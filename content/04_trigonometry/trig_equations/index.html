@@ -1,0 +1,975 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trigonometric Equations - Trigonometry & Waves</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "04_trigonometry",
+            logo: {"main":"Wave","accent":"Lab","sub":"Trigonometric Equations"},
+            navigation: [
+    {
+        "label": "waveform intersection",
+        "desc": "waveform intersection interactive section",
+        "href": "#visualizer"
+    },
+    {
+        "label": "Algebraic Solver",
+        "desc": "Algebraic Solver interactive section",
+        "href": "#step-solver"
+    },
+    {
+        "label": "Conceptual Quiz",
+        "desc": "Conceptual Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Trigonometry Amber Theme */
+            --color-amber: #ffb000;
+            --color-amber-glow: rgba(255, 176, 0, 0.35);
+            --color-accent: #ffb000;
+            --color-accent-glow: rgba(255, 176, 0, 0.35);
+
+            --color-curve: #38bdf8; /* Cyan for trig curve */
+            --color-line: #ffb000; /* Amber for horizontal constant line */
+            --color-dot: #f43f5e; /* Rose for intersection points */
+        }
+
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-amber) !important;
+            box-shadow: 0 4px 20px var(--color-amber-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-title,
+        .sidebar-drawer .syllabus-item.active a .syllabus-desc {
+            color: var(--bg-color) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-amber);
+            background: rgba(255, 176, 0, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 176, 0, 0.2);
+            text-shadow: 0 0 5px var(--color-amber-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-amber);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-amber);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .math-symbol {
+            font-style: italic;
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .canvas-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--text-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid var(--card-border);
+            pointer-events: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-amber) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Trigonometric Equations</h1>
+            <p>Solve equations involving trigonometric terms. Visualize how horizontal lines intersect periodic waveforms, yielding infinite sets of general solutions.</p>
+        </header>
+
+        <!-- SECTION 1: DYNAMIC VISUALIZER -->
+        <section id="visualizer">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>waveform intersection</h2>
+            </div>
+            <p class="section-intro">
+                Select an equation preset. Use the target slider to vary constant $c$. Watch the intersections (solutions in $[0, 2\pi]$) update in real-time. If the line lies outside the curve, notice the empty intersection set.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Graph Canvas -->
+                <div class="panel" style="position: relative;">
+                    <div class="canvas-label" id="canvasTitle">Graph: y = sin(x) vs y = c</div>
+                    <div class="canvas-container" style="height: 380px;">
+                        <canvas id="graphCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders & Equations -->
+                <div class="panel">
+                    <!-- Presets -->
+                    <div class="presets-grid" style="grid-template-columns: 1fr; gap: 8px; margin-bottom: 1.25rem;">
+                        <button class="btn-preset active" id="btnPreset1" onclick="switchPreset(1)">Linear: sin(x) = c</button>
+                        <button class="btn-preset" id="btnPreset2" onclick="switchPreset(2)">Double Freq: cos(2x) = c</button>
+                        <button class="btn-preset" id="btnPreset3" onclick="switchPreset(3)">Quadratic: 2sin&sup2;(x) - sin(x) - 1 = c</button>
+                    </div>
+
+                    <div class="math-card">
+                        <h3>Active Equation</h3>
+                        <div class="equation-box" id="eqDisplay">
+                            sin(x) = 0.50
+                        </div>
+                    </div>
+
+                    <!-- Sliders -->
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Target Value (<span class="math-symbol">c</span>)</span>
+                                <span class="number" id="lblC">0.50</span>
+                            </div>
+                            <input type="range" id="slideC" min="-1.50" max="1.50" step="0.05" value="0.50">
+                        </div>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>Pulsing red dots indicate valid coordinates (x, y) where the trigonometric function equals c.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: STEP-BY-STEP SOLVER -->
+        <section id="step-solver">
+            <div class="section-header">
+                <span class="section-tag">Algebraic Solver</span>
+                <h2>Algebraic Solver</h2>
+            </div>
+            <p class="section-intro">
+                Trace how we compute primary, quadrant-based, and general solutions for the active wave-constant intersections.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Calculation Steps -->
+                <div class="panel">
+                    <h3>Algebraic Expansion Steps</h3>
+                    <br>
+                    <div class="formula-steps" id="solveSteps">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Right Panel: Solutions Summary -->
+                <div class="panel">
+                    <h3>Roots in range [0, 2&pi;]</h3>
+                    <br>
+                    <div class="math-card" style="border-color: rgba(244, 63, 94, 0.15);">
+                        <h3>Numeric Solutions</h3>
+                        <p style="font-size: 0.9rem; line-height: 1.6; color: var(--text-color);" id="rootsSummaryText">
+                            No Solutions in [0, 2&pi;]
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Conceptual Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Test your understanding of solutions frequency, general periodic formula structures, and quadratic trig factorizations.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Question Board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">How many solutions does the equation sin(x) = 0.5 have in the interval [0, 2&pi;]?</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text...</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Cheatsheet -->
+                <div class="panel" id="quizStatsPanel">
+                    <h3>Solving Cheat Sheet</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom: 0; list-style: none; display: flex; flex-direction: column; gap: 10px;">
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-curve); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-curve);"></span>
+                            <span>sin(x) = c: x = sin⁻¹(c) &nbsp;|&nbsp; x = &pi; - sin⁻¹(c)</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-line); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-line);"></span>
+                            <span>cos(x) = c: x = cos⁻¹(c) &nbsp;|&nbsp; x = 2&pi; - cos⁻¹(c)</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-dot); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-dot);"></span>
+                            <span>General Solution (sine): &theta; = &theta;₀ + 2k&pi;</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-amber); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-amber-glow);"></span>
+                            <span>Factor: 2sin&sup2;x - sinx - 1 = (2sinx + 1)(sinx - 1)</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Sliders
+        const slideC = document.getElementById('slideC');
+        const lblC = document.getElementById('lblC');
+
+        const canvasTitle = document.getElementById('canvasTitle');
+        const eqDisplay = document.getElementById('eqDisplay');
+        const solveSteps = document.getElementById('solveSteps');
+        const rootsSummaryText = document.getElementById('rootsSummaryText');
+
+        // State
+        let activePreset = 1; // 1, 2, 3
+        let valC = 0.50; // target constant c
+
+        function switchPreset(presetNum) {
+            activePreset = presetNum;
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+
+            if (presetNum === 1) {
+                document.getElementById('btnPreset1').classList.add('active');
+                canvasTitle.textContent = "Graph: y = sin(x) vs y = c";
+                slideC.min = -1.50;
+                slideC.max = 1.50;
+            } else if (presetNum === 2) {
+                document.getElementById('btnPreset2').classList.add('active');
+                canvasTitle.textContent = "Graph: y = cos(2x) vs y = c";
+                slideC.min = -1.50;
+                slideC.max = 1.50;
+            } else {
+                document.getElementById('btnPreset3').classList.add('active');
+                canvasTitle.textContent = "Graph: y = 2sin\u00B2(x) - sin(x) - 1 vs y = c";
+                // Let's set slide bounds suitable for the quadratic range [-1.125, 2.0]
+                slideC.min = -1.50;
+                slideC.max = 1.50;
+            }
+            updateAll();
+        }
+
+        function resizeCanvases() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            drawAll();
+        }
+
+        // Coordinate transforms
+        // x-axis: [0, 2.1 * PI] (labeled 0 to 2PI)
+        // y-axis: [-2.2, 2.2]
+        function toPixel(gx, gy) {
+            const margin = 35;
+            const w = canvas.width - 2 * margin;
+            const h = canvas.height - 2 * margin;
+            const px = margin + (gx / (2.1 * Math.PI)) * w;
+            const py = margin + ((2.2 - gy) / 4.4) * h;
+            return { x: px, y: py };
+        }
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const margin = 35;
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.font = '9px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // X-axis divisions at fractions of pi
+            const xDivs = [
+                { val: 0, label: '0' },
+                { val: Math.PI / 2, label: '\u03C0/2' },
+                { val: Math.PI, label: '\u03C0' },
+                { val: 1.5 * Math.PI, label: '3\u03C0/2' },
+                { val: 2 * Math.PI, label: '2\u03C0' }
+            ];
+
+            xDivs.forEach(div => {
+                let p = toPixel(div.val, 0);
+                ctx.beginPath();
+                ctx.moveTo(p.x, margin);
+                ctx.lineTo(p.x, canvas.height - margin);
+                ctx.stroke();
+                ctx.fillText(div.label, p.x, canvas.height - margin + 12);
+            });
+
+            // Y-axis divisions
+            const yDivs = [-2, -1, 1, 2];
+            yDivs.forEach(yVal => {
+                let p = toPixel(0, yVal);
+                ctx.beginPath();
+                ctx.moveTo(margin, p.y);
+                ctx.lineTo(canvas.width - margin, p.y);
+                ctx.stroke();
+                ctx.fillText(yVal, margin - 15, p.y);
+            });
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 1.5;
+            let center = toPixel(0, 0);
+
+            ctx.beginPath();
+            ctx.moveTo(margin, center.y);
+            ctx.lineTo(canvas.width - margin, center.y);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(center.x, margin);
+            ctx.lineTo(center.x, canvas.height - margin);
+            ctx.stroke();
+        }
+
+        // Evaluate f(x)
+        function evalF(x) {
+            if (activePreset === 1) {
+                return Math.sin(x);
+            } else if (activePreset === 2) {
+                return Math.cos(2 * x);
+            } else {
+                const s = Math.sin(x);
+                return 2 * s * s - s - 1;
+            }
+        }
+
+        // Analytically compute roots in [0, 2pi]
+        function getRoots() {
+            let roots = [];
+
+            function shiftTo2Pi(rad) {
+                let r = rad % (2 * Math.PI);
+                if (r < 0) r += 2 * Math.PI;
+                return r;
+            }
+
+            if (activePreset === 1) {
+                // sin(x) = c
+                if (Math.abs(valC) <= 1.0) {
+                    const r1 = Math.asin(valC);
+                    roots.push(shiftTo2Pi(r1));
+                    roots.push(shiftTo2Pi(Math.PI - r1));
+                }
+            } else if (activePreset === 2) {
+                // cos(2x) = c
+                if (Math.abs(valC) <= 1.0) {
+                    const v = Math.acos(valC);
+                    // 2x = v, 2pi-v, 2pi+v, 4pi-v
+                    roots.push(v / 2);
+                    roots.push(Math.PI - v / 2);
+                    roots.push(Math.PI + v / 2);
+                    roots.push(2 * Math.PI - v / 2);
+                }
+            } else {
+                // 2sin^2 x - sin x - 1 = c
+                // Let u = sin x. 2u^2 - u - (1 + c) = 0
+                const D = 1 - 4 * 2 * (-(1 + valC)); // D = 1 + 8 + 8c = 9 + 8c
+                if (D >= 0) {
+                    const u1 = (1 + Math.sqrt(D)) / 4;
+                    const u2 = (1 - Math.sqrt(D)) / 4;
+
+                    [u1, u2].forEach(u => {
+                        if (Math.abs(u) <= 1.0) {
+                            const r = Math.asin(u);
+                            roots.push(shiftTo2Pi(r));
+                            roots.push(shiftTo2Pi(Math.PI - r));
+                        }
+                    });
+                }
+            }
+
+            // Keep unique roots (dedup close values) and sort
+            let uniqueRoots = [];
+            roots.forEach(r => {
+                if (!uniqueRoots.some(val => Math.abs(val - r) < 0.0001)) {
+                    if (r >= 0 && r <= 2 * Math.PI + 0.001) {
+                        uniqueRoots.push(r);
+                    }
+                }
+            });
+            uniqueRoots.sort((a, b) => a - b);
+            return uniqueRoots;
+        }
+
+        function drawAll() {
+            drawGrid();
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(35, 35, canvas.width - 70, canvas.height - 70);
+            ctx.clip();
+
+            // 1. Draw target line y = c (Amber)
+            const pLineStart = toPixel(0, valC);
+            const pLineEnd = toPixel(2.1 * Math.PI, valC);
+
+            ctx.strokeStyle = 'var(--color-line)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(pLineStart.x, pLineStart.y);
+            ctx.lineTo(pLineEnd.x, pLineEnd.y);
+            ctx.stroke();
+
+            // 2. Draw trig curve f(x) (Cyan)
+            ctx.strokeStyle = 'var(--color-curve)';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+
+            const step = 0.02;
+            let first = true;
+            for (let x = 0; x <= 2.1 * Math.PI; x += step) {
+                const y = evalF(x);
+                let p = toPixel(x, y);
+                if (first) {
+                    ctx.moveTo(p.x, p.y);
+                    first = false;
+                } else {
+                    ctx.lineTo(p.x, p.y);
+                }
+            }
+            ctx.stroke();
+
+            // 3. Mark intersections (solutions)
+            const roots = getRoots();
+
+            roots.forEach(r => {
+                const y = evalF(r);
+                const p = toPixel(r, y);
+
+                ctx.fillStyle = 'var(--color-dot)';
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 6, 0, 2 * Math.PI);
+                ctx.fill();
+
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 8.5px JetBrains Mono';
+                ctx.fillText(`(${r.toFixed(2)}, ${y.toFixed(2)})`, p.x, p.y - 12);
+            });
+
+            // 4. If no solutions, draw banner
+            if (roots.length === 0) {
+                ctx.fillStyle = 'rgba(244, 63, 94, 0.12)';
+                ctx.fillRect(35, canvas.height / 2 - 30, canvas.width - 70, 60);
+
+                ctx.fillStyle = '#f43f5e';
+                ctx.font = 'bold 15px Outfit';
+                ctx.textAlign = 'center';
+                ctx.fillText('NO REAL SOLUTIONS', canvas.width / 2, canvas.height / 2 + 5);
+            }
+
+            ctx.restore();
+        }
+
+        function updateSolver() {
+            lblC.textContent = valC.toFixed(2);
+            slideC.value = valC;
+
+            let eqStr = '';
+            if (activePreset === 1) {
+                eqStr = `sin(x) = ${valC.toFixed(2)}`;
+            } else if (activePreset === 2) {
+                eqStr = `cos(2x) = ${valC.toFixed(2)}`;
+            } else {
+                eqStr = `2sin\u00B2(x) - sin(x) - 1 = ${valC.toFixed(2)}`;
+            }
+            eqDisplay.textContent = eqStr;
+
+            const roots = getRoots();
+
+
+            if (roots.length === 0) {
+                rootsSummaryText.innerHTML = '<span style="color:var(--color-dot); font-weight:bold;">No solutions in [0, 2&pi;]</span>';
+            } else {
+                let htmlSummary = '';
+                roots.forEach((r, idx) => {
+                    const deg = r * 180 / Math.PI;
+                    htmlSummary += `x<sub>${idx+1}</sub> = ${r.toFixed(4)} rad (${deg.toFixed(1)}°)<br>`;
+                });
+                rootsSummaryText.innerHTML = htmlSummary;
+            }
+
+            // Steps display
+            let htmlSteps = '';
+            if (activePreset === 1) {
+                htmlSteps += `
+                    <div><strong>1. Isolate the trigonometric function:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px;">
+                        sin(x) = ${valC.toFixed(2)}
+                    </div>
+                `;
+                if (Math.abs(valC) > 1.0) {
+                    htmlSteps += `
+                        <div><strong>2. Check domain limits:</strong></div>
+                        <div style="margin-left: 10px; font-weight:700; color:#f43f5e;">
+                            Since |${valC.toFixed(2)}| > 1.0, the sine function cannot reach this value.<br>
+                            &rArr; No Real Solutions exist.
+                        </div>
+                    `;
+                } else {
+                    const r1 = Math.asin(valC);
+                    const deg1 = r1 * 180 / Math.PI;
+                    const r2 = Math.PI - r1;
+                    const deg2 = r2 * 180 / Math.PI;
+
+                    htmlSteps += `
+                        <div><strong>2. Find the principal solution (Quadrant I/IV):</strong></div>
+                        <div style="margin-left: 10px; margin-bottom: 12px;">
+                            x₁ = sin⁻¹(${valC.toFixed(2)}) = <strong>${r1.toFixed(4)} rad</strong> (${deg1.toFixed(1)}°)
+                        </div>
+                        <div><strong>3. Find secondary solution using quadrant rules:</strong></div>
+                        <div style="margin-left: 10px; margin-bottom: 12px;">
+                            x₂ = &pi; - x₁ = &pi; - ${r1.toFixed(4)} = <strong>${r2.toFixed(4)} rad</strong> (${deg2.toFixed(1)}°)
+                        </div>
+                        <div><strong>4. Formulate the general solutions (+2k&pi;):</strong></div>
+                        <div style="margin-left: 10px; font-weight:700; color:var(--color-amber);">
+                            x = ${r1.toFixed(3)} + 2k&pi;<br>
+                            x = ${r2.toFixed(3)} + 2k&pi; &nbsp;(k &isin; Z)
+                        </div>
+                    `;
+                }
+            } else if (activePreset === 2) {
+                htmlSteps += `
+                    <div><strong>1. Set double-angle notation:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px;">
+                        cos(2x) = ${valC.toFixed(2)}
+                    </div>
+                `;
+                if (Math.abs(valC) > 1.0) {
+                    htmlSteps += `
+                        <div><strong>2. Check domain limits:</strong></div>
+                        <div style="margin-left: 10px; font-weight:700; color:#f43f5e;">
+                            Since |${valC.toFixed(2)}| > 1.0, the cosine function cannot reach this value.<br>
+                            &rArr; No Real Solutions exist.
+                        </div>
+                    `;
+                } else {
+                    const v = Math.acos(valC);
+                    const degV = v * 180 / Math.PI;
+
+                    htmlSteps += `
+                        <div><strong>2. Solve for the double angle (2x):</strong></div>
+                        <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.6;">
+                            2x = cos⁻¹(${valC.toFixed(2)}) = &plusmn;${v.toFixed(4)} + 2k&pi;<br>
+                            &bull; 2x₁ = ${v.toFixed(4)} &nbsp;&rArr;&nbsp; x₁ = ${(v/2).toFixed(4)} rad<br>
+                            &bull; 2x₂ = ${(2*Math.PI - v).toFixed(4)} &nbsp;&rArr;&nbsp; x₂ = ${(Math.PI - v/2).toFixed(4)} rad
+                        </div>
+                        <div><strong>3. Generate remaining roots in [0, 2&pi;] (adding period increments):</strong></div>
+                        <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.6;">
+                            Since frequency is doubled, period is &pi; (add &pi; to previous roots):<br>
+                            &bull; x₃ = x₁ + &pi; = ${(Math.PI + v/2).toFixed(4)} rad<br>
+                            &bull; x₄ = x₂ + &pi; = ${(2*Math.PI - v/2).toFixed(4)} rad
+                        </div>
+                        <div><strong>4. Formulate the general solutions (+k&pi;):</strong></div>
+                        <div style="margin-left: 10px; font-weight:700; color:var(--color-amber);">
+                            x = &plusmn;${(v/2).toFixed(3)} + k&pi; &nbsp;(k &isin; Z)
+                        </div>
+                    `;
+                }
+            } else {
+                htmlSteps += `
+                    <div><strong>1. Treat as a quadratic in terms of u = sin(x):</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px;">
+                        2u² - u - ${(1 + valC).toFixed(2)} = 0
+                    </div>
+                `;
+                const D = 9 + 8 * valC;
+                if (D < 0) {
+                    htmlSteps += `
+                        <div><strong>2. Evaluate quadratic discriminant:</strong></div>
+                        <div style="margin-left: 10px; font-weight:700; color:#f43f5e;">
+                            Discriminant D = ${D.toFixed(3)} < 0.<br>
+                            &rArr; No Real Solutions exist.
+                        </div>
+                    `;
+                } else {
+                    const u1 = (1 + Math.sqrt(D)) / 4;
+                    const u2 = (1 - Math.sqrt(D)) / 4;
+
+                    htmlSteps += `
+                        <div><strong>2. Compute quadratic roots for sin(x):</strong></div>
+                        <div style="margin-left: 10px; margin-bottom: 12px;">
+                            sin(x) = ${u1.toFixed(4)}<br>
+                            sin(x) = ${u2.toFixed(4)}
+                        </div>
+                        <div><strong>3. Solve inverse sine for valid roots (|sin x| &le; 1.0):</strong></div>
+                        <div style="margin-left: 10px; line-height: 1.6;">
+                    `;
+
+                    let hasAny = false;
+                    [u1, u2].forEach((u, uIdx) => {
+                        if (Math.abs(u) <= 1.0) {
+                            hasAny = true;
+                            const r = Math.asin(u);
+                            const deg = r * 180 / Math.PI;
+                            htmlSteps += `
+                                &bull; sin(x) = ${u.toFixed(2)} &rArr; x = ${r.toFixed(4)} rad (${deg.toFixed(0)}°) and &pi; - x = ${(Math.PI - r).toFixed(4)} rad<br>
+                            `;
+                        } else {
+                            htmlSteps += `
+                                &bull; sin(x) = ${u.toFixed(2)} &rArr; Out of bounds (|sin x| > 1.0)<br>
+                            `;
+                        }
+                    });
+
+                    htmlSteps += `
+                        </div>
+                    `;
+
+                    if (!hasAny) {
+                        htmlSteps += `
+                            <div style="margin-left: 10px; font-weight:700; color:#f43f5e; margin-top: 10px;">
+                                Both quadratic roots exceed sine limits. No real solutions.
+                            </div>
+                        `;
+                    }
+                }
+            }
+
+            solveSteps.innerHTML = htmlSteps;
+        }
+
+        function updateAll() {
+            updateSolver();
+            drawAll();
+        }
+
+        slideC.addEventListener('input', (e) => {
+            valC = parseFloat(e.target.value);
+            updateAll();
+        });
+
+        // Quiz State & Data
+        const quizQuestions = [
+            {
+                question: "How many distinct real solutions does the equation sin(x) = -1.2 have?",
+                options: [
+                    "1 solution",
+                    "2 solutions",
+                    "0 solutions (No Real Solutions)",
+                    "Infinite solutions"
+                ],
+                correct: 2,
+                explanation: "The range of the sine function is strictly [-1, 1]. Since -1.2 lies outside this range, the equation has no real solutions."
+            },
+            {
+                question: "What is the general solution to the equation cos(x) = 1?",
+                options: [
+                    "x = &pi; + 2k&pi;",
+                    "x = 2k&pi; (where k is any integer)",
+                    "x = &pi;/2 + k&pi;",
+                    "x = k&pi;"
+                ],
+                correct: 1,
+                explanation: "cos(x) = 1 at x = 0. Since the cosine function is periodic with period 2&pi;, the general solution is x = 0 + 2k&pi; = 2k&pi;."
+            },
+            {
+                question: "How many solutions exist in the interval [0, 2&pi;] for the equation cos(2x) = 0.5?",
+                options: [
+                    "2 solutions",
+                    "4 solutions",
+                    "1 solution",
+                    "8 solutions"
+                ],
+                correct: 1,
+                explanation: "For cos(2x), the frequency is doubled, so the wave cycles twice in [0, 2&pi;]. In a single cycle, cos &theta; = 0.5 has 2 solutions. Across two cycles, there are 2 * 2 = 4 solutions."
+            },
+            {
+                question: "Which of the following represents a correct factoring of the equation 2sin&sup2;(x) - sin(x) - 1 = 0?",
+                options: [
+                    "(2sin x - 1)(sin x + 1) = 0",
+                    "(2sin x + 1)(sin x - 1) = 0",
+                    "(2sin x - 1)(sin x - 1) = 0",
+                    "2sin x(sin x - 1) = 0"
+                ],
+                correct: 1,
+                explanation: "Expanding (2sin x + 1)(sin x - 1) gives 2sin&sup2;(x) - 2sin x + sin x - 1 = 2sin&sup2;(x) - sin x - 1. This matches the quadratic expression."
+            },
+            {
+                question: "If sin(x) = 0.5, what are the two solutions in the interval [0, 2&pi;]?",
+                options: [
+                    "&pi;/6 and 5&pi;/6",
+                    "&pi;/6 and 7&pi;/6",
+                    "&pi;/3 and 2&pi;/3",
+                    "&pi;/3 and 5&pi;/3"
+                ],
+                correct: 0,
+                explanation: "The principal solution is sin⁻¹(0.5) = &pi;/6. The secondary solution is &pi; - &pi;/6 = 5&pi;/6. Both sine values are positive 0.5."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-amber); box-shadow:0 4px 15px var(--color-amber-glow); color:var(--bg-color);">
+                        Restart Quiz Evaluation
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function() {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvases, 300);
+            });
+            updateAll();
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

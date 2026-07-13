@@ -1,0 +1,996 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Statistical Inference & Hypothesis Testing - Data Science & Stats</title>
+    <script>
+        window.PAGE_CONFIG = {
+            domain: "06_data_science_statistics",
+            logo: { main: "Hypothesis", accent: "Testing", sub: "Statistical Inference" }
+        };
+    </script>
+    <script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            --color-reject: #f43f5e;       /* Rose/Red for Critical region & Reject */
+            --color-reject-glow: rgba(244, 63, 94, 0.35);
+            --color-retain: #10b981;       /* Emerald for Fail to reject */
+            --color-retain-glow: rgba(16, 185, 129, 0.35);
+            --color-stat: #38bdf8;         /* Cyan for test statistic Z */
+            --color-stat-glow: rgba(56, 189, 248, 0.35);
+            --color-interval: #ffb000;     /* Amber for Confidence Interval */
+            --color-interval-glow: rgba(255, 176, 0, 0.35);
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-accent);
+            background: rgba(168, 85, 247, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            text-shadow: 0 0 5px var(--color-accent-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 1.455fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 960px) {
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Canvas layouts */
+        .canvas-card {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .canvas-container {
+            width: 100%;
+            height: 220px;
+            position: relative;
+            touch-action: none;
+        }
+
+        .interval-container {
+            width: 100%;
+            height: 110px;
+            border-top: 1px solid var(--card-border);
+            background: rgba(255,255,255,0.005);
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Sliders control panel */
+        .control-row-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 1.25rem;
+        }
+
+        .input-select {
+            background: #0f121e;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text-color);
+            padding: 8px 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            width: 100%;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+
+        .input-select:focus {
+            border-color: var(--color-accent);
+        }
+
+        /* Decision Banner */
+        .decision-banner {
+            text-align: center;
+            font-size: 1.15rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .decision-banner.reject {
+            background: rgba(244, 63, 94, 0.08);
+            border: 1px solid rgba(244, 63, 94, 0.25);
+            color: var(--color-reject);
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.15);
+        }
+
+        .decision-banner.retain {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            color: var(--color-retain);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+        }
+
+        /* Solver steps */
+        .solver-step {
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 2px solid var(--card-border);
+        }
+
+        .solver-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .solver-step-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .solver-step-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Quiz option styling */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Hypothesis Testing</h1>
+            <p>Formulate and test claims. Adjust experimental samples size, mean, and standard deviation to compute Standard Errors, Z-test statistics, and P-values under normal distributions.</p>
+        </header>
+
+        <!-- SECTION 1: VISUAL SANDBOX -->
+        <section id="visualizer">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Z-Distribution Rejection Curves & Confidence Intervals</h2>
+            </div>
+            <p class="section-intro">
+                Select your hypothesis configuration on the right and adjust the sample statistics sliders. Observe in real-time if the calculated Z-statistic lands in the shaded red rejection zone, and compare it with the confidence interval overlap.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Dual Canvas Card -->
+                <div style="display:flex; flex-direction:column; gap: 1.25rem;">
+                    
+                    <!-- Decision Banner -->
+                    <div class="decision-banner retain" id="lblDecisionBanner">
+                        FAIL TO REJECT NULL HYPOTHESIS (P-value > &alpha;)
+                    </div>
+
+                    <div class="canvas-card">
+                        <!-- Z curve canvas -->
+                        <div class="canvas-container">
+                            <canvas id="canvasCurve"></canvas>
+                        </div>
+                        <!-- Confidence interval canvas -->
+                        <div class="interval-container">
+                            <canvas id="canvasInterval"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Parameters Adjusters & Diagnostics -->
+                <div class="panel">
+                    <div style="margin-bottom: 1.25rem;">
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">1. Hypothesis Parameters</h3>
+                        
+                        <div class="control-row-split">
+                            <div>
+                                <span style="font-size: 0.8rem; color: var(--text-muted); display:block; margin-bottom:4px;">Alternative (Ha):</span>
+                                <select class="input-select" id="selHa" onchange="updateAll()">
+                                    <option value="two">Two-Tailed (&mu; &ne; 70)</option>
+                                    <option value="upper" selected>One-Tailed Greater (&mu; &gt; 70)</option>
+                                    <option value="lower">One-Tailed Lesser (&mu; &lt; 70)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.8rem; color: var(--text-muted); display:block; margin-bottom:4px;">Significance (&alpha;):</span>
+                                <select class="input-select" id="selAlpha" onchange="updateAll()">
+                                    <option value="0.01">&alpha; = 0.01</option>
+                                    <option value="0.05" selected>&alpha; = 0.05</option>
+                                    <option value="0.10">&alpha; = 0.10</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.25rem;">
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">2. Sample Statistics</h3>
+                        
+                        <div style="display:flex; flex-direction:column; gap:12px;">
+                            <!-- Mean Slider -->
+                            <div>
+                                <div style="display:flex; justify-content:space-between; font-size: 0.85rem; margin-bottom:4px;">
+                                    <span style="color:var(--text-muted);">Sample Mean (&xbar;):</span>
+                                    <span class="number" id="lblMeanVal">72.0</span>
+                                </div>
+                                <input type="range" class="wedge-slider" id="slideMean" min="65" max="78" step="0.1" value="72.0" oninput="updateAll()">
+                            </div>
+                            
+                            <!-- Sample Size Slider -->
+                            <div>
+                                <div style="display:flex; justify-content:space-between; font-size: 0.85rem; margin-bottom:4px;">
+                                    <span style="color:var(--text-muted);">Sample Size (n):</span>
+                                    <span class="number" id="lblNVal">50</span>
+                                </div>
+                                <input type="range" class="wedge-slider" id="slideN" min="10" max="150" step="1" value="50" oninput="updateAll()">
+                            </div>
+
+                            <!-- Std Dev Slider -->
+                            <div>
+                                <div style="display:flex; justify-content:space-between; font-size: 0.85rem; margin-bottom:4px;">
+                                    <span style="color:var(--text-muted);">Standard Dev (s):</span>
+                                    <span class="number" id="lblStdVal">10.0</span>
+                                </div>
+                                <input type="range" class="wedge-slider" id="slideStd" min="5" max="20" step="0.5" value="10.0" oninput="updateAll()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Diagnostic Output Cards -->
+                    <div>
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">3. Diagnostics Summary</h3>
+                        
+                        <div class="math-card" style="border-color: rgba(56, 189, 248, 0.12); margin-bottom: 0.5rem; padding: 10px 12px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.8rem; color:var(--text-muted);">Z-Test Statistic:</span>
+                            <strong style="color:var(--color-stat); font-size:1.15rem;" class="number" id="lblZStat">Z = +1.41</strong>
+                        </div>
+
+                        <div class="math-card" style="border-color: rgba(168, 85, 247, 0.12); margin-bottom: 0.5rem; padding: 10px 12px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.8rem; color:var(--text-muted);">Calculated P-Value:</span>
+                            <strong style="color:var(--color-ledger); font-size:1.15rem;" class="number" id="lblPValue">P = 0.0786</strong>
+                        </div>
+
+                        <div class="math-card" style="border-color: rgba(255, 176, 0, 0.12); margin-bottom: 0; padding: 10px 12px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.8rem; color:var(--text-muted);">Standard Error (SE):</span>
+                            <strong style="color:var(--color-interval); font-size:1.05rem;" class="number" id="lblSE">SE = 1.41</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: STEP-BY-STEP SOLVER -->
+        <section id="step-solver">
+            <div class="section-header">
+                <span class="section-tag">Algebraic Solver</span>
+                <h2>Hypothesis Testing Trace Walkthrough</h2>
+            </div>
+            <p class="section-intro">
+                Trace how the test statistic is evaluated against significance critical thresholds and confidence regions.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left: Solver Steps -->
+                <div class="panel" style="gap: 1rem;">
+                    <h3>Trace Calculations Steps</h3>
+                    <div id="solveSteps">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Right: Aggregation Reference -->
+                <div class="panel">
+                    <h3>Critical Thresholds Cheat Sheet</h3>
+                    <br>
+                    <div id="solverRightCard" style="font-size:0.85rem; line-height:1.4; color:var(--text-muted);">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: QUIZ EVALUATION -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Inference & Testing Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Evaluate your conceptual understanding of error rates, significance cutoffs, Z vs t stats, and p-value interpretations.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Question board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Quiz question loading...</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text...</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Cheatsheet -->
+                <div class="panel">
+                    <h3>Statistical Error Rules</h3>
+                    <br>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">
+                        <li><strong>Null Hypothesis (H0):</strong> The baseline assumption of no effect or no difference (e.g. $\mu = 70$).</li>
+                        <li><strong>Alternative Hypothesis (Ha):</strong> The claim we wish to test (e.g. $\mu > 70$).</li>
+                        <li><strong>Type I Error (False Positive):</strong> Rejecting $H_0$ when it is actually true. The probability of this is exactly $\alpha$ (the significance level).</li>
+                        <li><strong>Type II Error (False Negative):</strong> Failing to reject $H_0$ when $H_0$ is false. The probability of this is $\beta$.</li>
+                        <li><strong>Power (1 - &beta;):</strong> The probability of correctly rejecting a false null hypothesis. Power increases as sample size $n$ increases.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvasCurve = document.getElementById('canvasCurve');
+        const ctxCurve = canvasCurve.getContext('2d');
+        const canvasInterval = document.getElementById('canvasInterval');
+        const ctxInterval = canvasInterval.getContext('2d');
+
+        const selHa = document.getElementById('selHa');
+        const selAlpha = document.getElementById('selAlpha');
+        const slideMean = document.getElementById('slideMean');
+        const slideN = document.getElementById('slideN');
+        const slideStd = document.getElementById('slideStd');
+
+        const lblMeanVal = document.getElementById('lblMeanVal');
+        const lblNVal = document.getElementById('lblNVal');
+        const lblStdVal = document.getElementById('lblStdVal');
+        
+        const lblZStat = document.getElementById('lblZStat');
+        const lblPValue = document.getElementById('lblPValue');
+        const lblSE = document.getElementById('lblSE');
+        const lblDecisionBanner = document.getElementById('lblDecisionBanner');
+        const solveSteps = document.getElementById('solveSteps');
+        const solverRightCard = document.getElementById('solverRightCard');
+
+        const mu0 = 70.0; // Null value reference
+
+        // Abramowitz & Stegun standard normal CDF approximation
+        function normalCDF(z) {
+            const t = 1 / (1 + 0.2316419 * Math.abs(z));
+            const d = 0.39894228 * Math.exp(-z * z / 2);
+            const p = d * t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+            return z >= 0 ? 1 - p : p;
+        }
+
+        // Standard Normal Percent Point Function (PPF) or Inverse CDF lookup dictionary
+        // Mapped for alpha values: 0.01, 0.05, 0.10
+        const zCriticals = {
+            two: { "0.01": 2.576, "0.05": 1.960, "0.10": 1.645 },
+            upper: { "0.01": 2.326, "0.05": 1.645, "0.10": 1.282 },
+            lower: { "0.01": 2.326, "0.05": 1.645, "0.10": 1.282 } // symmetric
+        };
+
+        // Calculations & Stats
+        function runTestCalculations() {
+            const meanVal = parseFloat(slideMean.value);
+            const nVal = parseInt(slideN.value);
+            const stdVal = parseFloat(slideStd.value);
+            const alphaVal = selAlpha.value;
+            const haType = selHa.value;
+
+            const seVal = stdVal / Math.sqrt(nVal);
+            const zStat = (meanVal - mu0) / seVal;
+            
+            // Critical value
+            const zCrit = zCriticals[haType][alphaVal];
+
+            // P-value
+            let pVal = 0;
+            if (haType === 'upper') {
+                pVal = 1 - normalCDF(zStat);
+            } else if (haType === 'lower') {
+                pVal = normalCDF(zStat);
+            } else { // two-tailed
+                pVal = 2 * (1 - normalCDF(Math.abs(zStat)));
+            }
+
+            // Decision mapping
+            let rejectNull = false;
+            if (haType === 'upper') {
+                rejectNull = zStat >= zCrit;
+            } else if (haType === 'lower') {
+                rejectNull = zStat <= -zCrit;
+            } else { // two-tailed
+                rejectNull = Math.abs(zStat) >= zCrit;
+            }
+
+            // Confidence interval bounds around sample mean
+            const marginOfError = zCriticals['two'][alphaVal] * seVal; // CI is always two-tailed
+            const ciLower = meanVal - marginOfError;
+            const ciUpper = meanVal + marginOfError;
+
+            return {
+                meanVal, nVal, stdVal, alphaVal, haType,
+                seVal, zStat, zCrit, pVal, rejectNull,
+                ciLower, ciUpper, marginOfError
+            };
+        }
+
+        function drawCurveChart(res) {
+            ctxCurve.clearRect(0, 0, canvasCurve.width, canvasCurve.height);
+
+            const width = canvasCurve.width;
+            const height = canvasCurve.height;
+            const marginX = 40;
+            const marginY = 30;
+            const drawW = width - 2 * marginX;
+            const drawH = height - 2 * marginY;
+
+            // Z curve bounds from -3.5 to +3.5
+            const minZ = -3.5;
+            const maxZ = 3.5;
+            const rangeZ = maxZ - minZ;
+
+            function standardPDF(z) {
+                return (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-z * z / 2);
+            }
+
+            const maxPDFVal = standardPDF(0); // peaks at 0.3989
+            const scaleY = maxPDFVal + 0.05;
+
+            ctxCurve.fillStyle = 'rgba(244, 63, 94, 0.2)';
+            
+            function drawShadedRegion(startZ, endZ) {
+                ctxCurve.beginPath();
+                const startPx = marginX + ((startZ - minZ) / rangeZ) * drawW;
+                const endPx = marginX + ((endZ - minZ) / rangeZ) * drawW;
+                ctxCurve.moveTo(startPx, height - marginY);
+
+                const steps = 40;
+                for (let k = 0; k <= steps; k++) {
+                    const z = startZ + (k / steps) * (endZ - startZ);
+                    const pdf = standardPDF(z);
+                    const px = marginX + ((z - minZ) / rangeZ) * drawW;
+                    const py = height - marginY - (pdf / scaleY) * drawH;
+                    ctxCurve.lineTo(px, py);
+                }
+                ctxCurve.lineTo(endPx, height - marginY);
+                ctxCurve.closePath();
+                ctxCurve.fill();
+            }
+
+            // Shading critical regions based on hypothesis tail configurations
+            if (res.haType === 'upper') {
+                drawShadedRegion(res.zCrit, maxZ);
+            } else if (res.haType === 'lower') {
+                drawShadedRegion(minZ, -res.zCrit);
+            } else { // two-tailed split
+                drawShadedRegion(minZ, -res.zCrit);
+                drawShadedRegion(res.zCrit, maxZ);
+            }
+
+            ctxCurve.strokeStyle = 'var(--color-mean)';
+            ctxCurve.lineWidth = 2.2;
+            ctxCurve.beginPath();
+            const curveSteps = 100;
+            for (let i = 0; i <= curveSteps; i++) {
+                const z = minZ + (i / curveSteps) * rangeZ;
+                const pdf = standardPDF(z);
+                const px = marginX + ((z - minZ) / rangeZ) * drawW;
+                const py = height - marginY - (pdf / scaleY) * drawH;
+                if (i === 0) ctxCurve.moveTo(px, py);
+                else ctxCurve.lineTo(px, py);
+            }
+            ctxCurve.stroke();
+
+            ctxCurve.strokeStyle = 'var(--color-reject)';
+            ctxCurve.lineWidth = 1.5;
+
+            function drawCritLine(zVal, labelText) {
+                const px = marginX + ((zVal - minZ) / rangeZ) * drawW;
+                ctxCurve.beginPath();
+                ctxCurve.moveTo(px, marginY - 12);
+                ctxCurve.lineTo(px, height - marginY);
+                ctxCurve.stroke();
+
+                // Label critical threshold
+                ctxCurve.fillStyle = 'var(--color-reject)';
+                ctxCurve.font = 'bold 8.5px JetBrains Mono';
+                ctxCurve.textAlign = 'center';
+                ctxCurve.textBaseline = 'bottom';
+                ctxCurve.fillText(labelText, px, marginY - 16);
+            }
+
+            if (res.haType === 'upper') {
+                drawCritLine(res.zCrit, `+${res.zCrit.toFixed(2)}`);
+            } else if (res.haType === 'lower') {
+                drawCritLine(-res.zCrit, `-${res.zCrit.toFixed(2)}`);
+            } else { // two-tailed
+                drawCritLine(-res.zCrit, `-${res.zCrit.toFixed(2)}`);
+                drawCritLine(res.zCrit, `+${res.zCrit.toFixed(2)}`);
+            }
+
+            // Constrain Z to render bounds
+            const zBounded = Math.max(minZ + 0.05, Math.min(maxZ - 0.05, res.zStat));
+            const statPx = marginX + ((zBounded - minZ) / rangeZ) * drawW;
+
+            ctxCurve.strokeStyle = 'var(--color-stat)';
+            ctxCurve.lineWidth = 2.5;
+            ctxCurve.beginPath();
+            ctxCurve.moveTo(statPx, marginY + 10);
+            ctxCurve.lineTo(statPx, height - marginY);
+            ctxCurve.stroke();
+
+            // Label Z statistic
+            ctxCurve.fillStyle = 'var(--color-stat)';
+            ctxCurve.font = 'bold 9px JetBrains Mono';
+            ctxCurve.textAlign = 'center';
+            ctxCurve.textBaseline = 'bottom';
+            ctxCurve.fillText(`Z = ${res.zStat >= 0 ? '+' : ''}${res.zStat.toFixed(2)}`, statPx, marginY + 6);
+
+            ctxCurve.strokeStyle = 'rgba(255,255,255,0.12)';
+            ctxCurve.lineWidth = 1.5;
+            ctxCurve.beginPath();
+            ctxCurve.moveTo(marginX - 10, height - marginY);
+            ctxCurve.lineTo(width - marginX + 10, height - marginY);
+            ctxCurve.stroke();
+
+            // Label Z values at axis ticks (-3, -2, -1, 0, 1, 2, 3)
+            ctxCurve.fillStyle = 'rgba(255,255,255,0.3)';
+            ctxCurve.font = '7.5px JetBrains Mono';
+            ctxCurve.textAlign = 'center';
+            ctxCurve.textBaseline = 'top';
+            for (let z = -3; z <= 3; z++) {
+                const px = marginX + ((z - minZ) / rangeZ) * drawW;
+                ctxCurve.fillText(z, px, height - marginY + 6);
+            }
+        }
+
+        function drawIntervalChart(res) {
+            ctxInterval.clearRect(0, 0, canvasInterval.width, canvasInterval.height);
+
+            const width = canvasInterval.width;
+            const height = canvasInterval.height;
+            const marginX = 40;
+            const drawW = width - 2 * marginX;
+
+            // X-axis coordinate scale from 62 to 78 (centered on mu0 = 70)
+            const minX = 62;
+            const maxX = 78;
+            const rangeX = maxX - minX;
+
+            ctxInterval.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctxInterval.lineWidth = 1;
+            ctxInterval.beginPath();
+            ctxInterval.moveTo(marginX, 45);
+            ctxInterval.lineTo(width - marginX, 45);
+            ctxInterval.stroke();
+
+            ctxInterval.fillStyle = 'rgba(255,255,255,0.25)';
+            ctxInterval.font = '7.5px JetBrains Mono';
+            ctxInterval.textAlign = 'center';
+            ctxInterval.textBaseline = 'top';
+            for (let x = 62; x <= 78; x += 2) {
+                const px = marginX + ((x - minX) / rangeX) * drawW;
+                ctxInterval.beginPath();
+                ctxInterval.moveTo(px, 42);
+                ctxInterval.lineTo(px, 48);
+                ctxInterval.stroke();
+                ctxInterval.fillText(x, px, 52);
+            }
+
+            const nullPx = marginX + ((mu0 - minX) / rangeX) * drawW;
+            ctxInterval.strokeStyle = 'var(--color-reject)';
+            ctxInterval.lineWidth = 1.5;
+            ctxInterval.setLineDash([3, 3]);
+            ctxInterval.beginPath();
+            ctxInterval.moveTo(nullPx, 10);
+            ctxInterval.lineTo(nullPx, 65);
+            ctxInterval.stroke();
+            ctxInterval.setLineDash([]); // reset
+
+            // Label Null Value
+            ctxInterval.fillStyle = 'var(--color-reject)';
+            ctxInterval.font = 'bold 8.5px JetBrains Mono';
+            ctxInterval.textAlign = 'center';
+            ctxInterval.fillText(`\u03BC\u2080 = 70`, nullPx, 67);
+
+            const ciLowerBounded = Math.max(minX + 0.1, Math.min(maxX - 0.1, res.ciLower));
+            const ciUpperBounded = Math.max(minX + 0.1, Math.min(maxX - 0.1, res.ciUpper));
+
+            const ciL = marginX + ((ciLowerBounded - minX) / rangeX) * drawW;
+            const ciR = marginX + ((ciUpperBounded - minX) / rangeX) * drawW;
+            const meanPx = marginX + ((res.meanVal - minX) / rangeX) * drawW;
+
+            ctxInterval.strokeStyle = 'var(--color-interval)';
+            ctxInterval.lineWidth = 2.5;
+            ctxInterval.beginPath();
+            ctxInterval.moveTo(ciL, 30);
+            ctxInterval.lineTo(ciR, 30);
+            ctxInterval.stroke();
+
+            ctxInterval.lineWidth = 1.5;
+            ctxInterval.beginPath();
+            ctxInterval.moveTo(ciL, 24);
+            ctxInterval.lineTo(ciL, 36);
+            ctxInterval.moveTo(ciR, 24);
+            ctxInterval.lineTo(ciR, 36);
+            ctxInterval.stroke();
+
+            ctxInterval.fillStyle = 'var(--color-stat)';
+            ctxInterval.beginPath();
+            ctxInterval.arc(meanPx, 30, 4, 0, Math.PI * 2);
+            ctxInterval.fill();
+
+            // Label CI range bounds text at top
+            ctxInterval.fillStyle = 'var(--color-interval)';
+            ctxInterval.font = 'bold 9px JetBrains Mono';
+            ctxInterval.textAlign = 'center';
+            ctxInterval.fillText(`${(100 - parseFloat(res.alphaVal)*100).toFixed(0)}% CI: [${res.ciLower.toFixed(2)}, ${res.ciUpper.toFixed(2)}]`, meanPx, 12);
+        }
+
+        function updateAll() {
+            const res = runTestCalculations();
+
+            lblMeanVal.textContent = res.meanVal.toFixed(1);
+            lblNVal.textContent = res.nVal;
+            lblStdVal.textContent = res.stdVal.toFixed(1);
+
+            lblZStat.textContent = `Z = ${res.zStat >= 0 ? '+' : ''}${res.zStat.toFixed(2)}`;
+            lblPValue.textContent = `P = ${res.pVal.toFixed(4)}`;
+            lblSE.textContent = `SE = ${res.seVal.toFixed(2)}`;
+
+            // Decision banner style update
+            if (res.rejectNull) {
+                lblDecisionBanner.textContent = `REJECT NULL HYPOTHESIS (P-value \u2264 \u03B1)`;
+                lblDecisionBanner.className = 'decision-banner reject';
+            } else {
+                lblDecisionBanner.textContent = `FAIL TO REJECT NULL HYPOTHESIS (P-value > \u03B1)`;
+                lblDecisionBanner.className = 'decision-banner retain';
+            }
+
+            drawCurveChart(res);
+            drawIntervalChart(res);
+
+            // Solver Steps Walkthrough
+            let solverHtml = `
+                <div class="solver-step">
+                    <div class="solver-step-title">1. Formulate Null ($H_0$) and Alternative ($H_a$) Hypotheses</div>
+                    <div class="solver-step-desc">
+                        We test the claim that the population mean ($\mu$) differs from the baseline value of 70:<br>
+                        &bull; Null Hypothesis ($H_0$): $\mu = 70.0$<br>
+                        &bull; Alternative ($H_a$): ${res.haType === 'upper' ? '$\\mu > 70.0$ (One-Tailed Upper)' : res.haType === 'lower' ? '$\\mu < 70.0$ (One-Tailed Lower)' : '$\\mu \\neq 70.0$ (Two-Tailed)'}
+                    </div>
+                </div>
+                <div class="solver-step">
+                    <div class="solver-step-title">2. Calculate standard error (SE) of the mean</div>
+                    <div class="solver-step-desc">
+                        Standard error measures the deviation variability of sample means:
+                        <div class="math-equation" style="margin-left:10px; font-size: 1rem;">
+                            SE = 
+                            <span class="math-fraction">
+                                <span class="numerator">s</span>
+                                <span class="denominator">&radic;n</span>
+                            </span>
+                            =
+                            <span class="math-fraction">
+                                <span class="numerator">${res.stdVal.toFixed(2)}</span>
+                                <span class="denominator">&radic;${res.nVal}</span>
+                            </span>
+                            = <strong>${res.seVal.toFixed(3)}</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="solver-step">
+                    <div class="solver-step-title">3. Compute the Z Test Statistic</div>
+                    <div class="solver-step-desc">
+                        Standardize our sample Mean ($\bar{x} = ${res.meanVal.toFixed(1)}$) under the null curve:
+                        <div class="math-equation" style="margin-left:10px; font-size:1.05rem;">
+                            Z = 
+                            <span class="math-fraction">
+                                <span class="numerator">&xbar; &minus; &mu;&sub0;</span>
+                                <span class="denominator">SE</span>
+                            </span>
+                            =
+                            <span class="math-fraction">
+                                <span class="numerator">${res.meanVal.toFixed(1)} &minus; 70.0</span>
+                                <span class="denominator">${res.seVal.toFixed(3)}</span>
+                            </span>
+                            = <strong style="color:var(--color-stat);">${res.zStat >= 0 ? '+' : ''}${res.zStat.toFixed(4)}</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="solver-step">
+                    <div class="solver-step-title">4. Calculate the P-value (Integral of extremity)</div>
+                    <div class="solver-step-desc">
+                        P-value represents the probability of obtaining a test statistic at least as extreme as the one calculated, assuming $H_0$ is true:
+                        <br>
+                        ${res.haType === 'upper' ? `&bull; $P = P(Z \ge ${res.zStat.toFixed(3)}) = 1 - \\Phi(${res.zStat.toFixed(3)}) = \\mathbf{${res.pVal.toFixed(4)}}$ (${(res.pVal*100).toFixed(2)}%)` : 
+                          res.haType === 'lower' ? `&bull; $P = P(Z \le ${res.zStat.toFixed(3)}) = \\Phi(${res.zStat.toFixed(3)}) = \\mathbf{${res.pVal.toFixed(4)}}$ (${(res.pVal*100).toFixed(2)}%)` : 
+                          `&bull; $P = 2 \\times P(Z \ge |${res.zStat.toFixed(3)}|) = 2 \\times (1 - \\Phi(${Math.abs(res.zStat).toFixed(3)})) = \\mathbf{${res.pVal.toFixed(4)}}$ (${(res.pVal*100).toFixed(2)}%)`}
+                    </div>
+                </div>
+                <div class="solver-step" style="border-color:${res.rejectNull ? 'var(--color-reject)' : 'var(--color-retain)'};">
+                    <div class="solver-step-title">5. Compare P-value to Significance Level &alpha;</div>
+                    <div class="solver-step-desc">
+                        Given significance level &alpha; = <strong>${res.alphaVal}</strong>:<br>
+                        &bull; P-value = <strong>${res.pVal.toFixed(4)}</strong>.<br>
+                        &bull; Decision: ${res.rejectNull ? 
+                            `<span style="color:var(--color-reject); font-weight:700;">Reject H0</span> because P-value (${res.pVal.toFixed(4)}) &le; &alpha; (${res.alphaVal}). There is statistically significant evidence to support the alternative hypothesis.` : 
+                            `<span style="color:var(--color-retain); font-weight:700;">Fail to Reject H0</span> because P-value (${res.pVal.toFixed(4)}) > &alpha; (${res.alphaVal}). There is not enough evidence to support the claim.`}
+                    </div>
+                </div>
+            `;
+            solveSteps.innerHTML = solverHtml;
+
+            // Solver Right panel Table cheat sheet
+            solverRightCard.innerHTML = `
+                <h3>Critical Boundaries (&alpha; = ${res.alphaVal})</h3>
+                <br>
+                Type of Test: **${res.haType === 'two' ? 'Two-Tailed' : 'One-Tailed'}** <br>
+                Z-Critical Threshold: **${res.haType === 'two' ? '&plusmn;' : res.haType === 'upper' ? '+' : '-'}${res.zCrit.toFixed(3)}** <br>
+                Current Z-Statistic: **${res.zStat >= 0 ? '+' : ''}${res.zStat.toFixed(3)}** <br>
+                <br>
+                <span style="color:#ffffff;">Confidence Interval test:</span> <br>
+                Does the ${(100 - parseFloat(res.alphaVal)*100).toFixed(0)}% CI contain $\mu_0 = 70$? <br>
+                &bull; Interval: **[${res.ciLower.toFixed(2)}, ${res.ciUpper.toFixed(2)}]** <br>
+                &bull; Includes 70.0? **${(mu0 >= res.ciLower && mu0 <= res.ciUpper) ? 'YES (Fail to Reject)' : 'NO (Reject H0)'}**
+            `;
+        }
+
+        function resizeCanvases() {
+            canvasCurve.width = canvasCurve.parentElement.clientWidth;
+            canvasCurve.height = canvasCurve.parentElement.clientHeight;
+            canvasInterval.width = canvasInterval.parentElement.clientWidth;
+            canvasInterval.height = canvasInterval.parentElement.clientHeight;
+            updateAll();
+        }
+
+        // Quiz Engine Data
+        const quizQuestions = [
+            {
+                question: "What is the primary definition of a Type I error in statistical hypothesis testing?",
+                options: [
+                    "Rejecting the null hypothesis when it is actually true (False Positive).",
+                    "Failing to reject the null hypothesis when it is false (False Negative).",
+                    "Calculating an incorrect test statistic due to small sample size.",
+                    "Choosing a significance level alpha that is too large."
+                ],
+                correct: 0,
+                explanation: "A Type I error occurs when the null hypothesis H0 is true, but we incorrectly reject it (False Positive). The probability of making a Type I error is equal to the significance level alpha."
+            },
+            {
+                question: "If a researcher obtains a P-value of 0.024 from a Z-test, what is the correct decision at the standard significance level alpha = 0.05?",
+                options: [
+                    "Fail to reject the null hypothesis because P-value > alpha.",
+                    "Reject the null hypothesis because P-value <= alpha.",
+                    "Accept the alternative hypothesis because P-value equals 1 - alpha.",
+                    "The test is inconclusive because the Z-score is not provided."
+                ],
+                correct: 1,
+                explanation: "Since the P-value (0.024) is less than or equal to the significance level alpha (0.05), we reject the null hypothesis (H0), concluding that there is statistically significant evidence to support the alternative."
+            },
+            {
+                question: "How does increasing the sample size n typically affect the Standard Error (SE) and the statistical Power of a hypothesis test?",
+                options: [
+                    "SE increases, and Power decreases.",
+                    "SE decreases, and Power increases.",
+                    "Both SE and Power remain unchanged.",
+                    "SE decreases, and Power decreases."
+                ],
+                correct: 1,
+                explanation: "Standard Error (SE = s / sqrt(n)) decreases as sample size n increases. A smaller SE yields more precise estimates and increases the likelihood of correctly rejecting a false null (increasing Power)."
+            },
+            {
+                question: "If a two-tailed hypothesis test rejects the null hypothesis H0: mu = 70 at the alpha = 0.05 level, what can be inferred about the corresponding 95% confidence interval?",
+                options: [
+                    "The 95% confidence interval will contain the value 70.0.",
+                    "The 95% confidence interval will NOT contain the value 70.0.",
+                    "The confidence interval bounds will be symmetric around 70.0.",
+                    "The standard deviation must be greater than the sample size."
+                ],
+                correct: 1,
+                explanation: "Rejecting H0 at alpha = 0.05 is mathematically equivalent to the 95% confidence interval (1 - alpha) NOT containing the null value (70.0)."
+            },
+            {
+                question: "Under what condition would you typically perform a one-tailed upper test instead of a two-tailed test?",
+                options: [
+                    "When you want to prove the null hypothesis is exactly true.",
+                    "When you are only interested in detecting if the population parameter is strictly greater than the null value.",
+                    "When the sample standard deviation is very small.",
+                    "When you want to decrease the probability of making a Type I error."
+                ],
+                correct: 1,
+                explanation: "A one-tailed upper test is used when the alternative hypothesis claims a directional increase (e.g. Ha: mu > 70). We only reject H0 if the test statistic is significantly large and positive."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-accent); box-shadow:0 4px 15px var(--color-accent-glow); color:var(--text-color);">
+                        Restart Quiz Evaluation
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function() {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvases, 300);
+            });
+
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

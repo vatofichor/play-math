@@ -1,0 +1,1150 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Related Rates & Optimization - Calculus & Limits</title>
+    <script>
+        window.PAGE_CONFIG = {
+            domain: "05_calculus",
+            logo: { main: "Rates", accent: "Optimization", sub: "Calculus Extrema" }
+        };
+    </script>
+    <script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            --color-ladder: #a855f7; /* Purple for ladder */
+            --color-fence: #38bdf8; /* Cyan for fence */
+            --color-parabola: #6366f1; /* Indigo for area curve */
+            --color-dx: #10b981; /* Green for dx/dt rate */
+            --color-dy: #f43f5e; /* Rose for dy/dt rate */
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-accent);
+            background: rgba(99, 102, 241, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            text-shadow: 0 0 5px var(--color-accent-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-accent);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-accent);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .canvas-label {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--text-color);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid var(--card-border);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .graph-item {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Related Rates & Optimization</h1>
+            <p>Apply derivatives to real-world dynamics. Solve related rates of changing variables using implicit differentiation, and maximize enclosure areas using extreme value optimization.</p>
+        </header>
+
+        <!-- SECTION 1: DYNAMIC VISUALIZER -->
+        <section id="visualizer">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Rates & Extrema Visualizer</h2>
+            </div>
+            <p class="section-intro">
+                Toggle between Related Rates (Sliding Ladder) and Optimization (Parabolic Fenced Yard). Drag handles directly on the canvas or adjust sliders to see calculus in action.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Coordinate Grid -->
+                <div class="panel" style="padding: 10px; height: 420px;">
+                    <div class="graph-item">
+                        <div class="canvas-label" id="lblCurveFormula">Related Rates: Sliding Ladder</div>
+                        <canvas id="canvasRatesOpt"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Controls & Presets -->
+                <div class="panel">
+                    <div class="presets-grid" style="grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 1.25rem;">
+                        <button class="btn-preset active" id="btnModeRates" onclick="switchMode('rates')">1. Related Rates (Ladder)</button>
+                        <button class="btn-preset" id="btnModeOpt" onclick="switchMode('opt')">2. Optimization (Yard)</button>
+                    </div>
+
+                    <div class="math-card">
+                        <h3 id="cardHeaderTitle">Pythagorean Rate Equation</h3>
+                        <div class="equation-box" id="eqDisplay" style="font-size: 1.05rem; line-height: 1.5; padding: 0.95rem;">
+                            x² + y² = L² &nbsp;&rArr;&nbsp; 2x(dx/dt) + 2y(dy/dt) = 0
+                        </div>
+                    </div>
+
+                    <!-- Related Rates Sliders -->
+                    <div class="slider-group" id="groupRates">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Base Distance (x)</span>
+                                <span class="number" id="lblX">3.00 m</span>
+                            </div>
+                            <input type="range" id="slideX" min="0.80" max="4.80" step="0.05" value="3.00">
+                        </div>
+
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Sliding Speed (dx/dt)</span>
+                                <span class="number" id="lblDx">0.80 m/s</span>
+                            </div>
+                            <input type="range" id="slideDx" min="0.10" max="2.00" step="0.10" value="0.80">
+                        </div>
+                    </div>
+
+                    <!-- Optimization Sliders -->
+                    <div class="slider-group" id="groupOpt" style="display: none;">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Yard Width (x)</span>
+                                <span class="number" id="lblOptX">25.00 m</span>
+                            </div>
+                            <input type="range" id="slideOptX" min="5.00" max="45.00" step="0.50" value="25.00">
+                        </div>
+
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Fencing Perimeter (P)</span>
+                                <span class="number" id="lblOptP">100.00 m</span>
+                            </div>
+                            <input type="range" id="slideOptP" min="40.00" max="180.00" step="5.00" value="100.00">
+                        </div>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span id="lblHintText">Drag the ladder base horizontally. Observe how dy/dt shoots up to infinity as the ladder approaches the floor.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: STEP-BY-STEP SOLVER -->
+        <section id="step-solver">
+            <div class="section-header">
+                <span class="section-tag">Algebraic Solver</span>
+                <h2>Implicit & Extreme Steps Solver</h2>
+            </div>
+            <p class="section-intro">
+                Trace exact rates differentials and derivative test optimization bounds.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Calculation Steps -->
+                <div class="panel">
+                    <h3>Analytical Steps Solution</h3>
+                    <br>
+                    <div class="formula-steps" id="solveSteps">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Right Panel: Conversion Values Summary -->
+                <div class="panel">
+                    <h3>Values Summary</h3>
+                    <br>
+                    <!-- Mode Rates Summary Cards -->
+                    <div id="summaryRates">
+                        <div class="math-card" style="border-color: rgba(16, 185, 129, 0.15);">
+                            <h3>Ladder Base Speed (dx/dt)</h3>
+                            <p style="font-size: 1.15rem; font-weight: 700; color: var(--color-dx);" id="dxSummaryText">
+                                dx/dt = 0.80 m/s
+                            </p>
+                        </div>
+
+                        <div class="math-card" style="border-color: rgba(244, 63, 94, 0.15);">
+                            <h3>Ladder Top Speed (dy/dt)</h3>
+                            <p style="font-size: 1.15rem; font-weight: 700; color: var(--color-dy);" id="dySummaryText">
+                                dy/dt = -0.60 m/s
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Mode Opt Summary Cards -->
+                    <div id="summaryOpt" style="display: none;">
+                        <div class="math-card" style="border-color: rgba(56, 189, 248, 0.15);">
+                            <h3>Active Enclosure Area (A)</h3>
+                            <p style="font-size: 1.15rem; font-weight: 700; color: var(--color-fence);" id="areaSummaryText">
+                                Area = 1250.00 m²
+                            </p>
+                        </div>
+
+                        <div class="math-card" style="border-color: rgba(168, 85, 247, 0.15);">
+                            <h3>Max Extrema Area (x = P/4)</h3>
+                            <p style="font-size: 1.15rem; font-weight: 700; color: var(--color-parabola);" id="maxAreaSummaryText">
+                                Max Area = 1250.00 m²
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Rates & Extrema Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Test your conceptual understanding of related rates, optimization criteria, and Jacobians.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Question Board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">A ladder sliding down a wall has dy/dt which depends on what ratio of side lengths?</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text...</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Cheatsheet -->
+                <div class="panel" id="quizStatsPanel">
+                    <h3>Rates & Extrema Rules</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom: 0; list-style: none; display: flex; flex-direction: column; gap: 10px;">
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-dx); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-dx);"></span>
+                            <span>Ladder Rates: dy/dt = -(x/y) dx/dt</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-fence); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-fence);"></span>
+                            <span>Pen Area (3-sided): A = x(P - 2x)</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-parabola); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-parabola);"></span>
+                            <span>Extremum Peak: dA/dx = 0 &rArr; x = P/4</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('canvasRatesOpt');
+        const ctx = canvas.getContext('2d');
+
+        // Sliders
+        const slideX = document.getElementById('slideX');
+        const slideDx = document.getElementById('slideDx');
+        const slideOptX = document.getElementById('slideOptX');
+        const slideOptP = document.getElementById('slideOptP');
+
+        const lblX = document.getElementById('lblX');
+        const lblDx = document.getElementById('lblDx');
+        const lblOptX = document.getElementById('lblOptX');
+        const lblOptP = document.getElementById('lblOptP');
+
+        const lblCurveFormula = document.getElementById('lblCurveFormula');
+        const cardHeaderTitle = document.getElementById('cardHeaderTitle');
+        const eqDisplay = document.getElementById('eqDisplay');
+        const solveSteps = document.getElementById('solveSteps');
+        const lblHintText = document.getElementById('lblHintText');
+
+        // Layout panels
+        const groupRates = document.getElementById('groupRates');
+        const groupOpt = document.getElementById('groupOpt');
+        const summaryRates = document.getElementById('summaryRates');
+        const summaryOpt = document.getElementById('summaryOpt');
+
+        const dxSummaryText = document.getElementById('dxSummaryText');
+        const dySummaryText = document.getElementById('dySummaryText');
+        const areaSummaryText = document.getElementById('areaSummaryText');
+        const maxAreaSummaryText = document.getElementById('maxAreaSummaryText');
+
+        // State
+        let activeMode = 'rates'; // 'rates' or 'opt'
+        let valX = 3.00;          // ladder base x
+        let valDx = 0.80;         // base rate dx/dt
+        let valOptX = 25.00;      // yard width x
+        let valOptP = 100.00;     // fence perimeter P
+
+        let isDragging = false;
+
+        function switchMode(mode) {
+            activeMode = mode;
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+
+            if (mode === 'rates') {
+                document.getElementById('btnModeRates').classList.add('active');
+                lblCurveFormula.textContent = "Related Rates: Sliding Ladder";
+                cardHeaderTitle.textContent = "Pythagorean Rate Equation";
+                eqDisplay.innerHTML = "x² + y² = L² &nbsp;&rArr;&nbsp; 2x(dx/dt) + 2y(dy/dt) = 0";
+                lblHintText.textContent = "Drag the ladder base horizontally. Observe how dy/dt shoots up as the ladder approaches the floor.";
+                
+                groupRates.style.display = 'flex';
+                groupOpt.style.display = 'none';
+                summaryRates.style.display = 'block';
+                summaryOpt.style.display = 'none';
+            } else {
+                document.getElementById('btnModeOpt').classList.add('active');
+                lblCurveFormula.textContent = "Optimization: Enclosure Area Parabola";
+                cardHeaderTitle.textContent = "Quadratic Yard Area derivative";
+                eqDisplay.innerHTML = "A(x) = x(P - 2x) &nbsp;&rArr;&nbsp; dA/dx = P - 4x = 0";
+                lblHintText.textContent = "Drag the fence corner to change yard dimensions. Look at the area parabola track dot.";
+
+                groupRates.style.display = 'none';
+                groupOpt.style.display = 'flex';
+                summaryRates.style.display = 'none';
+                summaryOpt.style.display = 'block';
+            }
+            updateAll();
+        }
+
+        function resizeCanvases() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            drawAll();
+        }
+
+        // Transforms
+        // Mode rates grid: x in [0.0, 5.5], y in [-0.5, 5.5]
+        function toPixelRates(gx, gy) {
+            const margin = 25;
+            const w = canvas.width - 2 * margin;
+            const h = canvas.height - 2 * margin;
+
+            // Fit ladder inside a nice aspect ratio
+            const px = margin + (gx / 5.5) * w;
+            const py = margin + ((5.5 - gy) / 6.0) * h;
+            return { x: px, y: py };
+        }
+
+        function toGraphRates(px, py) {
+            const margin = 25;
+            const w = canvas.width - 2 * margin;
+            const h = canvas.height - 2 * margin;
+
+            const gx = ((px - margin) / w) * 5.5;
+            const gy = 5.5 - ((py - margin) / h) * 6.0;
+            return { x: gx, y: gy };
+        }
+
+        function drawRates() {
+            const margin = 25;
+            const center = toPixelRates(0, 0);
+
+            // Wall/floor lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(center.x, margin);
+            ctx.lineTo(center.x, center.y);
+            ctx.lineTo(canvas.width - margin, center.y);
+            ctx.stroke();
+
+            // Renders ticks
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.font = '8.5px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+
+            for (let i = 1; i <= 5; i++) {
+                let p = toPixelRates(i, 0);
+                ctx.beginPath(); ctx.moveTo(p.x, margin); ctx.lineTo(p.x, canvas.height - margin); ctx.stroke();
+                ctx.fillText(`${i}m`, p.x, center.y + 12);
+            }
+            for (let i = 1; i <= 5; i++) {
+                let p = toPixelRates(0, i);
+                ctx.beginPath(); ctx.moveTo(margin, p.y); ctx.lineTo(canvas.width - margin, p.y); ctx.stroke();
+                ctx.fillText(`${i}m`, center.x - 14, p.y);
+            }
+
+            const L = 5.0; // ladder length
+            const y = Math.sqrt(L * L - valX * valX);
+
+            const pBase = toPixelRates(valX, 0);
+            const pTop = toPixelRates(0, y);
+
+            ctx.strokeStyle = 'var(--color-ladder)';
+            ctx.lineWidth = 7;
+            ctx.beginPath();
+            ctx.moveTo(pTop.x, pTop.y);
+            ctx.lineTo(pBase.x, pBase.y);
+            ctx.stroke();
+
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.5;
+            const rungs = 8;
+            for (let i = 1; i < rungs; i++) {
+                const ratio = i / rungs;
+                const rx = valX * ratio;
+                const ry = y * (1 - ratio);
+                const pR = toPixelRates(rx, ry);
+
+                // Perpendicular rung segments
+                const angle = Math.atan2(-y, valX);
+                const perp = angle + Math.PI / 2;
+                const length = 5;
+
+                const rx1 = pR.x + Math.cos(perp) * length;
+                const ry1 = pR.y + Math.sin(perp) * length;
+                const rx2 = pR.x - Math.cos(perp) * length;
+                const ry2 = pR.y - Math.sin(perp) * length;
+
+                ctx.beginPath();
+                ctx.moveTo(rx1, ry1);
+                ctx.lineTo(rx2, ry2);
+                ctx.stroke();
+            }
+
+            const dyDt = -(valX / y) * valDx;
+
+            // base speed vector (green)
+            ctx.strokeStyle = 'var(--color-dx)';
+            ctx.fillStyle = 'var(--color-dx)';
+            ctx.lineWidth = 3;
+            const arrowScale = 40;
+            ctx.beginPath();
+            ctx.moveTo(pBase.x, pBase.y);
+            ctx.lineTo(pBase.x + valDx * arrowScale, pBase.y);
+            ctx.stroke();
+            // Arrow head
+            ctx.beginPath();
+            ctx.moveTo(pBase.x + valDx * arrowScale, pBase.y - 4);
+            ctx.lineTo(pBase.x + valDx * arrowScale + 8, pBase.y);
+            ctx.lineTo(pBase.x + valDx * arrowScale, pBase.y + 4);
+            ctx.closePath();
+            ctx.fill();
+
+            // top speed vector (rose pointing down)
+            ctx.strokeStyle = 'var(--color-dy)';
+            ctx.fillStyle = 'var(--color-dy)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(pTop.x, pTop.y);
+            ctx.lineTo(pTop.x, pTop.y - dyDt * arrowScale); // dyDt is negative, so pointing down
+            ctx.stroke();
+            // Arrow head
+            ctx.beginPath();
+            ctx.moveTo(pTop.x - 4, pTop.y - dyDt * arrowScale);
+            ctx.lineTo(pTop.x, pTop.y - dyDt * arrowScale + 8);
+            ctx.lineTo(pTop.x + 4, pTop.y - dyDt * arrowScale);
+            ctx.closePath();
+            ctx.fill();
+
+            // Label text overlay
+            ctx.fillStyle = 'var(--text-color)';
+            ctx.font = 'bold 9.5px JetBrains Mono';
+            ctx.textAlign = 'left';
+            ctx.fillText(`dx/dt = ${valDx.toFixed(2)} m/s`, pBase.x + 10, pBase.y - 12);
+            ctx.fillText(`dy/dt = ${dyDt.toFixed(2)} m/s`, pTop.x + 12, pTop.y + 20);
+
+            // Draggable handle base node
+            ctx.fillStyle = 'var(--color-accent)';
+            ctx.beginPath();
+            ctx.arc(pBase.x, pBase.y, 6, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+        }
+
+        // Optimization visualizer: Split screen (Left: Yard Diagram, Right: Parabola)
+        function drawOpt() {
+            const wHalf = canvas.width / 2;
+            const h = canvas.height;
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(wHalf, 15);
+            ctx.lineTo(wHalf, h - 15);
+            ctx.stroke();
+
+            // 1. LEFT HALF: Yard Diagram
+            ctx.strokeStyle = '#f43f5e';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(25, 45);
+            ctx.lineTo(wHalf - 25, 45);
+            ctx.stroke();
+            ctx.fillStyle = '#f43f5e';
+            ctx.font = 'bold 9px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.fillText("BARN WALL", (25 + wHalf - 25) / 2, 34);
+
+            // Enclosure math
+            const yFence = valOptP - 2 * valOptX;
+            // Coordinate mappings: scale dimension to fit
+            const scaleFactor = Math.min(wHalf - 60, h - 140) / valOptP * 1.5;
+
+            const pxLeft = (wHalf / 2) - (yFence * scaleFactor) / 2;
+            const pxRight = pxLeft + yFence * scaleFactor;
+            const pyTop = 45;
+            const pyBottom = pyTop + valOptX * scaleFactor;
+
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.06)';
+            ctx.fillRect(pxLeft, pyTop, yFence * scaleFactor, valOptX * scaleFactor);
+
+            ctx.strokeStyle = 'var(--color-fence)';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.moveTo(pxLeft, pyTop);
+            ctx.lineTo(pxLeft, pyBottom);
+            ctx.lineTo(pxRight, pyBottom);
+            ctx.lineTo(pxRight, pyTop);
+            ctx.stroke();
+
+            // Dimension labels
+            ctx.fillStyle = 'var(--text-color)';
+            ctx.font = '9.5px JetBrains Mono';
+            ctx.textAlign = 'right';
+            ctx.fillText(`${valOptX.toFixed(1)}m`, pxLeft - 8, (pyTop + pyBottom) / 2);
+            ctx.textAlign = 'center';
+            ctx.fillText(`${yFence.toFixed(1)}m`, (pxLeft + pxRight) / 2, pyBottom + 16);
+
+            // Enclosure Area label
+            const activeArea = valOptX * yFence;
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 11px Outfit';
+            ctx.fillText(`Area = ${activeArea.toFixed(1)} m\u00B2`, (pxLeft + pxRight) / 2, (pyTop + pyBottom) / 2 + 4);
+
+            // Draggable fence handle
+            ctx.fillStyle = 'var(--color-accent)';
+            ctx.beginPath();
+            ctx.arc(pxLeft, pyBottom, 6, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+
+
+            // 2. RIGHT HALF: Area Parabola Graph
+            // Parabola bounds: x in [0, P/2], area in [0, maxArea * 1.1]
+            const maxValX = valOptP / 2;
+            const maxArea = (valOptP * valOptP) / 8; // P²/8 is max area
+
+            const pXToPixel = (gx) => {
+                const margin = 35;
+                const plotW = wHalf - 2 * margin;
+                return wHalf + margin + (gx / maxValX) * plotW;
+            };
+            const pYToPixel = (gy) => {
+                const margin = 35;
+                const plotH = h - 2 * margin - 30;
+                return h - margin - (gy / (maxArea * 1.15)) * plotH - 10;
+            };
+
+            // Axes
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(pXToPixel(0), pYToPixel(0));
+            ctx.lineTo(pXToPixel(maxValX), pYToPixel(0));
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(pXToPixel(0), pYToPixel(0));
+            ctx.lineTo(pXToPixel(0), pYToPixel(maxArea * 1.15));
+            ctx.stroke();
+
+            // Label axes
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.font = '8px JetBrains Mono';
+            ctx.textAlign = 'left';
+            ctx.fillText("Area A", pXToPixel(0) + 6, pYToPixel(maxArea * 1.1) - 4);
+            ctx.textAlign = 'right';
+            ctx.fillText("width x", pXToPixel(maxValX), pYToPixel(0) + 14);
+
+            ctx.strokeStyle = 'var(--color-parabola)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            let first = true;
+            for (let x = 0; x <= maxValX; x += 0.5) {
+                const areaVal = x * (valOptP - 2 * x);
+                const px = pXToPixel(x);
+                const py = pYToPixel(areaVal);
+                if (first) {
+                    ctx.moveTo(px, py);
+                    first = false;
+                } else {
+                    ctx.lineTo(px, py);
+                }
+            }
+            ctx.stroke();
+
+            const curPX = pXToPixel(valOptX);
+            const curPY = pYToPixel(activeArea);
+            ctx.fillStyle = 'var(--color-accent)';
+            ctx.beginPath();
+            ctx.arc(curPX, curPY, 5, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+
+            // Peak reference indicator (dashed guides)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            ctx.moveTo(pXToPixel(valOptP / 4), pYToPixel(maxArea));
+            ctx.lineTo(pXToPixel(valOptP / 4), pYToPixel(0));
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            ctx.fillStyle = 'var(--color-parabola)';
+            ctx.font = 'bold 8.5px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Peak: x = ${(valOptP/4).toFixed(1)}m`, pXToPixel(valOptP / 4), pYToPixel(maxArea) - 8);
+        }
+
+        function drawAll() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (activeMode === 'rates') {
+                drawRates();
+            } else {
+                drawOpt();
+            }
+        }
+
+        function updateSolver() {
+            if (activeMode === 'rates') {
+                lblX.textContent = `${valX.toFixed(2)} m`;
+                lblDx.textContent = `${valDx.toFixed(2)} m/s`;
+
+                const y = Math.sqrt(25.0 - valX * valX);
+                const dyDt = -(valX / y) * valDx;
+
+                dxSummaryText.textContent = `dx/dt = ${valDx.toFixed(2)} m/s`;
+                dySummaryText.textContent = `dy/dt = ${dyDt.toFixed(2)} m/s`;
+
+                // solver steps
+                solveSteps.innerHTML = `
+                    <div><strong>1. Identify the relationship:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.5;">
+                        Pythagorean Theorem: x² + y² = L² = 25<br>
+                        Evaluate vertical height y: y = &radic;(25 - ${valX.toFixed(2)}²) = <strong>${y.toFixed(4)} m</strong>
+                    </div>
+                    <div><strong>2. Differentiate implicitly with respect to time t:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.5;">
+                        d/dt(x²) + d/dt(y²) = d/dt(25)<br>
+                        2x &bull; (dx/dt) + 2y &bull; (dy/dt) = 0
+                    </div>
+                    <div><strong>3. Solve for dy/dt:</strong></div>
+                    <div style="margin-left: 10px; line-height: 1.6; font-weight:700; color:var(--color-accent);">
+                        dy/dt = -(x / y) &bull; (dx/dt)<br>
+                        dy/dt = -(${valX.toFixed(2)} / ${y.toFixed(4)}) &bull; ${valDx.toFixed(2)} = <strong>${dyDt.toFixed(4)} m/s</strong><br>
+                        (Top sliding down at speed ${Math.abs(dyDt).toFixed(4)} m/s!)
+                    </div>
+                `;
+            } else {
+                lblOptX.textContent = `${valOptX.toFixed(2)} m`;
+                lblOptP.textContent = `${valOptP.toFixed(2)} m`;
+
+                const yFence = valOptP - 2 * valOptX;
+                const activeArea = valOptX * yFence;
+                const maxArea = (valOptP * valOptP) / 8;
+                const maxDimX = valOptP / 4;
+                const maxDimY = valOptP / 2;
+
+                areaSummaryText.textContent = `Active Area = ${activeArea.toFixed(2)} m\u00B2`;
+                maxAreaSummaryText.textContent = `Max Area = ${maxArea.toFixed(2)} m\u00B2`;
+
+                // solver steps
+                solveSteps.innerHTML = `
+                    <div><strong>1. Establish target equation and constraint:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.5;">
+                        &bull; Yard Area A = x &bull; y<br>
+                        &bull; Perimeter constraint (3-sided): 2x + y = ${valOptP.toFixed(2)} &rArr; y = ${valOptP.toFixed(2)} - 2x
+                    </div>
+                    <div><strong>2. Express Area in terms of width x only:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.5;">
+                        A(x) = x &bull; (${valOptP.toFixed(2)} - 2x) = ${valOptP.toFixed(2)}x - 2x²
+                    </div>
+                    <div><strong>3. Find critical points by setting derivative dA/dx = 0:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.5;">
+                        dA/dx = ${valOptP.toFixed(2)} - 4x = 0 &rArr; x = <strong>${maxDimX.toFixed(2)} m</strong><br>
+                        &bull; Second derivative: d²A/dx² = -4 < 0 (confirms local maximum!)
+                    </div>
+                    <div style="margin-left: 10px; line-height: 1.6; font-weight:700; color:var(--color-accent);">
+                        &bull; Best Dimensions: width x = ${maxDimX.toFixed(2)}m, length y = ${maxDimY.toFixed(2)}m<br>
+                        &bull; Maximum Enclosed Area = <strong>${maxArea.toFixed(2)} m\u00B2</strong>
+                    </div>
+                `;
+            }
+        }
+
+        function updateAll() {
+            updateSolver();
+            drawAll();
+        }
+
+        // Sliders Listeners
+        slideX.addEventListener('input', (e) => {
+            valX = parseFloat(e.target.value);
+            updateAll();
+        });
+        slideDx.addEventListener('input', (e) => {
+            valDx = parseFloat(e.target.value);
+            updateAll();
+        });
+        slideOptX.addEventListener('input', (e) => {
+            valOptX = parseFloat(e.target.value);
+            // clamp width based on perimeter
+            const maxAllowedX = valOptP / 2 - 2;
+            if (valOptX > maxAllowedX) {
+                valOptX = maxAllowedX;
+                slideOptX.value = valOptX;
+            }
+            updateAll();
+        });
+        slideOptP.addEventListener('input', (e) => {
+            valOptP = parseFloat(e.target.value);
+            // adjust max slider bounds for x
+            slideOptX.max = (valOptP / 2 - 1).toFixed(1);
+            if (valOptX > parseFloat(slideOptX.max)) {
+                valOptX = parseFloat(slideOptX.max);
+                slideOptX.value = valOptX;
+            }
+            updateAll();
+        });
+
+        // Tactile Dragging on Canvas elements
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const pos = getMousePos(e);
+
+            if (activeMode === 'rates') {
+                const L = 5.0;
+                const pBase = toPixelRates(valX, 0);
+                const dx = pos.x - pBase.x;
+                const dy = pos.y - pBase.y;
+
+                if (dx * dx + dy * dy < 200) {
+                    isDragging = true;
+                }
+            } else {
+                // Optimization yard left node dragging
+                const yFence = valOptP - 2 * valOptX;
+                const wHalf = canvas.width / 2;
+                const h = canvas.height;
+                const scaleFactor = Math.min(wHalf - 60, h - 140) / valOptP * 1.5;
+
+                const pxLeft = (wHalf / 2) - (yFence * scaleFactor) / 2;
+                const pyBottom = 45 + valOptX * scaleFactor;
+
+                const dx = pos.x - pxLeft;
+                const dy = pos.y - pyBottom;
+
+                if (dx * dx + dy * dy < 200) {
+                    isDragging = true;
+                }
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const pos = getMousePos(e);
+
+            if (activeMode === 'rates') {
+                const graphPos = toGraphRates(pos.x, pos.y);
+                valX = Math.max(0.80, Math.min(4.80, graphPos.x));
+                slideX.value = valX;
+            } else {
+                // Optimization width dragging
+                // yBottom = 45 + valOptX * scale
+                const wHalf = canvas.width / 2;
+                const h = canvas.height;
+                const scaleFactor = Math.min(wHalf - 60, h - 140) / valOptP * 1.5;
+
+                const dy = pos.y - 45;
+                const calcX = dy / scaleFactor;
+
+                const maxAllowedX = valOptP / 2 - 2;
+                valOptX = Math.max(5.00, Math.min(maxAllowedX, calcX));
+                slideOptX.value = valOptX;
+            }
+            updateAll();
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // Touch support
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                const pos = getMousePos(e.touches[0]);
+                if (activeMode === 'rates') {
+                    const pBase = toPixelRates(valX, 0);
+                    const dx = pos.x - pBase.x;
+                    const dy = pos.y - pBase.y;
+                    if (dx * dx + dy * dy < 400) { isDragging = true; e.preventDefault(); }
+                } else {
+                    const yFence = valOptP - 2 * valOptX;
+                    const wHalf = canvas.width / 2;
+                    const h = canvas.height;
+                    const scaleFactor = Math.min(wHalf - 60, h - 140) / valOptP * 1.5;
+                    const pxLeft = (wHalf / 2) - (yFence * scaleFactor) / 2;
+                    const pyBottom = 45 + valOptX * scaleFactor;
+                    const dx = pos.x - pxLeft;
+                    const dy = pos.y - pyBottom;
+                    if (dx * dx + dy * dy < 400) { isDragging = true; e.preventDefault(); }
+                }
+            }
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            if (e.touches.length === 1) {
+                const pos = getMousePos(e.touches[0]);
+                if (activeMode === 'rates') {
+                    const graphPos = toGraphRates(pos.x, pos.y);
+                    valX = Math.max(0.80, Math.min(4.80, graphPos.x));
+                    slideX.value = valX;
+                } else {
+                    const wHalf = canvas.width / 2;
+                    const h = canvas.height;
+                    const scaleFactor = Math.min(wHalf - 60, h - 140) / valOptP * 1.5;
+                    const dy = pos.y - 45;
+                    const calcX = dy / scaleFactor;
+                    const maxAllowedX = valOptP / 2 - 2;
+                    valOptX = Math.max(5.00, Math.min(maxAllowedX, calcX));
+                    slideOptX.value = valOptX;
+                }
+                updateAll();
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+
+        // Quiz Data
+        const quizQuestions = [
+            {
+                question: "A spherical balloon is inflated at a rate of 10 cm³/s. As the radius increases, what happens to the rate of change of the radius (dr/dt)?",
+                options: [
+                    "dr/dt increases because balloon gets larger",
+                    "dr/dt decreases because balloon volume grows as r³",
+                    "dr/dt remains constant",
+                    "dr/dt is zero"
+                ],
+                correct: 1,
+                explanation: "Volume V = (4/3)πr³; differentiating gives dV/dt = 4πr²(dr/dt). Solving for dr/dt yields (dV/dt) / (4πr²): as radius increases, dr/dt drops quadratically."
+            },
+            {
+                question: "A 5m ladder slides down a wall. When the base is 3m out, sliding at 0.8 m/s, the top slides down at 0.6 m/s. What happens when the base reaches 4.8m?",
+                options: [
+                    "The top speed increases significantly because y gets very small",
+                    "The top speed decreases",
+                    "The top speed is exactly 0.8 m/s",
+                    "The ladder stops moving"
+                ],
+                correct: 0,
+                explanation: "The velocity rate formula is dy/dt = -(x/y) dx/dt. When x=4.8, y=1.4, yielding a much larger speed ratio of 4.8/1.4 = 3.42 times dx/dt."
+            },
+            {
+                question: "You fence a rectangular yard using a barn wall on one side. If the total fence perimeter is 100m, what dimensions x (width) and y (length) yield max area?",
+                options: [
+                    "x = 25m, y = 50m",
+                    "x = 33.3m, y = 33.3m",
+                    "x = 20m, y = 60m",
+                    "x = 25m, y = 25m"
+                ],
+                correct: 0,
+                explanation: "Maximize A = x(100 - 2x) = 100x - 2x². Taking the derivative dA/dx = 100 - 4x = 0 yields critical point x = 25m. The length y = 100 - 2(25) = 50m."
+            },
+            {
+                question: "Why does the second derivative test verify that critical point x = P/4 is a local maximum for enclosure area A = Px - 2x²?",
+                options: [
+                    "The second derivative is positive: d²A/dx² = 4 > 0",
+                    "The second derivative is negative constant: d²A/dx² = -4 < 0",
+                    "The second derivative is zero",
+                    "The first derivative is positive"
+                ],
+                correct: 1,
+                explanation: "By the second derivative test, if f'(c) = 0 and f''(c) < 0, the curve is concave down, verifying a local maximum."
+            },
+            {
+                question: "If two variables u and v are related by the equation u² + v³ = 12, what is the implicit rate relation with respect to time t?",
+                options: [
+                    "2u (du/dt) + 3v² (dv/dt) = 0",
+                    "2u + 3v² = 0",
+                    "u (du/dt) + v² (dv/dt) = 12",
+                    "2u (du/dt) = 3v² (dv/dt)"
+                ],
+                correct: 0,
+                explanation: "Applying the chain rule implicitly gives d/dt(u²) + d/dt(v³) = d/dt(12) which expands to 2u(du/dt) + 3v²(dv/dt) = 0."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-accent); box-shadow:0 4px 15px var(--color-accent-glow); color:var(--text-color);">
+                        Restart Quiz Evaluation
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function() {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvases, 300);
+            });
+            updateAll();
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

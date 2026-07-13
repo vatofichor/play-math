@@ -1,0 +1,1086 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Sequences & Series - Calculus & Limits</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "05_calculus",
+            logo: {"main":"Limit","accent":"Lab","sub":"Infinite Sequences & Series"},
+            navigation: [
+    {
+        "label": "Slicing & Runner Sandbox",
+        "desc": "Slicing & Runner Sandbox interactive section",
+        "href": "#zeno"
+    },
+    {
+        "label": "Symmetry & Convergence Rules",
+        "desc": "Symmetry & Convergence Rules interactive section",
+        "href": "#anatomy"
+    },
+    {
+        "label": "Sequences & Series Quiz",
+        "desc": "Sequences & Series Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Indigo Theme override */
+            --color-indigo: #6366f1;
+            --color-indigo-glow: rgba(99, 102, 241, 0.35);
+            --color-accent: #6366f1;
+            --color-accent-glow: rgba(99, 102, 241, 0.35);
+
+            --color-slice: #10b981; /* Emerald for slices */
+            --color-runner: #38bdf8; /* Cyan for runner */
+            --color-asymptote: #ffb000; /* Amber for limit line */
+        }
+
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-accent) !important;
+            box-shadow: 0 4px 20px var(--color-accent-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-title {
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-desc {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-indigo);
+            background: rgba(99, 102, 241, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            text-shadow: 0 0 5px var(--color-indigo-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .equation-box {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.35rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-indigo);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-indigo-glow);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-preset {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-preset:hover, .btn-preset.active {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .presets-grid {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-mode {
+            flex: 1;
+            padding: 0.6rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .btn-mode.active {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--color-indigo);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .status-badge.converge {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .status-badge.diverge {
+            background: rgba(244, 63, 94, 0.12);
+            color: #f43f5e;
+            border: 1px solid rgba(244, 63, 94, 0.25);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-indigo) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Infinite Sequences & Series
+            </h1>
+            <p>Visualize geometric convergence and discrete summing bounds. Slice the unit block, animate Zeno's infinite runner, and plot partial sums.</p>
+        </header>
+
+        <!-- SECTION 1: SLICING SLEDGE -->
+        <section id="zeno">
+            <div class="section-header">
+                <span class="section-tag">Zeno's Slices</span>
+                <h2>Slicing & Runner Sandbox</h2>
+            </div>
+            <p class="section-intro">
+                An infinite series summates a sequence of numbers forever. In Zeno's paradox, a runner goes $1/2$ the remaining distance at each step. This geometric summation packing area always bounds to exactly 1.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Large Visualizer Canvas Dashboard -->
+                <div class="panel">
+                    <div style="display: flex; gap: 8px; margin-bottom: 1.25rem;">
+                        <button class="btn-mode active" id="btnModeGeo" onclick="setSeriesMode('geometric')">Geometric (&Sigma; a rⁿ)</button>
+                        <button class="btn-mode" id="btnModeHarm" onclick="setSeriesMode('harmonic')">Harmonic (&Sigma; 1/n)</button>
+                        <button class="btn-mode" id="btnModeAri" onclick="setSeriesMode('arithmetic')">Arithmetic (&Sigma; a + nd)</button>
+                    </div>
+
+                    <div class="canvas-container" style="height: 420px; background: #06070a;">
+                        <canvas id="seriesCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders & sum results -->
+                <div class="panel">
+                    <div class="math-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                            <h3>Current Series State</h3>
+                            <span class="status-badge converge" id="lblStatus">CONVERGES</span>
+                        </div>
+                        <div class="equation-box" id="sumDisplay" style="color: var(--color-indigo);">
+                            S_10 = 0.999
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Starting Term (a)</span>
+                                <span class="number" id="lblValA">0.50</span>
+                            </div>
+                            <input type="range" id="slideA" min="0.1" max="1.0" value="0.5" step="0.05">
+                        </div>
+
+                        <div class="slider-row" id="rowRatio">
+                            <div class="slider-label">
+                                <span>Common Ratio (r)</span>
+                                <span class="number" id="lblValR">0.50</span>
+                            </div>
+                            <input type="range" id="slideR" min="-0.95" max="0.95" value="0.5" step="0.05">
+                        </div>
+
+                        <div class="slider-row" id="rowDiff" style="display: none;">
+                            <div class="slider-label">
+                                <span>Common Difference (d)</span>
+                                <span class="number" id="lblValD">0.05</span>
+                            </div>
+                            <input type="range" id="slideD" min="-0.2" max="0.2" value="0.05" step="0.01">
+                        </div>
+
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Number of Terms (n)</span>
+                                <span class="number" id="lblValN">10</span>
+                            </div>
+                            <input type="range" id="slideN" min="1" max="30" value="10" step="1">
+                        </div>
+                    </div>
+
+                    <div class="formula-steps">
+                        <div><strong>Analytical Sum Estimation:</strong></div>
+                        <div id="analyticalExplanation" style="margin-top: 8px; font-size:0.82rem; font-family:'JetBrains Mono'; line-height:1.6; color:var(--text-muted);">
+                            Sum = a / (1 - r) = 0.50 / 0.50 = 1.000<br>
+                            S_10 = 0.999 (99.9% of limit reached)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: CONVERGENCE CRITERIA -->
+        <section id="anatomy">
+            <div class="section-header">
+                <span class="section-tag">Anatomy Specs</span>
+                <h2>Symmetry & Convergence Rules</h2>
+            </div>
+            <p class="section-intro">
+                Not all infinite series add up to a finite number. Understanding criteria determines convergence.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Geometric criteria -->
+                <div class="panel">
+                    <h3>Geometric Series Rules</h3>
+                    <br>
+                    <div class="formula-steps" style="line-height:1.7; font-size:0.85rem;">
+                        <div><strong style="color:var(--color-indigo);">Convergence Condition:</strong></div>
+                        <div style="color:var(--text-muted); margin-bottom:12px;">
+                            A geometric series converges **if and only if** the common ratio satisfies **|r| < 1**. Under this state, the terms approach zero exponentially.
+                        </div>
+
+                        <div><strong style="color:var(--color-indigo);">Divergence:</strong></div>
+                        <div style="color:var(--text-muted); margin-bottom:12px;">
+                            If **|r| &ge; 1**, terms grow or alternate with static size, causing the cumulative summation to shoot to positive/negative infinity or alternate.
+                        </div>
+
+                        <div><strong style="color:var(--color-indigo);">Sum Formula:</strong></div>
+                        <div style="color:var(--text-muted);">
+                            S_&infin; = a / (1 - r)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Harmonic & Arithmetic specs -->
+                <div class="panel">
+                    <h3>Harmonic & Arithmetic Rules</h3>
+                    <br>
+                    <div class="formula-steps" style="line-height:1.7; font-size:0.85rem;">
+                        <div><strong style="color:var(--color-asymptote);">Harmonic Series (&Sigma; 1/n):</strong></div>
+                        <div style="color:var(--text-muted); margin-bottom:12px;">
+                            The harmonic terms (1, 1/2, 1/3, 1/4...) approach zero, yet the overall sum **always diverges** to infinity, albeit very slowly. This proves that terms going to zero is not a sufficient condition for convergence!
+                        </div>
+
+                        <div><strong style="color:var(--color-asymptote);">Arithmetic Series (&Sigma; a + nd):</strong></div>
+                        <div style="color:var(--text-muted);">
+                            Unless starting value a = 0 and difference d = 0, arithmetic summations **always diverge** to infinity because terms do not approach zero.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Self Evaluation</span>
+                <h2>Sequences & Series Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Assess your mathematical grasp of sequence boundaries, geometric convergence ratios, and series properties.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Quiz Question -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Under what condition does the infinite geometric series &Sigma; a rⁿ converge to a finite sum?</h3>
+
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong>Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation goes here.</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Vocabulary Review -->
+                <div class="panel">
+                    <h3>Focus Area Vocabulary</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom:0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-indigo); box-shadow:0 0 6px var(--color-indigo-glow);"></span>
+                                Convergence: <strong>Summation values flattening to approach a finite limit.</strong>
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-asymptote); box-shadow:0 0 6px var(--color-asymptote-glow);"></span>
+                                Divergence: <strong>Summation values growing without bound to infinity.</strong>
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-slice); box-shadow:0 0 6px rgba(16, 185, 129, 0.35);"></span>
+                                Partial Sum (S_n): <strong>The sum of the first n terms of a sequence.</strong>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const seriesCanvas = document.getElementById('seriesCanvas');
+        const seriesCtx = seriesCanvas.getContext('2d');
+
+        const slideA = document.getElementById('slideA');
+        const slideR = document.getElementById('slideR');
+        const slideD = document.getElementById('slideD');
+        const slideN = document.getElementById('slideN');
+
+        const lblValA = document.getElementById('lblValA');
+        const lblValR = document.getElementById('lblValR');
+        const lblValD = document.getElementById('lblValD');
+        const lblValN = document.getElementById('lblValN');
+
+        const sumDisplay = document.getElementById('sumDisplay');
+        const analyticalExplanation = document.getElementById('analyticalExplanation');
+        const lblStatus = document.getElementById('lblStatus');
+
+        const btnModeGeo = document.getElementById('btnModeGeo');
+        const btnModeHarm = document.getElementById('btnModeHarm');
+        const btnModeAri = document.getElementById('btnModeAri');
+
+        const rowRatio = document.getElementById('rowRatio');
+        const rowDiff = document.getElementById('rowDiff');
+
+        let seriesMode = 'geometric'; // 'geometric', 'harmonic', 'arithmetic'
+        let valA = 0.5;
+        let valR = 0.5;
+        let valD = 0.05;
+        let valN = 10;
+
+        function setSeriesMode(mode) {
+            seriesMode = mode;
+            btnModeGeo.classList.remove('active');
+            btnModeHarm.classList.remove('active');
+            btnModeAri.classList.remove('active');
+
+            rowRatio.style.display = 'none';
+            rowDiff.style.display = 'none';
+
+            if (mode === 'geometric') {
+                btnModeGeo.classList.add('active');
+                rowRatio.style.display = 'flex';
+            } else if (mode === 'harmonic') {
+                btnModeHarm.classList.add('active');
+            } else if (mode === 'arithmetic') {
+                btnModeAri.classList.add('active');
+                rowDiff.style.display = 'flex';
+            }
+
+            updateSeriesUI();
+        }
+
+        function getSeriesData() {
+            const terms = [];
+            const partialSums = [];
+            let currentSum = 0;
+
+            for (let i = 1; i <= 30; i++) {
+                let termVal = 0;
+                if (seriesMode === 'geometric') {
+                    termVal = valA * Math.pow(valR, i - 1);
+                } else if (seriesMode === 'harmonic') {
+                    termVal = valA / i;
+                } else if (seriesMode === 'arithmetic') {
+                    termVal = valA + (i - 1) * valD;
+                }
+                currentSum += termVal;
+                terms.push(termVal);
+                partialSums.push(currentSum);
+            }
+            return { terms, partialSums };
+        }
+
+        function resizeCanvasElement(canvasElement) {
+            const container = canvasElement.parentElement;
+            canvasElement.width = container.clientWidth;
+            canvasElement.height = container.clientHeight;
+        }
+
+        // DYNAMIC CANVAS RENDERER
+        function drawSeriesVisualizer() {
+            resizeCanvasElement(seriesCanvas);
+            const w = seriesCanvas.width;
+            const h = seriesCanvas.height;
+            seriesCtx.clearRect(0, 0, w, h);
+
+            const midDivider = w * 0.5;
+
+            // 1. Draw Mid Border separator
+            seriesCtx.strokeStyle = 'rgba(255,255,255,0.06)';
+            seriesCtx.lineWidth = 1;
+            seriesCtx.beginPath();
+            seriesCtx.moveTo(midDivider, 15);
+            seriesCtx.lineTo(midDivider, h - 15);
+            seriesCtx.stroke();
+
+            const data = getSeriesData();
+
+            // LEFT PANEL: 2D Block Slicing & Runner Timeline
+            drawBlockSlices(midDivider, h, data.terms);
+            drawRunnerTimeline(midDivider, h, data.partialSums);
+
+            // RIGHT PANEL: Partial Sum Progression Line Graph
+            drawSumProgressionChart(midDivider, w, h, data.partialSums);
+        }
+
+        function drawBlockSlices(maxW, canvasH, terms) {
+            const pad = 30;
+            const size = Math.min(maxW - pad * 2, canvasH * 0.55 - pad);
+            const startX = (maxW - size) / 2;
+            const startY = pad;
+
+            seriesCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+            seriesCtx.lineWidth = 1.5;
+            seriesCtx.strokeRect(startX, startY, size, size);
+
+            seriesCtx.fillStyle = 'rgba(255,255,255,0.3)';
+            seriesCtx.font = '8px JetBrains Mono';
+            seriesCtx.textAlign = 'left';
+            seriesCtx.fillText('2D Area = 1.00', startX + 5, startY + 12);
+
+            // Recursively draw nested rectangles representing terms
+            let rx = startX;
+            let ry = startY;
+            let rw = size;
+            let rh = size;
+
+            const termsToDraw = Math.min(valN, 12); // capping visual rendering to prevent tiny pixel layout overflows
+
+            for (let i = 0; i < termsToDraw; i++) {
+                const hue = (i * 137.5) % 360;
+                seriesCtx.fillStyle = `hsla(${hue}, 65%, 45%, 0.35)`;
+                seriesCtx.strokeStyle = `hsla(${hue}, 70%, 55%, 0.65)`;
+                seriesCtx.lineWidth = 1;
+
+                seriesCtx.beginPath();
+                // Alternating directional recursive cuts: Vertical, Horizontal, Vertical, Horizontal...
+                if (i % 4 === 0) {
+                    // Left half
+                    const halfW = rw / 2;
+                    seriesCtx.rect(rx, ry, halfW, rh);
+                    seriesCtx.fill();
+                    seriesCtx.stroke();
+                    rx += halfW;
+                    rw -= halfW;
+                } else if (i % 4 === 1) {
+                    // Bottom half
+                    const halfH = rh / 2;
+                    seriesCtx.rect(rx, ry + halfH, rw, halfH);
+                    seriesCtx.fill();
+                    seriesCtx.stroke();
+                    rh -= halfH;
+                } else if (i % 4 === 2) {
+                    // Right half
+                    const halfW = rw / 2;
+                    seriesCtx.rect(rx + halfW, ry, halfW, rh);
+                    seriesCtx.fill();
+                    seriesCtx.stroke();
+                    rw -= halfW;
+                } else {
+                    // Top half
+                    const halfH = rh / 2;
+                    seriesCtx.rect(rx, ry, rw, halfH);
+                    seriesCtx.fill();
+                    seriesCtx.stroke();
+                    ry += halfH;
+                    rh -= halfH;
+                }
+            }
+        }
+
+        function drawRunnerTimeline(maxW, canvasH, partialSums) {
+            const startX = 30;
+            const endX = maxW - 30;
+            const timelineY = canvasH * 0.85;
+
+            seriesCtx.strokeStyle = 'rgba(255,255,255,0.15)';
+            seriesCtx.lineWidth = 2;
+            seriesCtx.beginPath();
+            seriesCtx.moveTo(startX, timelineY);
+            seriesCtx.lineTo(endX, timelineY);
+            seriesCtx.stroke();
+
+            // Label bounds
+            seriesCtx.fillStyle = 'rgba(255,255,255,0.4)';
+            seriesCtx.font = '9px Outfit';
+            seriesCtx.textAlign = 'center';
+            seriesCtx.fillText('0.0', startX, timelineY + 15);
+            seriesCtx.fillText('1.0', endX, timelineY + 15);
+
+            const fractions = [0.5, 0.75, 0.875, 0.9375];
+            seriesCtx.fillStyle = 'rgba(255,255,255,0.2)';
+            fractions.forEach(f => {
+                const px = startX + f * (endX - startX);
+                seriesCtx.beginPath();
+                seriesCtx.moveTo(px, timelineY - 4);
+                seriesCtx.lineTo(px, timelineY + 4);
+                seriesCtx.stroke();
+            });
+
+            // Map current partial sum value to timeline scale
+            // Cap visual coordinate to 1.1 max to avoid shooting off left panel width boundaries
+            const currentSum = partialSums[valN - 1];
+            const maxTimelineVal = 1.0;
+            const ratioVal = Math.min(currentSum / maxTimelineVal, 1.08);
+            const runnerX = startX + ratioVal * (endX - startX);
+
+            seriesCtx.strokeStyle = 'rgba(99, 102, 241, 0.4)';
+            seriesCtx.setLineDash([2, 2]);
+            let lastX = startX;
+            for (let i = 0; i < valN; i++) {
+                const sVal = partialSums[i];
+                const rVal = Math.min(sVal / maxTimelineVal, 1.08);
+                const nextX = startX + rVal * (endX - startX);
+
+                if (nextX > lastX + 1) {
+                    const radius = (nextX - lastX) / 2;
+                    const cX = lastX + radius;
+                    seriesCtx.beginPath();
+                    seriesCtx.arc(cX, timelineY, radius, Math.PI, 0, false);
+                    seriesCtx.stroke();
+                }
+                lastX = nextX;
+            }
+            seriesCtx.setLineDash([]);
+
+            seriesCtx.fillStyle = 'var(--color-runner)';
+            seriesCtx.shadowBlur = 8;
+            seriesCtx.shadowColor = 'var(--color-runner)';
+            seriesCtx.beginPath();
+            seriesCtx.arc(runnerX, timelineY, 6, 0, Math.PI * 2);
+            seriesCtx.fill();
+            seriesCtx.shadowBlur = 0;
+
+            seriesCtx.fillStyle = '#ffffff';
+            seriesCtx.font = 'bold 9px JetBrains Mono';
+            seriesCtx.fillText(`Sum: ${currentSum.toFixed(3)}`, runnerX, timelineY - 14);
+        }
+
+        function drawSumProgressionChart(divX, canvasW, canvasH, partialSums) {
+            const startX = divX + 45;
+            const endX = canvasW - 25;
+            const startY = canvasH - 45;
+            const endY = 40;
+
+            seriesCtx.strokeStyle = 'rgba(255,255,255,0.08)';
+            seriesCtx.lineWidth = 1.5;
+            seriesCtx.beginPath();
+            seriesCtx.moveTo(startX, endY - 10);
+            seriesCtx.lineTo(startX, startY);
+            seriesCtx.lineTo(endX + 10, startY);
+            seriesCtx.stroke();
+
+            // Label Graph axes
+            seriesCtx.fillStyle = 'rgba(255,255,255,0.3)';
+            seriesCtx.font = '8px JetBrains Mono';
+            seriesCtx.textAlign = 'left';
+            seriesCtx.fillText('Terms (n)', endX - 35, startY + 15);
+            seriesCtx.save();
+            seriesCtx.translate(startX - 30, endY + 45);
+            seriesCtx.rotate(-Math.PI / 2);
+            seriesCtx.fillText('Partial Sum S_n', 0, 0);
+            seriesCtx.restore();
+
+            // Sum limit bounds scale check
+            // For divergent series, sum shoots up. Let's auto-scale graph height based on max partial sum
+            const activeSums = partialSums.slice(0, valN);
+            const currentSum = partialSums[valN - 1];
+            
+            let maxGraphScale = 1.5;
+            if (seriesMode === 'geometric' && Math.abs(valR) < 1) {
+                maxGraphScale = Math.max(1.2, valA / (1 - valR));
+            } else {
+                maxGraphScale = Math.max(1.5, currentSum * 1.15);
+            }
+
+            seriesCtx.textAlign = 'right';
+            const numYTicks = 5;
+            for (let i = 0; i <= numYTicks; i++) {
+                const fraction = i / numYTicks;
+                const val = fraction * maxGraphScale;
+                const py = startY - fraction * (startY - endY);
+
+                seriesCtx.fillText(val.toFixed(2), startX - 8, py + 3);
+                seriesCtx.strokeStyle = 'rgba(255,255,255,0.02)';
+                seriesCtx.beginPath();
+                seriesCtx.moveTo(startX, py);
+                seriesCtx.lineTo(endX, py);
+                seriesCtx.stroke();
+            }
+
+            seriesCtx.textAlign = 'center';
+            for (let i = 0; i <= valN; i += Math.max(1, Math.floor(valN / 5))) {
+                const fraction = i / valN;
+                const px = startX + fraction * (endX - startX);
+                seriesCtx.fillText(i.toString(), px, startY + 12);
+            }
+
+            if (seriesMode === 'geometric' && Math.abs(valR) < 1) {
+                const limitVal = valA / (1 - valR);
+                if (limitVal <= maxGraphScale) {
+                    const py = startY - (limitVal / maxGraphScale) * (startY - endY);
+                    seriesCtx.strokeStyle = 'var(--color-asymptote)';
+                    seriesCtx.lineWidth = 1;
+                    seriesCtx.setLineDash([4, 4]);
+                    seriesCtx.beginPath();
+                    seriesCtx.moveTo(startX, py);
+                    seriesCtx.lineTo(endX, py);
+                    seriesCtx.stroke();
+                    seriesCtx.setLineDash([]);
+
+                    seriesCtx.fillStyle = 'var(--color-asymptote)';
+                    seriesCtx.font = '8px JetBrains Mono';
+                    seriesCtx.textAlign = 'left';
+                    seriesCtx.fillText(`Limit S_inf: ${limitVal.toFixed(3)}`, startX + 10, py - 6);
+                }
+            }
+
+            // Plot Partial Sum values connecting lines
+            seriesCtx.strokeStyle = 'var(--color-indigo)';
+            seriesCtx.lineWidth = 2.5;
+            seriesCtx.shadowBlur = 6;
+            seriesCtx.shadowColor = 'var(--color-indigo)';
+            seriesCtx.beginPath();
+            
+            // Plot starting point (0, 0)
+            seriesCtx.moveTo(startX, startY);
+
+            for (let i = 0; i < valN; i++) {
+                const sVal = partialSums[i];
+                const fractionX = (i + 1) / valN;
+                const fractionY = Math.min(sVal / maxGraphScale, 1.05); // cap coordinate limit to prevent graph overflow
+
+                const px = startX + fractionX * (endX - startX);
+                const py = startY - fractionY * (startY - endY);
+                seriesCtx.lineTo(px, py);
+            }
+            seriesCtx.stroke();
+            seriesCtx.shadowBlur = 0;
+
+            // Plot coordinate dots on the points
+            seriesCtx.fillStyle = 'var(--color-runner)';
+            for (let i = 0; i < valN; i++) {
+                const sVal = partialSums[i];
+                const fractionX = (i + 1) / valN;
+                const fractionY = Math.min(sVal / maxGraphScale, 1.05);
+
+                const px = startX + fractionX * (endX - startX);
+                const py = startY - fractionY * (startY - endY);
+
+                seriesCtx.beginPath();
+                seriesCtx.arc(px, py, 3.5, 0, Math.PI * 2);
+                seriesCtx.fill();
+            }
+        }
+
+        // UI PARAMETERS UPDATES
+        function updateSeriesUI() {
+            lblValA.textContent = valA.toFixed(2);
+            lblValR.textContent = valR.toFixed(2);
+            lblValD.textContent = valD.toFixed(2);
+            lblValN.textContent = valN.toString();
+
+            const data = getSeriesData();
+            const currentSum = data.partialSums[valN - 1];
+
+            // Display partial sum equation
+            sumDisplay.textContent = `S_${valN} = ${currentSum.toFixed(3)}`;
+
+            let isConvergent = false;
+            let infoText = '';
+
+            if (seriesMode === 'geometric') {
+                if (Math.abs(valR) < 1) {
+                    isConvergent = true;
+                    const limitVal = valA / (1 - valR);
+                    const pct = (currentSum / limitVal) * 100;
+                    infoText = `
+                        Sum limit S_&infin; = a / (1 - r) = ${valA.toFixed(2)} / (1 - ${valR.toFixed(2)}) = **${limitVal.toFixed(3)}**<br>
+                        S_${valN} reaches **${pct.toFixed(1)}%** of the infinite sum threshold.
+                    `;
+                } else {
+                    isConvergent = false;
+                    infoText = `
+                        Geometric series **diverges** because the ratio satisfies **|r| &ge; 1**.<br>
+                        Terms grow or oscillate, and the sum will grow without bound.
+                    `;
+                }
+            } else if (seriesMode === 'harmonic') {
+                isConvergent = false;
+                infoText = `
+                    Harmonic series **always diverges**.<br>
+                    Even though terms diminish: a_${valN} = ${valA.toFixed(2)}/${valN} = ${(valA/valN).toFixed(3)},<br>
+                    the partial sum grows infinitely to +&infin;.
+                `;
+            } else if (seriesMode === 'arithmetic') {
+                isConvergent = (valA === 0 && valD === 0);
+                if (isConvergent) {
+                    infoText = `Arithmetic series is trivial (sum = 0).`;
+                } else {
+                    infoText = `
+                        Arithmetic series **always diverges** to &plusmn;&infin;.<br>
+                        Cumulative sum of linear growth: S_n = n/2 * (2a + (n-1)d).
+                    `;
+                }
+            }
+
+            // Adjust badges
+            if (isConvergent) {
+                lblStatus.textContent = 'CONVERGES';
+                lblStatus.className = 'status-badge converge';
+            } else {
+                lblStatus.textContent = 'DIVERGES';
+                lblStatus.className = 'status-badge diverge';
+            }
+
+            analyticalExplanation.innerHTML = infoText;
+
+            drawSeriesVisualizer();
+        }
+
+        // EVENT HANDLERS
+        slideA.addEventListener('input', (e) => {
+            valA = parseFloat(e.target.value);
+            updateSeriesUI();
+        });
+        slideR.addEventListener('input', (e) => {
+            valR = parseFloat(e.target.value);
+            updateSeriesUI();
+        });
+        slideD.addEventListener('input', (e) => {
+            valD = parseFloat(e.target.value);
+            updateSeriesUI();
+        });
+        slideN.addEventListener('input', (e) => {
+            valN = parseInt(e.target.value);
+            updateSeriesUI();
+        });
+
+        // DYNAMIC SERIES QUIZ SYSTEM
+        const quizQuestions = [
+            {
+                question: "Under what condition does the infinite geometric series Σ a rⁿ converge to a finite sum?",
+                options: ["r > 1", "|r| < 1", "r = 1", "|r| >= 1"],
+                correct: 1,
+                explanation: "An infinite geometric series converges if and only if the absolute value of its common ratio is strictly less than 1 (|r| < 1). Otherwise, the terms do not shrink to zero fast enough."
+            },
+            {
+                question: "What is the infinite sum of the geometric series: 1/2 + 1/4 + 1/8 + 1/16 + ...?",
+                options: ["0.5", "1.5", "1.0", "Infinity (diverges)"],
+                correct: 2,
+                explanation: "Using the geometric limit formula S = a / (1 - r) with starting term a = 1/2 and ratio r = 1/2, we calculate: S = (1/2) / (1 - 1/2) = (1/2) / (1/2) = 1.0."
+            },
+            {
+                question: "Which of the following statements about the Harmonic Series (Σ 1/n) is correct?",
+                options: ["It converges because terms 1/n approach zero", "It diverges to infinity", "It converges to exactly 2.0", "It oscillates between positive and negative numbers"],
+                correct: 1,
+                explanation: "Although the terms 1/n approach 0 as n increases, the sum Σ 1/n grows without bound (diverges to infinity). This shows that terms approaching zero is not sufficient for a series to converge."
+            },
+            {
+                question: "If a geometric series starts at a = 6 and ratio r = -0.5, what is its infinite convergence sum?",
+                options: ["4.0", "12.0", "3.0", "9.0"],
+                correct: 0,
+                explanation: "Apply formula S = a / (1 - r) with a = 6 and r = -0.5: S = 6 / (1 - (-0.5)) = 6 / 1.5 = 4.0."
+            },
+            {
+                question: "What does Zeno's paradox of the runner illustrate about limits?",
+                options: ["Infinite actions cannot occur in finite time", "Summation of infinite terms must always diverge", "An infinite sequence of steps can summate to a finite bound", "Movement is physically impossible"],
+                correct: 2,
+                explanation: "Zeno's paradox shows that adding up infinitely many smaller and smaller increments (1/2 + 1/4 + 1/8...) sums to a finite limit (1.0), resolving the philosophical paradox of motion."
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let quizScore = 0;
+        let answered = false;
+
+        function loadQuestion() {
+            answered = false;
+            const q = quizQuestions[currentQuestionIdx];
+
+            document.getElementById('quizProgressText').textContent = `Question ${currentQuestionIdx + 1} of ${quizQuestions.length}`;
+            document.getElementById('quizScoreText').textContent = `Score: ${quizScore}/${currentQuestionIdx}`;
+            document.getElementById('quizQuestionTitle').textContent = q.question;
+            document.getElementById('quizFeedbackArea').style.display = 'none';
+
+            const container = document.getElementById('quizOptionsContainer');
+            container.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'quiz-option';
+                optDiv.innerHTML = `<span>${opt}</span>`;
+                optDiv.onclick = () => selectOption(idx, optDiv);
+                container.appendChild(optDiv);
+            });
+        }
+
+        function selectOption(selectedIdx, optionElement) {
+            if (answered) return;
+            answered = true;
+
+            const q = quizQuestions[currentQuestionIdx];
+            const options = document.querySelectorAll('.quiz-option');
+
+            options.forEach((opt, idx) => {
+                if (idx === q.correct) {
+                    opt.classList.add('correct');
+                } else if (idx === selectedIdx) {
+                    opt.classList.add('incorrect');
+                }
+            });
+
+            if (selectedIdx === q.correct) {
+                quizScore++;
+                document.getElementById('quizFeedbackArea').querySelector('strong').textContent = 'Correct Answer!';
+                document.getElementById('quizFeedbackArea').querySelector('strong').style.color = '#10b981';
+            } else {
+                document.getElementById('quizFeedbackArea').querySelector('strong').textContent = 'Incorrect Answer';
+                document.getElementById('quizFeedbackArea').querySelector('strong').style.color = '#f43f5e';
+            }
+
+            document.getElementById('quizExplanationText').textContent = q.explanation;
+            document.getElementById('quizFeedbackArea').style.display = 'block';
+            document.getElementById('quizScoreText').textContent = `Score: ${quizScore}/${currentQuestionIdx + 1}`;
+        }
+
+        document.getElementById('quizNextBtn').addEventListener('click', () => {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                const area = document.getElementById('quizContainer');
+                area.innerHTML = `
+                    <div class="quiz-score-overlay" style="text-align: center; padding: 2rem;">
+                        <h2 style="font-size: 2rem; margin-bottom: 1rem; font-family:'Outfit'; font-weight:700;">Quiz Completed!</h2>
+                        <p style="font-size: 1.1rem; margin-bottom: 2rem; color:var(--text-muted);">
+                            You scored <strong class="number" style="color:var(--color-indigo);">${quizScore} out of ${quizQuestions.length}</strong> correct answers.
+                        </p>
+                        <button class="btn" onclick="resetQuiz()" style="width:auto; display:inline-flex;">Restart Quiz</button>
+                    </div>
+                `;
+            }
+        });
+
+        function resetQuiz() {
+            currentQuestionIdx = 0;
+            quizScore = 0;
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = `
+                <div id="quizQuestionArea">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                        <span id="quizProgressText">Question 1 of 5</span>
+                        <span id="quizScoreText">Score: 0/0</span>
+                    </div>
+                    <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;"></h3>
+                    <div id="quizOptionsContainer"></div>
+                </div>
+                <div class="quiz-feedback" id="quizFeedbackArea">
+                    <strong>Correct Answer!</strong>
+                    <p id="quizExplanationText"></p>
+                    <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                        Next Question
+                    </button>
+                </div>
+            `;
+            document.getElementById('quizNextBtn').addEventListener('click', () => {
+                currentQuestionIdx++;
+                if (currentQuestionIdx < quizQuestions.length) {
+                    loadQuestion();
+                } else {
+                    const area = document.getElementById('quizContainer');
+                    area.innerHTML = `
+                        <div class="quiz-score-overlay" style="text-align: center; padding: 2rem;">
+                            <h2 style="font-size: 2rem; margin-bottom: 1rem; font-family:'Outfit'; font-weight:700;">Quiz Completed!</h2>
+                            <p style="font-size: 1.1rem; margin-bottom: 2rem; color:var(--text-muted);">
+                                You scored <strong class="number" style="color:var(--color-indigo);">${quizScore} out of ${quizQuestions.length}</strong> correct answers.
+                            </p>
+                            <button class="btn" onclick="resetQuiz()" style="width:auto; display:inline-flex;">Restart Quiz</button>
+                        </div>
+                    `;
+                }
+            });
+            loadQuestion();
+        }
+
+        // INIT & RESIZE BINDINGS
+        window.addEventListener('resize', () => {
+            setTimeout(() => {
+                drawSeriesVisualizer();
+            }, 300);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSeriesUI();
+            loadQuestion();
+        });
+    </script>
+</body>
+
+</html>

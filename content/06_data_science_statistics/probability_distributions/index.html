@@ -1,0 +1,1215 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Probability Distributions - Data Science & Stats</title>
+    <script>
+        window.PAGE_CONFIG = {
+            domain: "06_data_science_statistics",
+            logo: { main: "Probability", accent: "Distributions", sub: "Discrete & Continuous" }
+        };
+    </script>
+    <script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            --color-discrete: #38bdf8;   /* Cyan for Discrete Dice */
+            --color-discrete-glow: rgba(56, 189, 248, 0.35);
+            --color-continuous: #10b981; /* Emerald for Continuous Normal */
+            --color-continuous-glow: rgba(16, 185, 129, 0.35);
+            --color-outline: #a855f7;    /* Purple for theoretical bars */
+            --color-drag: #ffb000;         /* Amber for boundary handles */
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-accent);
+            background: rgba(168, 85, 247, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            text-shadow: 0 0 5px var(--color-accent-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        /* Tabs selection */
+        .tabs-header {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--card-border);
+            margin-bottom: 2rem;
+            padding-bottom: 1px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 10px 20px;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-color);
+        }
+
+        .tab-btn.active {
+            color: var(--color-accent);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--color-accent);
+            box-shadow: 0 0 8px var(--color-accent-glow);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 960px) {
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Discrete layout grid combinations */
+        .combinations-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            padding: 8px;
+            border: 1px solid var(--card-border);
+        }
+
+        .combination-cell {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 6px;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .combination-cell.highlighted {
+            background: rgba(56, 189, 248, 0.12);
+            border-color: rgba(56, 189, 248, 0.35);
+            color: var(--color-discrete);
+            box-shadow: 0 0 5px rgba(56, 189, 248, 0.15);
+        }
+
+        .die-icon {
+            font-size: 0.95rem;
+            line-height: 1;
+            margin-bottom: 2px;
+            color: var(--text-muted);
+        }
+
+        .combination-cell.highlighted .die-icon {
+            color: var(--color-discrete);
+        }
+
+        /* Canvases panels */
+        .canvas-panel {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Solver list */
+        .solver-step {
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 2px solid var(--card-border);
+        }
+
+        .solver-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .solver-step-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .solver-step-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Quiz option styling */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Probability Distributions</h1>
+            <p>Model the behavior of mathematical outcomes. Explore discrete distributions through rolling dice combinations, or Continuous Normal distributions shading areas under standard bell curves.</p>
+        </header>
+
+        <!-- Navigation Tabs Selector -->
+        <div class="tabs-header">
+            <button class="tab-btn active" id="tabBtnDiscrete" onclick="switchTab('discrete')">Discrete (Dice Sums)</button>
+            <button class="tab-btn" id="tabBtnContinuous" onclick="switchTab('continuous')">Continuous (Normal Bell Curve)</button>
+        </div>
+
+        <!-- ================= TAB 1: DISCRETE DISTRIBUTION ================= -->
+        <div class="tab-content active" id="tabDiscrete">
+            <div class="workspace-grid">
+                <!-- Left: Distribution Bar Chart & Combinations Grid -->
+                <div class="panel" style="gap: 1.25rem;">
+                    <div class="canvas-panel">
+                        <canvas id="canvasDiscrete"></canvas>
+                    </div>
+
+                    <div>
+                        <h4 style="font-size: 0.85rem; color: var(--text-muted); font-weight:600; margin-bottom: 0.5rem; text-transform:uppercase;">6x6 Dice Sum combinations space</h4>
+                        <div class="combinations-grid" id="combinationsGrid">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Presets, Controls & Stats -->
+                <div class="panel">
+                    <div style="margin-bottom: 1.25rem;">
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">1. Dice Rolling Simulator</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">Roll pairs of six-sided dice. Experimental counts populate as bars stacked over the theoretical triangular outline.</p>
+                        
+                        <div style="display:flex; gap: 8px;">
+                            <button class="btn" style="background: var(--color-discrete); color: var(--bg-color); box-shadow: 0 4px 15px var(--color-discrete-glow);" onclick="rollDiceSingle()">
+                                Roll Pair 🎲🎲
+                            </button>
+                            <button class="btn" style="background: rgba(255,255,255,0.03); color:var(--text-color); border:1px solid var(--card-border); box-shadow:none; width:auto;" onclick="rollDiceBatch(10)">+10</button>
+                            <button class="btn" style="background: rgba(255,255,255,0.03); color:var(--text-color); border:1px solid var(--card-border); box-shadow:none; width:auto;" onclick="rollDiceBatch(100)">+100</button>
+                            <button class="btn" style="background: rgba(255,255,255,0.03); color:var(--text-color); border:1px solid var(--card-border); box-shadow:none; width:auto;" onclick="rollDiceBatch(500)">+500</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.25rem;">
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">2. Selected Sum Stats</h3>
+                        <div style="display:flex; gap:8px; align-items:center; margin-bottom: 0.75rem;">
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">Choose Target Sum:</span>
+                            <select class="input-select" id="selTargetSum" onchange="updateDiscreteAll()" style="width:auto; margin:0; padding: 4px 24px 4px 8px; font-size: 0.85rem; height:auto;">
+                                <option value="2">Sum = 2</option>
+                                <option value="3">Sum = 3</option>
+                                <option value="4">Sum = 4</option>
+                                <option value="5">Sum = 5</option>
+                                <option value="6">Sum = 6</option>
+                                <option value="7" selected>Sum = 7</option>
+                                <option value="8">Sum = 8</option>
+                                <option value="9">Sum = 9</option>
+                                <option value="10">Sum = 10</option>
+                                <option value="11">Sum = 11</option>
+                                <option value="12">Sum = 12</option>
+                            </select>
+                        </div>
+
+                        <div class="math-card" style="border-color: rgba(56, 189, 248, 0.15); margin-bottom: 0.5rem;">
+                            <h3 style="font-size: 0.8rem; padding-bottom: 4px;">Theoretical Probability</h3>
+                            <p style="font-size: 1.2rem; font-weight: 700; color: var(--color-discrete);" id="lblDiscreteTheo">
+                                P(7) = 6/36 = 16.67%
+                            </p>
+                        </div>
+
+                        <div class="math-card" style="border-color: rgba(168, 85, 247, 0.15); margin-bottom: 0.5rem;">
+                            <h3 style="font-size: 0.8rem; padding-bottom: 4px;">Experimental Probability</h3>
+                            <p style="font-size: 1.2rem; font-weight: 700; color: var(--color-outline);" id="lblDiscreteExp">
+                                Exp. P = 0/0 = 0.00%
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style="border-top:1px solid rgba(255,255,255,0.05); padding-top: 1rem; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size: 0.85rem; color:var(--text-muted);" id="lblDiscreteSpinsCount">Total Rolls N = 0</span>
+                        <button class="btn" style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; width:auto; font-size: 0.8rem; padding: 6px 12px; box-shadow:none;" onclick="resetDiscrete()">Reset Rolls</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: CONTINUOUS DISTRIBUTION ================= -->
+        <div class="tab-content" id="tabContinuous">
+            <div class="workspace-grid">
+                <!-- Left: Normal PDF Curve Canvas -->
+                <div class="panel" style="gap: 1rem;">
+                    <div class="canvas-panel" style="height: 320px;">
+                        <canvas id="canvasContinuous"></canvas>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">
+                        <span>&mu; - 3&sigma;</span>
+                        <span>&mu; - 2&sigma;</span>
+                        <span>&mu; - &sigma;</span>
+                        <span style="color:var(--color-continuous);">&mu; (Mean)</span>
+                        <span>&mu; + &sigma;</span>
+                        <span>&mu; + 2&sigma;</span>
+                        <span>&mu; + 3&sigma;</span>
+                    </div>
+                </div>
+
+                <!-- Right: Bell parameters sliders & boundaries integration -->
+                <div class="panel">
+                    <div style="margin-bottom: 1.25rem;">
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">1. Adjust Normal Density Bounds</h3>
+                        
+                        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom: 1.25rem;">
+                            <!-- Mean Slider -->
+                            <div>
+                                <div style="display:flex; justify-content:space-between; font-size: 0.85rem; margin-bottom:4px;">
+                                    <span style="color:var(--text-muted);">Mean (&mu;):</span>
+                                    <span class="number" id="lblMeanVal">5.0</span>
+                                </div>
+                                <input type="range" class="wedge-slider" id="slideMean" min="0" max="10" step="0.1" value="5.0" oninput="updateContinuous()">
+                            </div>
+                            
+                            <!-- Std Dev Slider -->
+                            <div>
+                                <div style="display:flex; justify-content:space-between; font-size: 0.85rem; margin-bottom:4px;">
+                                    <span style="color:var(--text-muted);">Standard Deviation (&sigma;):</span>
+                                    <span class="number" id="lblStdVal">1.5</span>
+                                </div>
+                                <input type="range" class="wedge-slider" id="slideStd" min="0.5" max="3.0" step="0.1" value="1.5" oninput="updateContinuous()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.25rem;">
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">2. Shaded Area Boundaries</h3>
+                        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">Adjust boundaries a and b to calculate cumulative probability P(a &le; X &le; b):</p>
+                        
+                        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom: 1rem;">
+                            <!-- Bound A -->
+                            <div>
+                                <div style="display:flex; justify-content:space-between; font-size: 0.85rem; margin-bottom:4px;">
+                                    <span style="color:var(--text-muted);">Lower Bound (a):</span>
+                                    <span class="number" id="lblBoundAVal">3.5</span>
+                                </div>
+                                <input type="range" class="wedge-slider" id="slideBoundA" min="0" max="10" step="0.1" value="3.5" oninput="updateContinuous()">
+                            </div>
+                            
+                            <!-- Bound B -->
+                            <div>
+                                <div style="display:flex; justify-content:space-between; font-size: 0.85rem; margin-bottom:4px;">
+                                    <span style="color:var(--text-muted);">Upper Bound (b):</span>
+                                    <span class="number" id="lblBoundBVal">6.5</span>
+                                </div>
+                                <input type="range" class="wedge-slider" id="slideBoundB" min="0" max="10" step="0.1" value="6.5" oninput="updateContinuous()">
+                            </div>
+                        </div>
+
+                        <!-- Integration Card -->
+                        <div class="math-card" style="border-color: rgba(16, 185, 129, 0.15); margin-bottom: 0;">
+                            <h3 style="font-size: 0.8rem; padding-bottom: 4px;">Probability (Shaded Area)</h3>
+                            <p style="font-size: 1.35rem; font-weight: 800; color: var(--color-continuous);" id="lblContinuousProb">
+                                P(3.5 &le; X &le; 6.5) = 68.27%
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SECTION 2: SOLVER STEPS ================= -->
+        <section id="step-solver" style="margin-top: 4rem;">
+            <div class="section-header">
+                <span class="section-tag">Algebraic Solver</span>
+                <h2>Probability Density Walkthrough</h2>
+            </div>
+            <p class="section-intro">
+                Trace the mathematical resolution for the selected distribution and its bounds.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left: Solver Steps -->
+                <div class="panel" style="gap: 1rem;">
+                    <h3>Trace Calculations Steps</h3>
+                    <div id="solveSteps">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Right: Reference card -->
+                <div class="panel" id="solverRightCard">
+                    <!-- Populated dynamically based on tab -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 3: QUIZ EVALUATION ================= -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Distributions & Densities Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Test your conceptual knowledge of discrete coin/dice sums, continuous density shading, standard normal scaling, and area integrals.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Question board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Quiz question loading...</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text...</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Syllabus guides -->
+                <div class="panel">
+                    <h3>Distribution Key Rules</h3>
+                    <br>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">
+                        <li><strong>Discrete Probabilities:</strong> The outcomes are countable (e.g. sums of rolling dice). The sum of all probabilities in the sample space always equals exactly **1** (or 100%).</li>
+                        <li><strong>Continuous Probabilities:</strong> Outcomes represent ranges (e.g. heights). Probability is represented as shaded area under the density curve. The total volume/area under the curve is always **1.0**.</li>
+                        <li><strong>Z-Score Standardizing:</strong> Measures how many standard deviations a value $x$ lies from the mean $\mu$: $Z = (x - \mu)/\sigma$.</li>
+                        <li><strong>Empirical Rule (68-95-99.7):</strong> In any Normal distribution:
+                            <br>&bull; Approx. **68%** lies within $\pm 1\sigma$.
+                            <br>&bull; Approx. **95%** lies within $\pm 2\sigma$.
+                            <br>&bull; Approx. **99.7%** lies within $\pm 3\sigma$.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvasDiscrete = document.getElementById('canvasDiscrete');
+        const ctxDiscrete = canvasDiscrete.getContext('2d');
+        const canvasContinuous = document.getElementById('canvasContinuous');
+        const ctxContinuous = canvasContinuous.getContext('2d');
+
+        const tabBtnDiscrete = document.getElementById('tabBtnDiscrete');
+        const tabBtnContinuous = document.getElementById('tabBtnContinuous');
+        const tabDiscrete = document.getElementById('tabDiscrete');
+        const tabContinuous = document.getElementById('tabContinuous');
+
+        const combinationsGrid = document.getElementById('combinationsGrid');
+        const selTargetSum = document.getElementById('selTargetSum');
+        const lblDiscreteTheo = document.getElementById('lblDiscreteTheo');
+        const lblDiscreteExp = document.getElementById('lblDiscreteExp');
+        const lblDiscreteSpinsCount = document.getElementById('lblDiscreteSpinsCount');
+
+        const slideMean = document.getElementById('slideMean');
+        const slideStd = document.getElementById('slideStd');
+        const slideBoundA = document.getElementById('slideBoundA');
+        const slideBoundB = document.getElementById('slideBoundB');
+
+        const lblMeanVal = document.getElementById('lblMeanVal');
+        const lblStdVal = document.getElementById('lblStdVal');
+        const lblBoundAVal = document.getElementById('lblBoundAVal');
+        const lblBoundBVal = document.getElementById('lblBoundBVal');
+        const lblContinuousProb = document.getElementById('lblContinuousProb');
+
+        const solveSteps = document.getElementById('solveSteps');
+        const solverRightCard = document.getElementById('solverRightCard');
+
+        // State
+        let activeTab = 'discrete'; // 'discrete' or 'continuous'
+        
+        // Discrete state
+        let discreteRollsCount = 0;
+        const discreteCounts = {};
+        for (let s = 2; s <= 12; s++) discreteCounts[s] = 0;
+
+        // Continuous State
+        let mean = 5.0;
+        let std = 1.5;
+        let boundA = 3.5;
+        let boundB = 6.5;
+
+        // Abramowitz & Stegun approximation of standard normal CDF
+        function normalCDF(z) {
+            const t = 1 / (1 + 0.2316419 * Math.abs(z));
+            const d = 0.39894228 * Math.exp(-z * z / 2);
+            const p = d * t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+            return z >= 0 ? 1 - p : p;
+        }
+
+        function switchTab(tabName) {
+            activeTab = tabName;
+            tabBtnDiscrete.classList.remove('active');
+            tabBtnContinuous.classList.remove('active');
+            tabDiscrete.classList.remove('active');
+            tabContinuous.classList.remove('active');
+
+            if (tabName === 'discrete') {
+                tabBtnDiscrete.classList.add('active');
+                tabDiscrete.classList.add('active');
+            } else {
+                tabBtnContinuous.classList.add('active');
+                tabContinuous.classList.add('active');
+            }
+            resizeCanvases();
+        }
+
+        // Discrete Logic
+        function setupCombinationsGrid() {
+            const targetSum = parseInt(selTargetSum.value);
+            let html = '';
+            const diceIcons = ['\u2680', '\u2681', '\u2682', '\u2683', '\u2684', '\u2685'];
+
+            for (let d1 = 1; d1 <= 6; d1++) {
+                for (let d2 = 1; d2 <= 6; d2++) {
+                    const sum = d1 + d2;
+                    const isTarget = sum === targetSum;
+                    const highlightClass = isTarget ? 'highlighted' : '';
+                    html += `
+                        <div class="combination-cell ${highlightClass}" title="Dice 1: ${d1}, Dice 2: ${d2} | Sum: ${sum}">
+                            <span class="die-icon">${diceIcons[d1 - 1]}${diceIcons[d2 - 1]}</span>
+                            <strong>${sum}</strong>
+                        </div>
+                    `;
+                }
+            }
+            combinationsGrid.innerHTML = html;
+        }
+
+        function rollDiceSingle() {
+            const d1 = Math.floor(Math.random() * 6) + 1;
+            const d2 = Math.floor(Math.random() * 6) + 1;
+            const sum = d1 + d2;
+            discreteCounts[sum]++;
+            discreteRollsCount++;
+            updateDiscreteAll();
+        }
+
+        function rollDiceBatch(size) {
+            for (let i = 0; i < size; i++) {
+                const d1 = Math.floor(Math.random() * 6) + 1;
+                const d2 = Math.floor(Math.random() * 6) + 1;
+                const sum = d1 + d2;
+                discreteCounts[sum]++;
+                discreteRollsCount++;
+            }
+            updateDiscreteAll();
+        }
+
+        function resetDiscrete() {
+            for (let s = 2; s <= 12; s++) discreteCounts[s] = 0;
+            discreteRollsCount = 0;
+            updateDiscreteAll();
+        }
+
+        function getDiscreteTheoreticalProbs() {
+            const theoretical = {};
+            for (let s = 2; s <= 12; s++) {
+                // Number of combinations yielding sum s
+                // Combinations = 6 - |s - 7|
+                theoretical[s] = (6 - Math.abs(s - 7)) / 36;
+            }
+            return theoretical;
+        }
+
+        function drawDiscreteChart() {
+            ctxDiscrete.clearRect(0, 0, canvasDiscrete.width, canvasDiscrete.height);
+
+            const width = canvasDiscrete.width;
+            const height = canvasDiscrete.height;
+            const marginX = 35;
+            const marginY = 25;
+            const drawW = width - 2 * marginX;
+            const drawH = height - 2 * marginY;
+
+            // Theoretical probabilities
+            const tProbs = getDiscreteTheoreticalProbs();
+            
+            // Find max height for scaling
+            let maxCount = 0;
+            for (let s = 2; s <= 12; s++) {
+                if (discreteCounts[s] > maxCount) maxCount = discreteCounts[s];
+            }
+            // Scale based on theoretical limit or experimental count
+            const maxScaleProb = 6 / 36; // 16.67% is max theoretical sum 7 prob
+            const maxScaleCount = Math.max(maxCount, 10);
+
+            ctxDiscrete.strokeStyle = 'rgba(255,255,255,0.025)';
+            ctxDiscrete.lineWidth = 1;
+            ctxDiscrete.font = '8px JetBrains Mono';
+            ctxDiscrete.fillStyle = 'rgba(255,255,255,0.3)';
+            ctxDiscrete.textAlign = 'right';
+            ctxDiscrete.textBaseline = 'middle';
+
+            const gridLines = 5;
+            for (let l = 0; l <= gridLines; l++) {
+                const ratio = l / gridLines;
+                const py = height - marginY - ratio * drawH;
+                ctxDiscrete.beginPath();
+                ctxDiscrete.moveTo(marginX, py);
+                ctxDiscrete.lineTo(width - marginX, py);
+                ctxDiscrete.stroke();
+                
+                const pct = ratio * maxScaleProb * 100;
+                ctxDiscrete.fillText(pct.toFixed(0) + "%", marginX - 6, py);
+            }
+
+            const cols = 11; // 2 to 12
+            const colWidth = drawW / cols;
+            const barW = colWidth * 0.7;
+
+            const targetSum = parseInt(selTargetSum.value);
+
+            for (let s = 2; s <= 12; s++) {
+                const idx = s - 2;
+                const px = marginX + idx * colWidth + (colWidth - barW) / 2;
+
+                // 1. Draw Theoretical outline bar (purple)
+                const tH = (tProbs[s] / maxScaleProb) * drawH;
+                const tY = height - marginY - tH;
+
+                ctxDiscrete.strokeStyle = 'var(--color-outline)';
+                ctxDiscrete.lineWidth = 1.5;
+                if (s === targetSum) {
+                    ctxDiscrete.fillStyle = 'rgba(168, 85, 247, 0.12)';
+                    ctxDiscrete.fillRect(px, tY, barW, tH);
+                }
+                ctxDiscrete.strokeRect(px, tY, barW, tH);
+
+                // 2. Draw Experimental stack filled bar (cyan)
+                if (discreteRollsCount > 0) {
+                    const expRatio = discreteCounts[s] / discreteRollsCount;
+                    const expH = (expRatio / maxScaleProb) * drawH;
+                    const expY = height - marginY - expH;
+
+                    const grad = ctxDiscrete.createLinearGradient(px, expY, px, height - marginY);
+                    grad.addColorStop(0, 'var(--color-discrete)');
+                    grad.addColorStop(1, 'rgba(56, 189, 248, 0.15)');
+
+                    ctxDiscrete.fillStyle = grad;
+                    ctxDiscrete.fillRect(px, expY, barW, expH);
+
+                    ctxDiscrete.strokeStyle = 'var(--color-discrete)';
+                    ctxDiscrete.lineWidth = 1;
+                    ctxDiscrete.strokeRect(px, expY, barW, expH);
+
+                    if (discreteCounts[s] > 0) {
+                        ctxDiscrete.fillStyle = '#ffffff';
+                        ctxDiscrete.font = 'bold 8px JetBrains Mono';
+                        ctxDiscrete.textAlign = 'center';
+                        ctxDiscrete.fillText(discreteCounts[s], px + barW/2, expY - 4);
+                    }
+                }
+
+                ctxDiscrete.fillStyle = s === targetSum ? 'var(--color-discrete)' : 'rgba(255,255,255,0.4)';
+                ctxDiscrete.font = s === targetSum ? 'bold 10px JetBrains Mono' : '9px JetBrains Mono';
+                ctxDiscrete.textAlign = 'center';
+                ctxDiscrete.textBaseline = 'top';
+                ctxDiscrete.fillText(s, px + barW / 2, height - marginY + 6);
+            }
+
+            ctxDiscrete.strokeStyle = 'rgba(255,255,255,0.12)';
+            ctxDiscrete.lineWidth = 1.5;
+            ctxDiscrete.beginPath();
+            ctxDiscrete.moveTo(marginX, marginY - 10);
+            ctxDiscrete.lineTo(marginX, height - marginY);
+            ctxDiscrete.lineTo(width - marginX, height - marginY);
+            ctxDiscrete.stroke();
+        }
+
+        function updateDiscreteMetrics() {
+            const targetSum = parseInt(selTargetSum.value);
+            const tProbs = getDiscreteTheoreticalProbs();
+            const tP = tProbs[targetSum];
+
+            lblDiscreteTheo.innerHTML = `P(${targetSum}) = ${6 - Math.abs(targetSum - 7)}/36 = <strong>${(tP * 100).toFixed(2)}%</strong>`;
+            
+            if (discreteRollsCount === 0) {
+                lblDiscreteExp.innerHTML = `Exp. P = 0/0 = <strong>0.00%</strong>`;
+                lblDiscreteSpinsCount.textContent = `Total Rolls N = 0`;
+            } else {
+                const count = discreteCounts[targetSum];
+                const eP = count / discreteRollsCount;
+                lblDiscreteExp.innerHTML = `Exp. P = ${count}/${discreteRollsCount} = <strong>${(eP * 100).toFixed(2)}%</strong>`;
+                lblDiscreteSpinsCount.textContent = `Total Rolls N = ${discreteRollsCount}`;
+            }
+
+            // Solver discrete
+            const targetCombosCount = 6 - Math.abs(targetSum - 7);
+            
+            const matches = [];
+            for (let d1 = 1; d1 <= 6; d1++) {
+                const d2 = targetSum - d1;
+                if (d2 >= 1 && d2 <= 6) {
+                    matches.push(`(${d1}, ${d2})`);
+                }
+            }
+
+            const solverDiscreteHtml = `
+                <div class="solver-step">
+                    <div class="solver-step-title">1. Define the discrete outcomes sample space</div>
+                    <div class="solver-step-desc">
+                        Rolling two six-sided dice creates a grid of 6 rows by 6 columns, yielding exactly:<br>
+                        &bull; Total combinations = 6 &times; 6 = <strong>36 outcomes</strong>.
+                    </div>
+                </div>
+                <div class="solver-step">
+                    <div class="solver-step-title">2. Calculate favorable combinations for Sum = ${targetSum}</div>
+                    <div class="solver-step-desc">
+                        Identify all pairs (Die 1, Die 2) that sum to exactly ${targetSum}:<br>
+                        &bull; Favorable outcomes: <strong>${matches.join(', ')}</strong> (<strong>${targetCombosCount}</strong> total).
+                    </div>
+                </div>
+                <div class="solver-step">
+                    <div class="solver-step-title">3. Resolve the Theoretical probability</div>
+                    <div class="solver-step-desc">
+                        P(${targetSum}) = Favorable / Total = ${targetCombosCount} / 36 = <strong>${tP.toFixed(4)}</strong> (or <strong>${(tP * 100).toFixed(2)}%</strong>).
+                    </div>
+                </div>
+                <div class="solver-step" style="border-color: var(--color-discrete);">
+                    <div class="solver-step-title">4. Compare against experimental count (${discreteRollsCount} rolls)</div>
+                    <div class="solver-step-desc">
+                        &bull; Times sum rolled: <strong>${discreteCounts[targetSum]}</strong>.<br>
+                        &bull; Experimental percentage: (${discreteCounts[targetSum]} / ${discreteRollsCount || 1}) &bull; 100% = <strong>${(discreteRollsCount > 0 ? (discreteCounts[targetSum]/discreteRollsCount)*100 : 0).toFixed(2)}%</strong>.<br>
+                        &bull; Difference error margin: <strong>${Math.abs((discreteRollsCount > 0 ? (discreteCounts[targetSum]/discreteRollsCount) - tP : -tP)*100).toFixed(2)}%</strong>.
+                    </div>
+                </div>
+            `;
+            solveSteps.innerHTML = solverDiscreteHtml;
+
+            // Discrete Reference Right Panel Card
+            solverRightCard.innerHTML = `
+                <h3>Combinations Probability Table</h3>
+                <br>
+                <div style="font-family:'JetBrains Mono'; font-size:0.8rem; line-height:1.5;">
+                    Sum: 2 &rarr; P = 1/36 (2.78%) <br>
+                    Sum: 3 &rarr; P = 2/36 (5.56%) <br>
+                    Sum: 4 &rarr; P = 3/36 (8.33%) <br>
+                    Sum: 5 &rarr; P = 4/36 (11.11%) <br>
+                    Sum: 6 &rarr; P = 5/36 (13.89%) <br>
+                    <span style="color:var(--color-discrete); font-weight:700;">Sum: 7 &rarr; P = 6/36 (16.67%) - Peak</span> <br>
+                    Sum: 8 &rarr; P = 5/36 (13.89%) <br>
+                    Sum: 9 &rarr; P = 4/36 (11.11%) <br>
+                    Sum: 10 &rarr; P = 3/36 (8.33%) <br>
+                    Sum: 11 &rarr; P = 2/36 (5.56%) <br>
+                    Sum: 12 &rarr; P = 1/36 (2.78%) <br>
+                </div>
+            `;
+        }
+
+        function updateDiscreteAll() {
+            setupCombinationsGrid();
+            drawDiscreteChart();
+            updateDiscreteMetrics();
+        }
+
+
+        // Continuous Logic (Normal Distribution PDF)
+        function updateContinuous() {
+            mean = parseFloat(slideMean.value);
+            std = parseFloat(slideStd.value);
+            boundA = parseFloat(slideBoundA.value);
+            boundB = parseFloat(slideBoundB.value);
+
+            // Bounds constraints: ensure a <= b
+            if (boundA > boundB) {
+                // swap/align sliders
+                if (document.activeElement === slideBoundA) {
+                    slideBoundB.value = boundA;
+                    boundB = boundA;
+                } else {
+                    slideBoundA.value = boundB;
+                    boundA = boundB;
+                }
+            }
+
+            lblMeanVal.textContent = mean.toFixed(1);
+            lblStdVal.textContent = std.toFixed(1);
+            lblBoundAVal.textContent = boundA.toFixed(1);
+            lblBoundBVal.textContent = boundB.toFixed(1);
+
+            drawContinuousChart();
+            updateContinuousMetrics();
+        }
+
+        function drawContinuousChart() {
+            ctxContinuous.clearRect(0, 0, canvasContinuous.width, canvasContinuous.height);
+
+            const width = canvasContinuous.width;
+            const height = canvasContinuous.height;
+            const marginX = 25;
+            const marginY = 30;
+            const drawW = width - 2 * marginX;
+            const drawH = height - 2 * marginY;
+
+            // X scale: 0 to 10
+            const minX = 0;
+            const maxX = 10;
+            const rangeX = maxX - minX;
+
+            // Normal distribution PDF function
+            function normalPDF(x, mu, sigma) {
+                const a = 1 / (sigma * Math.sqrt(2 * Math.PI));
+                const b = -Math.pow(x - mu, 2) / (2 * Math.pow(sigma, 2));
+                return a * Math.exp(b);
+            }
+
+            // Find peak height for scaling (PDF peaks at mean where x = mu)
+            const peakPDF = normalPDF(mean, mean, std);
+            const maxScaleY = peakPDF + 0.05;
+
+            ctxContinuous.strokeStyle = 'rgba(255,255,255,0.025)';
+            ctxContinuous.lineWidth = 1;
+            ctxContinuous.beginPath();
+            for (let x = 0; x <= 10; x++) {
+                const px = marginX + (x / 10) * drawW;
+                ctxContinuous.moveTo(px, marginY - 10);
+                ctxContinuous.lineTo(px, height - marginY);
+
+                ctxContinuous.fillStyle = 'rgba(255,255,255,0.3)';
+                ctxContinuous.font = '8.5px JetBrains Mono';
+                ctxContinuous.textAlign = 'center';
+                ctxContinuous.textBaseline = 'top';
+                ctxContinuous.fillText(x, px, height - marginY + 6);
+            }
+            ctxContinuous.stroke();
+
+            // 1. Shaded area between boundA and boundB
+            ctxContinuous.fillStyle = 'rgba(16, 185, 129, 0.16)';
+            ctxContinuous.beginPath();
+
+            const startPct = boundA / 10;
+            const endPct = boundB / 10;
+
+            const startPx = marginX + startPct * drawW;
+            const endPx = marginX + endPct * drawW;
+
+            ctxContinuous.moveTo(startPx, height - marginY);
+
+            // Shading polygon vertices
+            const shadingSteps = 50;
+            for (let i = 0; i <= shadingSteps; i++) {
+                const xVal = boundA + (i / shadingSteps) * (boundB - boundA);
+                const pdfVal = normalPDF(xVal, mean, std);
+                
+                const px = marginX + (xVal / 10) * drawW;
+                const py = height - marginY - (pdfVal / maxScaleY) * drawH;
+                ctxContinuous.lineTo(px, py);
+            }
+            ctxContinuous.lineTo(endPx, height - marginY);
+            ctxContinuous.closePath();
+            ctxContinuous.fill();
+
+            // 2. Draw PDF Bell Curve Path outline
+            ctxContinuous.strokeStyle = 'var(--color-outline)';
+            ctxContinuous.lineWidth = 2.2;
+            ctxContinuous.beginPath();
+            
+            const curveSteps = 150;
+            for (let i = 0; i <= curveSteps; i++) {
+                const xVal = (i / curveSteps) * 10;
+                const pdfVal = normalPDF(xVal, mean, std);
+                
+                const px = marginX + (xVal / 10) * drawW;
+                const py = height - marginY - (pdfVal / maxScaleY) * drawH;
+                if (i === 0) {
+                    ctxContinuous.moveTo(px, py);
+                } else {
+                    ctxContinuous.lineTo(px, py);
+                }
+            }
+            ctxContinuous.stroke();
+
+            // 3. Draw vertical boundary lines: a and b (Amber)
+            ctxContinuous.lineWidth = 2;
+            
+            // Boundary A line
+            ctxContinuous.strokeStyle = 'var(--color-drag)';
+            ctxContinuous.beginPath();
+            ctxContinuous.moveTo(startPx, 15);
+            ctxContinuous.lineTo(startPx, height - marginY);
+            ctxContinuous.stroke();
+
+            // Boundary B line
+            ctxContinuous.beginPath();
+            ctxContinuous.moveTo(endPx, 15);
+            ctxContinuous.lineTo(endPx, height - marginY);
+            ctxContinuous.stroke();
+
+            // Labels for boundaries
+            ctxContinuous.fillStyle = 'var(--color-drag)';
+            ctxContinuous.font = 'bold 9px JetBrains Mono';
+            ctxContinuous.textAlign = 'center';
+            ctxContinuous.textBaseline = 'bottom';
+            ctxContinuous.fillText("a=" + boundA.toFixed(1), startPx, 12);
+            ctxContinuous.fillText("b=" + boundB.toFixed(1), endPx, 12);
+
+            // 4. Draw Mean vertical line (&mu;)
+            const meanPx = marginX + (mean / 10) * drawW;
+            ctxContinuous.strokeStyle = 'var(--color-continuous)';
+            ctxContinuous.lineWidth = 1.5;
+            ctxContinuous.setLineDash([3, 3]);
+            ctxContinuous.beginPath();
+            ctxContinuous.moveTo(meanPx, marginY - 10);
+            ctxContinuous.lineTo(meanPx, height - marginY);
+            ctxContinuous.stroke();
+            ctxContinuous.setLineDash([]); // reset
+
+
+            ctxContinuous.strokeStyle = 'rgba(255,255,255,0.12)';
+            ctxContinuous.lineWidth = 1.5;
+            ctxContinuous.beginPath();
+            ctxContinuous.moveTo(marginX, height - marginY);
+            ctxContinuous.lineTo(width - marginX, height - marginY);
+            ctxContinuous.stroke();
+        }
+
+        function updateContinuousMetrics() {
+            // Z-scores
+            const zA = (boundA - mean) / std;
+            const zB = (boundB - mean) / std;
+
+            const cdfA = normalCDF(zA);
+            const cdfB = normalCDF(zB);
+            const area = cdfB - cdfA;
+
+            lblContinuousProb.innerHTML = `P(${boundA.toFixed(1)} &le; X &le; ${boundB.toFixed(1)}) = <strong>${(area * 100).toFixed(2)}%</strong>`;
+
+            // Continuous calculations solver walkthrough steps
+            const cdfAStr = (cdfA * 100).toFixed(2);
+            const cdfBStr = (cdfB * 100).toFixed(2);
+            const areaStr = (area * 100).toFixed(2);
+
+            const solverContinuousHtml = `
+                <div class="solver-step">
+                    <div class="solver-step-title">1. Define distribution parameters</div>
+                    <div class="solver-step-desc">
+                        We model a Continuous Normal distribution $X \sim \mathcal{N}(\mu, \sigma^2)$:<br>
+                        &bull; Mean ($\mu$) = <strong>${mean.toFixed(2)}</strong><br>
+                        &bull; Standard Deviation ($\sigma$) = <strong>${std.toFixed(2)}</strong>
+                    </div>
+                </div>
+                <div class="solver-step">
+                    <div class="solver-step-title">2. Calculate standard Z-scores for boundaries</div>
+                    <div class="solver-step-desc">
+                        Standardize boundaries $a = ${boundA.toFixed(1)}$ and $b = ${boundB.toFixed(1)}$ using Z = (x &minus; &mu;) / &sigma;:<br>
+                        &bull; $Z_a$ = (${boundA.toFixed(1)} &minus; ${mean.toFixed(1)}) / ${std.toFixed(1)} = <strong style="color:var(--color-drag);">${zA.toFixed(3)}</strong><br>
+                        &bull; $Z_b$ = (${boundB.toFixed(1)} &minus; ${mean.toFixed(1)}) / ${std.toFixed(1)} = <strong style="color:var(--color-drag);">${zB.toFixed(3)}</strong>
+                    </div>
+                </div>
+                <div class="solver-step">
+                    <div class="solver-step-title">3. Lookup cumulative CDF probabilities</div>
+                    <div class="solver-step-desc">
+                        Look up $\Phi(Z)$ areas from a standard normal table:<br>
+                        &bull; $\Phi(Z_a) = P(Z \le ${zA.toFixed(2)}) = \mathbf{${cdfA.toFixed(4)}}$ (${cdfAStr}%)<br>
+                        &bull; $\Phi(Z_b) = P(Z \le ${zB.toFixed(2)}) = \mathbf{${cdfB.toFixed(4)}}$ (${cdfBStr}%)
+                    </div>
+                </div>
+                <div class="solver-step" style="border-color: var(--color-continuous);">
+                    <div class="solver-step-title">4. Calculate the interval probability (shaded area)</div>
+                    <div class="solver-step-desc">
+                        Subtract the cumulative lower area from the upper area:<br>
+                        &bull; $P(a \le X \le b) = \Phi(Z_b) - \Phi(Z_a)$<br>
+                        &bull; $P(${boundA.toFixed(1)} \le X \le ${boundB.toFixed(1)}) = ${cdfB.toFixed(4)} - ${cdfA.toFixed(4)} = \mathbf{${area.toFixed(4)}}$ (or <strong style="color:var(--color-continuous); font-size:1.1rem;">${areaStr}%</strong>).
+                    </div>
+                </div>
+            `;
+            solveSteps.innerHTML = solverContinuousHtml;
+
+            // Continuous Reference Card
+            solverRightCard.innerHTML = `
+                <h3>Z-Score & Empirical Shading</h3>
+                <br>
+                <div style="font-family:'Outfit'; font-size:0.85rem; line-height:1.4; color: var(--text-muted);">
+                    &bull; **Z-score:** measures distance in standard deviations. <br>
+                    &bull; **Empirical Rule ranges:** <br>
+                    - Between $\mu - 1\sigma$ and $\mu + 1\sigma$: **68.27%** <br>
+                    - Between $\mu - 2\sigma$ and $\mu + 2\sigma$: **95.45%** <br>
+                    - Between $\mu - 3\sigma$ and $\mu + 3\sigma$: **99.73%** <br>
+                    <br>
+                    <span style="color:#ffffff;">Current interval spans:</span> <strong>${((boundB - boundA)/std).toFixed(2)} &sigma;</strong>.
+                </div>
+            `;
+        }
+
+
+        // Layout setup
+        function resizeCanvases() {
+            if (activeTab === 'discrete') {
+                canvasDiscrete.width = canvasDiscrete.parentElement.clientWidth;
+                canvasDiscrete.height = canvasDiscrete.parentElement.clientHeight;
+                updateDiscreteAll();
+            } else {
+                canvasContinuous.width = canvasContinuous.parentElement.clientWidth;
+                canvasContinuous.height = canvasContinuous.parentElement.clientHeight;
+                updateContinuous();
+            }
+        }
+
+        // Quiz Engine Data
+        const quizQuestions = [
+            {
+                question: "In a discrete probability distribution representing the sum of rolling two six-sided dice, why is the probability of rolling a sum of 7 the highest (16.67%)?",
+                options: [
+                    "Because 7 is a prime number and rolled more easily.",
+                    "Because 7 has the most favorable combinations (6 out of 36) in the sample space.",
+                    "Because 7 is the average of the maximum (12) and minimum (2).",
+                    "Because dice are weighted to land on 7."
+                ],
+                correct: 1,
+                explanation: "Sum 7 can be formed by 6 combinations: (1,6), (2,5), (3,4), (4,3), (5,2), and (6,1). No other sum has this many combinations, giving 7 the highest peak in the triangular discrete distribution."
+            },
+            {
+                question: "What is the total area under any continuous probability density function (PDF) curve, such as the standard normal bell curve?",
+                options: [
+                    "It varies depending on the standard deviation.",
+                    "Exactly 1.0 (or 100%)",
+                    "Exactly 0.5 (or 50%)",
+                    "It approaches infinity."
+                ],
+                correct: 1,
+                explanation: "The total area under any probability density function must always equal exactly 1.0 (or 100%), representing the total probability of all possible outcomes in the continuous space."
+            },
+            {
+                question: "A Normal distribution has a mean of 50.0 and a standard deviation of 10.0. What is the Z-score for a data observation of value 65.0?",
+                options: [
+                    "Z = 1.5",
+                    "Z = 15.0",
+                    "Z = 1.0",
+                    "Z = -1.5"
+                ],
+                correct: 0,
+                explanation: "Z = (x - mean) / std = (65.0 - 50.0) / 10.0 = 15.0 / 10.0 = 1.5."
+            },
+            {
+                question: "According to the Empirical Rule (68-95-99.7), approximately what percentage of a standard normal population lies between Z = -2 and Z = +2?",
+                options: [
+                    "68.3%",
+                    "99.7%",
+                    "95.4%",
+                    "50.0%"
+                ],
+                correct: 2,
+                explanation: "The Empirical Rule dictates that approximately 95% (specifically 95.4%) of values in a normal distribution lie within 2 standard deviations (Z = -2 to +2) from the mean."
+            },
+            {
+                question: "A binomial distribution tracks the number of heads in 100 coin flips. What kind of probability distribution is this classified as?",
+                options: [
+                    "A continuous probability distribution.",
+                    "A discrete probability distribution.",
+                    "A standard normal density distribution.",
+                    "A uniform continuous distribution."
+                ],
+                correct: 1,
+                explanation: "A binomial distribution is discrete because the outcomes (number of heads) are countable, isolated integer values (e.g., you can get 51 or 52 heads, but not 51.34 heads)."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-accent); box-shadow:0 4px 15px var(--color-accent-glow); color:var(--text-color);">
+                        Restart Quiz Evaluation
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function() {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvases, 300);
+            });
+
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

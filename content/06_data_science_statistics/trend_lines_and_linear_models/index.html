@@ -1,0 +1,1104 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Trend Lines & Linear Models - Data Science & Stats</title>
+    <script>
+        window.PAGE_CONFIG = {
+            domain: "06_data_science_statistics",
+            logo: { main: "Trend", accent: "Lines", sub: "Linear Models" }
+        };
+    </script>
+    <script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            --color-points: #38bdf8;        /* Cyan for scatter points */
+            --color-user: #ffb000;          /* Amber for manual line */
+            --color-user-glow: rgba(255, 176, 0, 0.35);
+            --color-lsrl: #10b981;          /* Emerald for Line of Best Fit */
+            --color-lsrl-glow: rgba(16, 185, 129, 0.35);
+            --color-residual: #f43f5e;      /* Pink/Rose for residuals stems */
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-accent);
+            background: rgba(168, 85, 247, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            text-shadow: 0 0 5px var(--color-accent-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 960px) {
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Canvas Panel */
+        .canvas-panel {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Checkbox panel */
+        .checkbox-panel {
+            background: rgba(255,255,255,0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .checkbox-row input {
+            cursor: pointer;
+            accent-color: var(--color-accent);
+        }
+
+        /* Solver styles */
+        .solver-step {
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 2px solid var(--card-border);
+        }
+
+        .solver-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .solver-step-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .solver-step-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Quiz option styling */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Trend Lines & Linear Models</h1>
+            <p>Fit statistical trends to scatter points. Informally position manual lines to minimize errors, or calculate the exact Least Squares Regression equation.</p>
+        </header>
+
+        <!-- SECTION 1: VISUAL SANDBOX -->
+        <section id="visualizer">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Least Squares Optimization Visualizer</h2>
+            </div>
+            <p class="section-intro">
+                Click the canvas to add data points (right-click or double-click to remove). Drag data points to shift coordinates. If "Show Manual Trend Line" is checked, drag the large amber handle rings (Anchor 1 & Anchor 2) at the sides to fit your line, aiming to minimize the Sum of Squared Residuals.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Chart Canvas -->
+                <div class="canvas-panel">
+                    <canvas id="canvasScatter"></canvas>
+                </div>
+
+                <!-- Right Panel: Configurations & Settings -->
+                <div class="panel">
+                    <!-- Layer Checkboxes -->
+                    <div class="checkbox-panel">
+                        <label class="checkbox-row">
+                            <input type="checkbox" id="chkShowUser" checked onchange="updateAll()">
+                            <span>Show Manual Trend Line (Amber)</span>
+                        </label>
+                        <label class="checkbox-row">
+                            <input type="checkbox" id="chkShowLSRL" checked onchange="updateAll()">
+                            <span>Show Line of Best Fit / LSRL (Green)</span>
+                        </label>
+                        <label class="checkbox-row">
+                            <input type="checkbox" id="chkShowResiduals" checked onchange="updateAll()">
+                            <span>Show Vertical Residual Stems (Pink)</span>
+                        </label>
+                    </div>
+
+                    <!-- Presets selectors -->
+                    <div style="margin-bottom: 1.25rem;">
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">1. Data Presets</h3>
+                        <div class="presets-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px;">
+                            <button class="btn-preset active" id="btnPresetPositive" onclick="switchPreset('positive')">Positive Growth</button>
+                            <button class="btn-preset" id="btnPresetNegative" onclick="switchPreset('negative')">Negative Decay</button>
+                            <button class="btn-preset" id="btnPresetRandom" onclick="switchPreset('random')">No Relation</button>
+                        </div>
+                    </div>
+
+                    <!-- Error fitting comparison panel -->
+                    <div>
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">2. Fit Comparison Dashboard</h3>
+                        
+                        <div class="math-card" style="border-color: rgba(255, 176, 0, 0.15); margin-bottom: 0.5rem; padding:10px 12px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-size:0.8rem; color:var(--text-muted);">Manual Line Fit:</span>
+                                <strong style="color:var(--color-user); font-size:1rem;" id="lblUserEq">y = 5.0x + 10.0</strong>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                                <span style="font-size:0.75rem; color:var(--text-muted);">Sum of Squared Residuals (SSR):</span>
+                                <strong style="color:var(--color-user); font-family:'JetBrains Mono'; font-size:0.95rem;" id="lblUserSSR">SSR = 2500.0</strong>
+                            </div>
+                        </div>
+
+                        <div class="math-card" style="border-color: rgba(16, 185, 129, 0.15); margin-bottom: 0.5rem; padding:10px 12px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-size:0.8rem; color:var(--text-muted);">LSRL Best Fit Line:</span>
+                                <strong style="color:var(--color-lsrl); font-size:1rem;" id="lblLSRLEq">y = 5.2x + 8.5</strong>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                                <span style="font-size:0.75rem; color:var(--text-muted);">Minimum Possible SSR:</span>
+                                <strong style="color:var(--color-lsrl); font-family:'JetBrains Mono'; font-size:0.95rem;" id="lblLSRLSSR">SSR = 420.2</strong>
+                            </div>
+                        </div>
+
+                        <div class="math-card" style="border-color: rgba(56, 189, 248, 0.15); padding:10px 12px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.8rem; color:var(--text-muted);">Correlation Coefficient (R&sup2;):</span>
+                            <strong style="color:var(--color-points); font-size:1rem;" class="number" id="lblRSquared">R&sup2; = 0.85</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: STEP-BY-STEP SOLVER -->
+        <section id="step-solver">
+            <div class="section-header">
+                <span class="section-tag">Algebraic Solver</span>
+                <h2>Linear Modeling Walkthrough</h2>
+            </div>
+            <p class="section-intro">
+                Trace how residuals are calculated and how least-squares formulas establish slopes and intercepts.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left: Solver steps -->
+                <div class="panel" style="gap: 1rem;">
+                    <h3>Trace Calculations Steps</h3>
+                    <div id="solveSteps">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Right: Residuals table -->
+                <div class="panel">
+                    <h3>Residuals Computation Matrix</h3>
+                    <br>
+                    <div id="solverRightCard" style="max-height: 420px; overflow-y: auto;">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL EVALUATION QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Trend Lines & Fitting Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Test your conceptual knowledge of lines of best fit, residuals, least-squares requirements, and slopes.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Question board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Quiz question loading...</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text...</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Cheatsheet -->
+                <div class="panel">
+                    <h3>Trend Lines Key Rules</h3>
+                    <br>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">
+                        <li><strong>Residual:</strong> The vertical difference between an observed data value $y_i$ and the value predicted by the line $\hat{y}_i$: $e_i = y_i - \hat{y}_i$.</li>
+                        <li><strong>Least Squares Line (LSRL):</strong> The unique line that minimizes the sum of all squared residuals ($\sum e_i^2$).</li>
+                        <li><strong>Slope (m) interpretation:</strong> Indicates the expected change in the dependent variable ($y$) for each unit increase in the independent variable ($x$).</li>
+                        <li><strong>R-Squared ($R^2$):</strong> The coefficient of determination. It represents the proportion of variance in $y$ that is predictable from $x$. Values close to 1 indicate an excellent model fit.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('canvasScatter');
+        const ctx = canvas.getContext('2d');
+
+        const chkShowUser = document.getElementById('chkShowUser');
+        const chkShowLSRL = document.getElementById('chkShowLSRL');
+        const chkShowResiduals = document.getElementById('chkShowResiduals');
+
+        const lblUserEq = document.getElementById('lblUserEq');
+        const lblUserSSR = document.getElementById('lblUserSSR');
+        const lblLSRLEq = document.getElementById('lblLSRLEq');
+        const lblLSRLSSR = document.getElementById('lblLSRLSSR');
+        const lblRSquared = document.getElementById('lblRSquared');
+        const solveSteps = document.getElementById('solveSteps');
+        const solverRightCard = document.getElementById('solverRightCard');
+
+        let points = []; // Array of {x, y} coordinate objects in scale [0, 10] x [0, 100]
+
+        // Manual line anchors
+        // We set fixed X-axis positions for manual anchors: Anchor 1 at X = 1, Anchor 2 at X = 9
+        // The user can drag their Y values: userY1 (at X = 1) and userY2 (at X = 9)
+        let userY1 = 30.0; 
+        let userY2 = 80.0;
+
+        // Default Presets data
+        const presets = {
+            positive: [
+                {x: 1.0, y: 25}, {x: 2.0, y: 35}, {x: 3.2, y: 32}, {x: 4.0, y: 48},
+                {x: 5.5, y: 42}, {x: 6.0, y: 72}, {x: 7.2, y: 64}, {x: 8.0, y: 88},
+                {x: 9.0, y: 78}, {x: 9.8, y: 95}
+            ],
+            negative: [
+                {x: 1.0, y: 90}, {x: 2.0, y: 75}, {x: 3.5, y: 72}, {x: 4.2, y: 55},
+                {x: 5.0, y: 58}, {x: 6.2, y: 38}, {x: 7.0, y: 44}, {x: 8.0, y: 22},
+                {x: 9.0, y: 28}, {x: 9.8, y: 12}
+            ],
+            random: [
+                {x: 1.5, y: 45}, {x: 2.5, y: 78}, {x: 3.8, y: 22}, {x: 4.8, y: 88},
+                {x: 5.2, y: 15}, {x: 6.5, y: 54}, {x: 7.5, y: 82}, {x: 8.2, y: 32},
+                {x: 9.0, y: 68}, {x: 9.5, y: 41}
+            ]
+        };
+
+        // Dragging states: points, user anchors
+        // draggingIdx: index of point being dragged (-1 if none)
+        // draggingAnchor: 1 (left anchor), 2 (right anchor), -1 if none
+        let draggingIdx = -1;
+        let draggingAnchor = -1;
+
+        function switchPreset(mode) {
+            document.getElementById('btnPresetPositive').classList.remove('active');
+            document.getElementById('btnPresetNegative').classList.remove('active');
+            document.getElementById('btnPresetRandom').classList.remove('active');
+
+            if (mode === 'positive') {
+                document.getElementById('btnPresetPositive').classList.add('active');
+                userY1 = 25.0; userY2 = 85.0;
+            } else if (mode === 'negative') {
+                document.getElementById('btnPresetNegative').classList.add('active');
+                userY1 = 88.0; userY2 = 20.0;
+            } else {
+                document.getElementById('btnPresetRandom').classList.add('active');
+                userY1 = 50.0; userY2 = 50.0;
+            }
+
+            points = presets[mode].map(p => ({...p}));
+            updateAll();
+        }
+
+        // Logic & Mathematics
+        function computeLSRL() {
+            const n = points.length;
+            if (n < 2) return { slope: 0, intercept: 50, r2: 0 };
+
+            let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0, sumYY = 0;
+            points.forEach(p => {
+                sumX += p.x;
+                sumY += p.y;
+                sumXY += p.x * p.y;
+                sumXX += p.x * p.x;
+                sumYY += p.y * p.y;
+            });
+
+            const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+
+            // R^2 calculation
+            const meanY = sumY / n;
+            let ssTot = 0;
+            let ssRes = 0;
+            points.forEach(p => {
+                const pred = slope * p.x + intercept;
+                ssTot += Math.pow(p.y - meanY, 2);
+                ssRes += Math.pow(p.y - pred, 2);
+            });
+
+            const r2 = ssTot > 0 ? 1 - (ssRes / ssTot) : 0;
+
+            return { slope, intercept, r2 };
+        }
+
+        function getUserLineEquation() {
+            // Anchor 1 at (1, userY1), Anchor 2 at (9, userY2)
+            const slope = (userY2 - userY1) / 8.0;
+            const intercept = userY1 - slope * 1.0;
+            return { slope, intercept };
+        }
+
+        function calculateSSR(slope, intercept) {
+            let ssr = 0;
+            points.forEach(p => {
+                const pred = slope * p.x + intercept;
+                ssr += Math.pow(p.y - pred, 2);
+            });
+            return ssr;
+        }
+
+        function drawGraph() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const width = canvas.width;
+            const height = canvas.height;
+            const marginX = 40;
+            const marginY = 40;
+            const drawW = width - 2 * marginX;
+            const drawH = height - 2 * marginY;
+
+            function getCoords(xVal, yVal) {
+                const px = marginX + (xVal / 10) * drawW;
+                const py = height - marginY - (yVal / 100) * drawH;
+                return { x: px, y: py };
+            }
+
+            ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+            ctx.lineWidth = 1;
+            ctx.font = '8px JetBrains Mono';
+            ctx.fillStyle = 'rgba(255,255,255,0.25)';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            
+            for (let y = 0; y <= 100; y += 20) {
+                const pt = getCoords(0, y);
+                ctx.beginPath();
+                ctx.moveTo(marginX, pt.y);
+                ctx.lineTo(width - marginX, pt.y);
+                ctx.stroke();
+                ctx.fillText(y, marginX - 6, pt.y);
+            }
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            for (let x = 0; x <= 10; x += 1) {
+                const pt = getCoords(x, 0);
+                ctx.beginPath();
+                ctx.moveTo(pt.x, height - marginY);
+                ctx.lineTo(pt.x, height - marginY + 4);
+                ctx.stroke();
+                ctx.fillText(x, pt.x, height - marginY + 6);
+            }
+
+            // Calculations parameters
+            const lsrl = computeLSRL();
+            const user = getUserLineEquation();
+
+            // Determine which line's residuals to draw
+            const activeLine = chkShowUser.checked ? user : lsrl;
+
+            // 1. Draw Residual Stems (Pink dashed)
+            if (chkShowResiduals.checked && points.length > 0) {
+                ctx.strokeStyle = 'var(--color-residual)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([2, 3]);
+
+                points.forEach(p => {
+                    const ptCoords = getCoords(p.x, p.y);
+                    const predY = activeLine.slope * p.x + activeLine.intercept;
+                    const lineCoords = getCoords(p.x, predY);
+
+                    ctx.beginPath();
+                    ctx.moveTo(ptCoords.x, ptCoords.y);
+                    ctx.lineTo(lineCoords.x, lineCoords.y);
+                    ctx.stroke();
+                });
+                ctx.setLineDash([]); // reset
+            }
+
+            // 2. Draw LSRL Best Fit Line (Green)
+            if (chkShowLSRL.checked && points.length >= 2) {
+                ctx.strokeStyle = 'var(--color-lsrl)';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+
+                const ptStart = getCoords(0, lsrl.intercept);
+                const ptEnd = getCoords(10, lsrl.slope * 10 + lsrl.intercept);
+
+                ctx.moveTo(ptStart.x, ptStart.y);
+                ctx.lineTo(ptEnd.x, ptEnd.y);
+                ctx.stroke();
+            }
+
+            // 3. Draw Manual Trend Line (Amber)
+            if (chkShowUser.checked) {
+                ctx.strokeStyle = 'var(--color-user)';
+                ctx.lineWidth = 2.0;
+                ctx.beginPath();
+
+                const ptStart = getCoords(0, user.intercept);
+                const ptEnd = getCoords(10, user.slope * 10 + user.intercept);
+
+                ctx.moveTo(ptStart.x, ptStart.y);
+                ctx.lineTo(ptEnd.x, ptEnd.y);
+                ctx.stroke();
+
+                const ptAnc1 = getCoords(1, userY1);
+                const ptAnc2 = getCoords(9, userY2);
+
+                ctx.fillStyle = 'rgba(255, 176, 0, 0.15)';
+                ctx.strokeStyle = 'var(--color-user)';
+                ctx.lineWidth = 2;
+
+                ctx.beginPath();
+                ctx.arc(ptAnc1.x, ptAnc1.y, draggingAnchor === 1 ? 9 : 7, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(ptAnc2.x, ptAnc2.y, draggingAnchor === 2 ? 9 : 7, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            // 4. Draw Scatter Data Points (Cyan circles)
+            points.forEach((p, idx) => {
+                const pt = getCoords(p.x, p.y);
+                ctx.fillStyle = 'var(--color-points)';
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, draggingIdx === idx ? 6.5 : 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            });
+
+            // Axis borders
+            ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(marginX, marginY - 15);
+            ctx.lineTo(marginX, height - marginY);
+            ctx.lineTo(width - marginX, height - marginY);
+            ctx.stroke();
+        }
+
+        // Coordinate conversion helpers for mouse events
+        function getMousePos(evt) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            return {
+                x: (evt.clientX - rect.left) * scaleX,
+                y: (evt.clientY - rect.top) * scaleY
+            };
+        }
+
+        function getValFromCoords(px, py) {
+            const width = canvas.width;
+            const height = canvas.height;
+            const marginX = 40;
+            const marginY = 40;
+            const drawW = width - 2 * marginX;
+            const drawH = height - 2 * marginY;
+
+            let xVal = ((px - marginX) / drawW) * 10;
+            let yVal = ((height - marginY - py) / drawH) * 100;
+
+            xVal = Math.max(0, Math.min(10, xVal));
+            yVal = Math.max(0, Math.min(100, yVal));
+
+            return { x: xVal, y: yVal };
+        }
+
+        // Mouse Event Listeners
+        canvas.addEventListener('mousedown', evt => {
+            const mouse = getMousePos(evt);
+            const width = canvas.width;
+            const height = canvas.height;
+            const marginX = 40;
+            const marginY = 40;
+            const drawW = width - 2 * marginX;
+            const drawH = height - 2 * marginY;
+
+            function getPixelCoords(xVal, yVal) {
+                const px = marginX + (xVal / 10) * drawW;
+                const py = height - marginY - (yVal / 100) * drawH;
+                return { x: px, y: py };
+            }
+
+            // 1. Check manual handles anchor rings first (if visible)
+            if (chkShowUser.checked) {
+                const ptAnc1 = getPixelCoords(1, userY1);
+                const ptAnc2 = getPixelCoords(9, userY2);
+
+                if (Math.hypot(mouse.x - ptAnc1.x, mouse.y - ptAnc1.y) < 14) {
+                    draggingAnchor = 1;
+                    canvas.style.cursor = 'ns-resize';
+                    return;
+                }
+                if (Math.hypot(mouse.x - ptAnc2.x, mouse.y - ptAnc2.y) < 14) {
+                    draggingAnchor = 2;
+                    canvas.style.cursor = 'ns-resize';
+                    return;
+                }
+            }
+
+            // 2. Check scatter data points
+            let closestIdx = -1;
+            let minDist = 12;
+            points.forEach((p, idx) => {
+                const pt = getPixelCoords(p.x, p.y);
+                const d = Math.hypot(mouse.x - pt.x, mouse.y - pt.y);
+                if (d < minDist) {
+                    minDist = d;
+                    closestIdx = idx;
+                }
+            });
+
+            if (closestIdx !== -1) {
+                draggingIdx = closestIdx;
+                canvas.style.cursor = 'move';
+                updateAll();
+                return;
+            }
+
+            // 3. Click empty space to add new scatter point (left click only)
+            if (evt.button === 0) {
+                const vals = getValFromCoords(mouse.x, mouse.y);
+                // round to nearest decimal to keep solver neat
+                points.push({
+                    x: Math.round(vals.x * 10) / 10,
+                    y: Math.round(vals.y)
+                });
+                updateAll();
+            }
+        });
+
+        canvas.addEventListener('mousemove', evt => {
+            const mouse = getMousePos(evt);
+
+            if (draggingAnchor !== -1) {
+                const vals = getValFromCoords(mouse.x, mouse.y);
+                if (draggingAnchor === 1) {
+                    userY1 = Math.round(vals.y);
+                } else {
+                    userY2 = Math.round(vals.y);
+                }
+                updateAll();
+                return;
+            }
+
+            if (draggingIdx !== -1) {
+                const vals = getValFromCoords(mouse.x, mouse.y);
+                points[draggingIdx].x = Math.round(vals.x * 10) / 10;
+                points[draggingIdx].y = Math.round(vals.y);
+                updateAll();
+                return;
+            }
+
+            const width = canvas.width;
+            const height = canvas.height;
+            const marginX = 40;
+            const marginY = 40;
+            const drawW = width - 2 * marginX;
+            const drawH = height - 2 * marginY;
+
+            function getPixelCoords(xVal, yVal) {
+                return {
+                    x: marginX + (xVal / 10) * drawW,
+                    y: height - marginY - (yVal / 100) * drawH
+                };
+            }
+
+            let hover = false;
+            let hoverAnchor = false;
+
+            if (chkShowUser.checked) {
+                const ptAnc1 = getPixelCoords(1, userY1);
+                const ptAnc2 = getPixelCoords(9, userY2);
+                if (Math.hypot(mouse.x - ptAnc1.x, mouse.y - ptAnc1.y) < 10 ||
+                    Math.hypot(mouse.x - ptAnc2.x, mouse.y - ptAnc2.y) < 10) {
+                    hoverAnchor = true;
+                }
+            }
+
+            points.forEach(p => {
+                const pt = getPixelCoords(p.x, p.y);
+                if (Math.hypot(mouse.x - pt.x, mouse.y - pt.y) < 8) {
+                    hover = true;
+                }
+            });
+
+            if (hoverAnchor) {
+                canvas.style.cursor = 'ns-resize';
+            } else if (hover) {
+                canvas.style.cursor = 'move';
+            } else {
+                canvas.style.cursor = 'default';
+            }
+        });
+
+        // Double-click to remove points
+        canvas.addEventListener('dblclick', evt => {
+            const mouse = getMousePos(evt);
+            const width = canvas.width;
+            const height = canvas.height;
+            const marginX = 40;
+            const marginY = 40;
+            const drawW = width - 2 * marginX;
+            const drawH = height - 2 * marginY;
+
+            let closestIdx = -1;
+            let minDist = 14;
+
+            points.forEach((p, idx) => {
+                const px = marginX + (p.x / 10) * drawW;
+                const py = height - marginY - (p.y / 100) * drawH;
+                const d = Math.hypot(mouse.x - px, mouse.y - py);
+                if (d < minDist) {
+                    minDist = d;
+                    closestIdx = idx;
+                }
+            });
+
+            if (closestIdx !== -1) {
+                points.splice(closestIdx, 1);
+                draggingIdx = -1;
+                updateAll();
+            }
+        });
+
+        // Right click to remove points
+        canvas.addEventListener('contextmenu', evt => {
+            evt.preventDefault();
+            const mouse = getMousePos(evt);
+            const width = canvas.width;
+            const height = canvas.height;
+            const marginX = 40;
+            const marginY = 40;
+            const drawW = width - 2 * marginX;
+            const drawH = height - 2 * marginY;
+
+            let closestIdx = -1;
+            let minDist = 14;
+
+            points.forEach((p, idx) => {
+                const px = marginX + (p.x / 10) * drawW;
+                const py = height - marginY - (p.y / 100) * drawH;
+                const d = Math.hypot(mouse.x - px, mouse.y - py);
+                if (d < minDist) {
+                    minDist = d;
+                    closestIdx = idx;
+                }
+            });
+
+            if (closestIdx !== -1) {
+                points.splice(closestIdx, 1);
+                draggingIdx = -1;
+                updateAll();
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            draggingIdx = -1;
+            draggingAnchor = -1;
+            canvas.style.cursor = 'default';
+        });
+
+        function updateAll() {
+            const lsrl = computeLSRL();
+            const user = getUserLineEquation();
+
+            const userSSR = calculateSSR(user.slope, user.intercept);
+            const lsrlSSR = calculateSSR(lsrl.slope, lsrl.intercept);
+
+            lblUserEq.textContent = `y = ${user.slope.toFixed(2)}x + ${user.intercept.toFixed(1)}`;
+            lblUserSSR.textContent = `SSR = ${userSSR.toFixed(1)}`;
+
+            if (points.length >= 2) {
+                lblLSRLEq.textContent = `y = ${lsrl.slope.toFixed(2)}x + ${lsrl.intercept.toFixed(1)}`;
+                lblLSRLSSR.textContent = `SSR = ${lsrlSSR.toFixed(1)}`;
+                lblRSquared.textContent = `R\u00B2 = ${lsrl.r2.toFixed(3)}`;
+            } else {
+                lblLSRLEq.textContent = `Need at least 2 points`;
+                lblLSRLSSR.textContent = `SSR = -`;
+                lblRSquared.textContent = `R\u00B2 = -`;
+            }
+
+            drawGraph();
+            updateSolver(user, lsrl, userSSR, lsrlSSR);
+        }
+
+        // Solver Steps
+        function updateSolver(user, lsrl, userSSR, lsrlSSR) {
+            const n = points.length;
+            let solveHtml = '';
+            let matrixHtml = '';
+
+            const activeLine = chkShowUser.checked ? user : lsrl;
+            const lineName = chkShowUser.checked ? "Manual Trend Line" : "LSRL Best Fit Line";
+
+            if (n === 0) {
+                solveHtml = `<div><em>Please click the canvas grid to add coordinate scatter points.</em></div>`;
+                matrixHtml = `<div style="font-style:italic; font-size:0.85rem; color:var(--text-muted);">Matrix empty.</div>`;
+            } else {
+                // Renders calculations steps
+                solveHtml = `
+                    <div class="solver-step">
+                        <div class="solver-step-title">1. Formulate linear model prediction equation</div>
+                        <div class="solver-step-desc">
+                            Predictions are calculated using a linear formula &ycirc;<sub>i</sub> = mx<sub>i</sub> + b:
+                            <br>
+                            &bull; Selected line: <strong>${lineName}</strong>.
+                            <br>
+                            &bull; Model parameters: Slope m = <strong>${activeLine.slope.toFixed(3)}</strong>, Intercept b = <strong>${activeLine.intercept.toFixed(2)}</strong>.
+                        </div>
+                    </div>
+                    <div class="solver-step">
+                        <div class="solver-step-title">2. Calculate residuals (e<sub>i</sub> = y<sub>i</sub> &minus; &ycirc;<sub>i</sub>)</div>
+                        <div class="solver-step-desc">
+                            The residual is the vertical distance from a point to the line. Square each residual to eliminate negative signs:
+                            <br>
+                            &bull; Sum of Squared Residuals (SSR) = &sum; (y<sub>i</sub> &minus; &ycirc;<sub>i</sub>)<sup>2</sup>.
+                            <br>
+                            &bull; Current SSR = <strong>${(chkShowUser.checked ? userSSR : lsrlSSR).toFixed(2)}</strong>.
+                        </div>
+                    </div>
+                    <div class="solver-step" style="border-color: var(--color-lsrl);">
+                        <div class="solver-step-title">3. Establish Least-Squares criteria</div>
+                        <div class="solver-step-desc">
+                            The Least Squares Regression Line (LSRL) mathematically fits slope and intercept to achieve the absolute **minimum possible SSR**:
+                            <br>
+                            &bull; LSRL parameters: y = <strong>${lsrl.slope.toFixed(3)}</strong>x + <strong>${lsrl.intercept.toFixed(2)}</strong>.
+                            <br>
+                            &bull; Best fit minimum SSR = <strong>${lsrlSSR.toFixed(2)}</strong>.
+                            <br>
+                            &bull; User SSR = <strong>${userSSR.toFixed(2)}</strong> (Difference Delta = <strong>${Math.abs(userSSR - lsrlSSR).toFixed(2)}</strong>).
+                        </div>
+                    </div>
+                `;
+
+                // Residuals matrix table
+                let rows = '';
+                let sumSq = 0;
+                points.forEach((p, idx) => {
+                    const pred = activeLine.slope * p.x + activeLine.intercept;
+                    const res = p.y - pred;
+                    const resSq = res * res;
+                    sumSq += resSq;
+
+                    rows += `
+                        <tr style="border-bottom: 1px dashed rgba(255,255,255,0.03);">
+                            <td style="text-align:left; padding:4px 0;">(${p.x.toFixed(1)}, ${p.y})</td>
+                            <td>${pred.toFixed(1)}</td>
+                            <td style="color:var(--color-residual);">${res >= 0 ? '+' : ''}${res.toFixed(1)}</td>
+                            <td style="font-weight:700;">${resSq.toFixed(1)}</td>
+                        </tr>
+                    `;
+                });
+
+                matrixHtml = `
+                    <table class="stats-table" style="width:100%; border-collapse:collapse; font-size:0.8rem; font-family:'JetBrains Mono'; text-align:right;">
+                        <thead>
+                            <tr style="border-bottom:1px solid var(--card-border);">
+                                <th style="text-align:left; padding:4px 0;">Point (x, y)</th>
+                                <th style="padding:4px 0;">Pred &ycirc;</th>
+                                <th style="padding:4px 0;">Error (e)</th>
+                                <th style="padding:4px 0;">e&sup2; share</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows}
+                            <tr style="border-top:1.5px solid var(--card-border); font-weight:bold; color:var(--color-accent);">
+                                <td colspan="3" style="text-align:left; padding:6px 0;">Sum of Squared Errors (SSE / SSR):</td>
+                                <td>${sumSq.toFixed(1)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+            }
+            solveSteps.innerHTML = solveHtml;
+            solverRightCard.innerHTML = matrixHtml;
+        }
+
+        function resizeCanvases() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            updateAll();
+        }
+
+        // Quiz Engine Data
+        const quizQuestions = [
+            {
+                question: "What does a residual represent in a linear regression model?",
+                options: [
+                    "The slope of the line of best fit.",
+                    "The vertical difference between the observed y-value and the predicted y-value (y - y-hat).",
+                    "The horizontal distance from a data point to the y-axis.",
+                    "The correlation coefficient squared."
+                ],
+                correct: 1,
+                explanation: "A residual is the vertical error distance: e = y_observed - y_predicted. It measures how far off the model prediction is for a single data point."
+            },
+            {
+                question: "Why do we minimize the SUM OF SQUARED residuals (SSR) rather than the simple sum of residuals when fitting a trend line?",
+                options: [
+                    "To ensure the line has a positive slope.",
+                    "Because residuals cancel out to zero when summed directly, hiding the true size of errors.",
+                    "Because squared errors are easier to compute by hand.",
+                    "To decrease the standard deviation of the x-coordinates."
+                ],
+                correct: 1,
+                explanation: "Positive and negative residuals cancel each other out when summed directly. Squaring residuals makes all values positive so that large errors in either direction are accumulated."
+            },
+            {
+                question: "A line of best fit is calculated as y = -4.5x + 95.0. What is the correct interpretation of the slope -4.5?",
+                options: [
+                    "For each unit increase in x, y is expected to increase by 4.5 units.",
+                    "For each unit increase in x, y is expected to decrease by 4.5 units.",
+                    "The initial value of y when x is zero is -4.5.",
+                    "Exactly 4.5% of the data points lie on the line."
+                ],
+                correct: 1,
+                explanation: "The slope indicates the rate of change. A slope of -4.5 means that for each 1-unit increase in the independent variable x, the dependent variable y is predicted to decrease by 4.5 units."
+            },
+            {
+                question: "Which of the following lines represents the unique Least Squares Regression Line (LSRL) for a given scatter plot?",
+                options: [
+                    "The line that connects the first and last points.",
+                    "The line that yields the lowest possible Sum of Squared Residuals (SSR).",
+                    "The line that divides the scatter plot exactly in half horizontally.",
+                    "The line with the largest possible y-intercept."
+                ],
+                correct: 1,
+                explanation: "The Least Squares Regression Line (LSRL) is mathematically defined as the unique line that minimizes the sum of squared vertical distances (SSR) from the data points to the line."
+            },
+            {
+                question: "If a linear model has a coefficient of determination R-squared (R2) equal to 0.94, how should this be interpreted?",
+                options: [
+                    "The slope of the line is exactly 0.94.",
+                    "Approximately 94% of the variability in y is explained by the linear relationship with x.",
+                    "There are 94 data points close to the line.",
+                    "The average residual size is 6% of the mean."
+                ],
+                correct: 1,
+                explanation: "R-squared represents the proportion of variance in the dependent variable that is predictable from the independent variable. An R2 of 0.94 means 94% of the variance in y is explained by x."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-accent); box-shadow:0 4px 15px var(--color-accent-glow); color:var(--text-color);">
+                        Restart Quiz Evaluation
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function() {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvases, 300);
+            });
+
+            switchPreset('positive');
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

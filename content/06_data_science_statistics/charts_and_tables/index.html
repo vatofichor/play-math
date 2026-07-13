@@ -1,0 +1,1469 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charts & Tables - Data Science & Statistics</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Architects+Daughter&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "06_data_science_statistics",
+            logo: {"main":"Stat","accent":"Lab","sub":"Charts & Tables"},
+            navigation: [
+    {
+        "label": "Interactive Stem-and-Leaf Plot",
+        "desc": "Interactive Stem-and-Leaf Plot interactive section",
+        "href": "#section1"
+    },
+    {
+        "label": "Ogive & Cumulative Frequency Curve",
+        "desc": "Ogive & Cumulative Frequency Curve interactive section",
+        "href": "#section2"
+    },
+    {
+        "label": "Pareto Chart & The 80/20 Rule",
+        "desc": "Pareto Chart & The 80/20 Rule interactive section",
+        "href": "#section3"
+    },
+    {
+        "label": "Reading & Interpretation Playground",
+        "desc": "Reading & Interpretation Playground interactive section",
+        "href": "#section4"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Purple Theme for Data Science */
+            --color-primary: #a855f7;
+            --color-primary-glow: rgba(168, 85, 247, 0.35);
+            
+            /* Pen & Paper Gridbook Palette */
+            --paper-bg: #fdfaf2;         /* Cream notebook paper */
+            --paper-grid: #dceef2;       /* Soft blue grid lines */
+            --paper-margin: #f8d3d3;     /* Red margin line */
+            --ink-blue: #1b4d8f;         /* Blue ballpoint pen */
+            --pencil-graphite: #36383c;  /* Graphite pencil */
+            --ink-red: #cc241d;          /* Red grading/correction pen */
+            --ink-green: #2d824d;        /* Green pen */
+        }
+
+        /* Paper sheet visual styling */
+        .gridbook-sheet {
+            background-color: var(--paper-bg);
+            background-image: 
+                linear-gradient(var(--paper-grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--paper-grid) 1px, transparent 1px);
+            background-size: 20px 20px;
+            border-radius: 12px;
+            border: 1px solid #e5dec9;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), inset 0 0 40px rgba(0, 0, 0, 0.03);
+            padding: 1.5rem;
+            position: relative;
+            color: var(--pencil-graphite);
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Handwritten font styling helper */
+        .handwritten {
+            font-family: 'Architects Daughter', cursive;
+        }
+
+        /* Red margin line on notebook paper */
+        .gridbook-sheet::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 45px;
+            width: 1px;
+            border-left: 1px solid var(--paper-margin);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Content shifted to clear the red margin line */
+        .gridbook-content {
+            margin-left: 30px;
+            position: relative;
+            z-index: 2;
+        }
+
+        canvas {
+            display: block;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        /* Dataset text area customization */
+        .raw-data-textarea {
+            width: 100%;
+            height: 60px;
+            background: rgba(15, 18, 30, 0.5);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 10px;
+            color: var(--text-color);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            resize: none;
+            outline: none;
+            transition: border-color var(--transition-speed);
+        }
+
+        .raw-data-textarea:focus {
+            border-color: var(--color-primary);
+            background: rgba(15, 18, 30, 0.7);
+        }
+
+        /* Notebook Data table */
+        .notebook-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .notebook-table th {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 2px solid var(--pencil-graphite);
+            color: var(--pencil-graphite);
+            font-weight: 700;
+        }
+
+        .notebook-table td {
+            padding: 8px;
+            border-bottom: 1px dashed rgba(54, 56, 60, 0.15);
+            color: var(--ink-blue);
+        }
+
+        /* Stem Plot layout */
+        .stem-leaf-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+        }
+
+        .stem-leaf-row {
+            display: flex;
+            align-items: center;
+            height: 30px;
+        }
+
+        .stem-box {
+            width: 45px;
+            text-align: right;
+            padding-right: 15px;
+            font-weight: 700;
+            color: var(--pencil-graphite);
+            border-right: 2.5px solid var(--pencil-graphite);
+            user-select: none;
+        }
+
+        .leaf-box {
+            display: flex;
+            gap: 12px;
+            padding-left: 15px;
+            color: var(--ink-blue);
+            flex-wrap: wrap;
+        }
+
+        .leaf-digit {
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: background 0.15s;
+        }
+
+        .leaf-digit:hover {
+            background: rgba(27, 77, 143, 0.12);
+            color: var(--ink-red);
+        }
+
+        /* Sidebar table styling */
+        .category-input-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .category-input-table th {
+            text-align: left;
+            padding: 6px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .category-input-table td {
+            padding: 6px;
+            vertical-align: middle;
+        }
+
+        .btn-value {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            border: 1px solid var(--card-border);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-color);
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-value:hover {
+            background: var(--color-primary);
+            color: var(--bg-color);
+            border-color: var(--color-primary);
+        }
+
+        .category-value-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            width: 35px;
+            text-align: center;
+        }
+
+        .category-name-input {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-color);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            padding: 4px;
+            border-radius: 4px;
+            outline: none;
+            width: 100px;
+        }
+
+        .category-name-input:focus {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Quiz Panel Styles */
+        .quiz-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-question-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-primary);
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .quiz-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-option {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            padding: 14px;
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            text-align: left;
+        }
+
+        .btn-option:hover:not(:disabled) {
+            background: rgba(168, 85, 247, 0.12);
+            border-color: var(--color-primary);
+        }
+
+        .btn-option.correct {
+            background: rgba(16, 185, 129, 0.2) !important;
+            border-color: var(--ink-green) !important;
+            color: #ffffff;
+        }
+
+        .btn-option.incorrect {
+            background: rgba(244, 63, 94, 0.2) !important;
+            border-color: var(--ink-red) !important;
+            color: #ffffff;
+        }
+
+        .quiz-score-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 1.25rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .score-pill {
+            background: rgba(168, 85, 247, 0.08);
+            border: 1px solid rgba(168, 85, 247, 0.15);
+            color: var(--color-primary);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+
+        /* Preset buttons */
+        .btn-preset {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-preset:hover, .btn-preset.active {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .presets-grid {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer (Managed by shared.js) -->
+    <aside></aside>
+
+    <!-- Main Workspace Content -->
+    <main>
+        <!-- SECTION 1: STEM-AND-LEAF PLOT -->
+        <section id="section1">
+            <header>
+                <h1>Interactive Stem-and-Leaf Plot</h1>
+                <p>Observe how raw data values are organized to show shapes and peaks. Click on leaf numbers to reconstruct full numbers, or add custom numbers to update the grid.</p>
+            </header>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Notebook Sheet -->
+                <div class="panel" style="padding: 0; background:transparent; border:none; box-shadow:none;">
+                    <div class="gridbook-sheet">
+                        <div class="gridbook-content">
+                            <span class="handwritten" style="font-size:1.4rem; color:var(--ink-green); font-weight:bold;">Lab Note: Stem Plotting</span>
+                            
+                            <!-- Preset & Data Inputs inside notebook panel -->
+                            <div class="presets-grid" style="margin-top: 1rem; margin-bottom: 1rem;">
+                                <button class="btn-preset active" onclick="loadStemPreset('testScores', this)">Math Test Scores</button>
+                                <button class="btn-preset" onclick="loadStemPreset('ages', this)">Ages of Teachers</button>
+                            </div>
+
+                            <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:1rem;">
+                                <span style="font-size:0.8rem; font-weight:700; color:var(--pencil-graphite);">Add a 2-Digit Value to Dataset:</span>
+                                <div style="display:flex; gap:10px;">
+                                    <input type="number" id="stemNewValue" min="10" max="99" placeholder="e.g. 52" style="background:#fff; border:1px solid #c8c2b0; border-radius:6px; padding:6px 12px; font-family:'JetBrains Mono'; width:100px; outline:none; color:var(--pencil-graphite);">
+                                    <button onclick="addStemValue()" style="background:var(--ink-blue); color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">+ Add</button>
+                                    <button onclick="clearStemDataset()" style="background:transparent; border:1px solid #c8c2b0; color:var(--pencil-graphite); padding:6px 12px; border-radius:6px; cursor:pointer;">Clear All</button>
+                                </div>
+                            </div>
+
+                            <!-- Stem plot rows -->
+                            <div class="stem-leaf-container" id="stemLeafGrid">
+                                <!-- Populated dynamically -->
+                            </div>
+
+                            <!-- Legend/Key indicator -->
+                            <div style="margin-top:2rem; border-top:1px dashed rgba(54,56,60,0.15); padding-top:1rem; font-size:0.95rem; color:var(--pencil-graphite); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                                <div>
+                                    <strong>Key:</strong> <span style="font-family:'JetBrains Mono';" id="stemLegendKey">5 | 2 = 52 Test Score</span>
+                                </div>
+                                <div id="stemInteractiveReconstruction" style="font-weight:700; color:var(--ink-red);">
+                                    Hover/Click a Leaf digit!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Explanation Card -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>What is a Stem-and-Leaf Plot?</h3>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6; margin-bottom:0.75rem;">
+                            Invented by John Tukey, the **Stem-and-Leaf Plot** is a visual table splitting double-digit numbers:
+                        </p>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6; margin-bottom:0.75rem;">
+                            *   **The Stem (Left):** Typically represents the tens digit.
+                        </p>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6; margin-bottom:0.75rem;">
+                            *   **The Leaf (Right):** Represents the ones digit, sorted sequentially.
+                        </p>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">
+                            It behaves like a horizontal **Histogram** but has a unique advantage: it **preserves the exact raw values** instead of hiding them inside bars!
+                        </p>
+                    </div>
+
+                    <div class="math-card" style="margin-bottom:0;">
+                        <h3>Active Values List</h3>
+                        <div id="stemRawDataSummary" style="font-family:'JetBrains Mono', monospace; font-size:0.85rem; color:var(--text-muted); word-break:break-all; line-height:1.5;">
+                            <!-- Dynamic raw values list -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: CUMULATIVE & OGIVE -->
+        <section id="section2" style="display: none;">
+            <header>
+                <h1>Ogive & Cumulative Frequency Curve</h1>
+                <p>Read relative percentiles from cumulative data distributions. Slide the percentile selector to see exactly how score limits correspond to specific population percentiles.</p>
+            </header>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Ogive Sheet -->
+                <div class="panel" style="padding:0; background:transparent; border:none; box-shadow:none;">
+                    <div class="gridbook-sheet">
+                        <div class="gridbook-content">
+                            <span class="handwritten" style="font-size:1.4rem; color:var(--ink-green); font-weight:bold;">Ogive Percentile Tracer</span>
+                            
+                            <div class="presets-grid" style="margin-top: 1rem; margin-bottom: 1rem;">
+                                <button class="btn-preset active" onclick="loadOgivePreset('scores', this)">Exam Scores (n=30)</button>
+                                <button class="btn-preset" onclick="loadOgivePreset('wages', this)">Daily Wages ($)</button>
+                            </div>
+
+                            <!-- Percentile Slider -->
+                            <div class="control-row" style="margin-bottom:1.5rem; color:var(--pencil-graphite);">
+                                <div class="control-label-row">
+                                    <span style="font-weight:700;">Select Target Percentile:</span>
+                                    <span class="number" style="font-weight:700; color:var(--ink-red); background:rgba(204,36,29,0.06); padding:2px 8px; border-radius:6px;" id="ogivePercentileLabel">50% (Median)</span>
+                                </div>
+                                <input type="range" id="ogivePercentileSlider" min="0" max="100" value="50" step="5" style="background:rgba(0,0,0,0.15);" oninput="updateOgivePercentile(this.value)">
+                            </div>
+
+                            <!-- Ogive Gridbook Canvas -->
+                            <div style="height: 280px; width:100%; border:1px solid #c8c2b0; border-radius:6px; background:#fff; overflow:hidden; position:relative; box-shadow:inset 0 1px 5px rgba(0,0,0,0.05);">
+                                <canvas id="ogiveCanvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Frequency Table and Concept -->
+                <div class="panel">
+                    <div class="math-card" style="margin-bottom: 1rem;">
+                        <h3>Ogive Calculations</h3>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:0.75rem;">
+                            An **Ogive** (pronounced *oh-jive*) is a line graph representing cumulative frequencies.
+                        </p>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:0.75rem;">
+                            *   **Y-Axis:** Represents the **cumulative percentage** (from 0% to 100%).
+                        </p>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+                            *   **Usage:** Find what score separates the top 20% of the class (the 80th percentile), or determine what percentile a score of 70 represents.
+                        </p>
+                    </div>
+
+                    <!-- Cumulative Frequency Table -->
+                    <div class="math-card" style="margin-bottom: 0; padding:10px;">
+                        <h3 style="font-size:0.9rem;">Cumulative Frequency Table</h3>
+                        <div style="max-height: 180px; overflow-y:auto;">
+                            <table class="notebook-table">
+                                <thead>
+                                    <tr>
+                                        <th>Interval</th>
+                                        <th>Freq (f)</th>
+                                        <th>Cum Freq</th>
+                                        <th>Cum %</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ogiveTableBody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: PARETO CHART -->
+        <section id="section3" style="display: none;">
+            <header>
+                <h1>Pareto Chart & The 80/20 Rule</h1>
+                <p>Identify primary contributing factors using a Pareto analysis. Modify category counts and observe how categories sort and accumulate to 100%.</p>
+            </header>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Pareto Visualizer Sheet -->
+                <div class="panel" style="padding:0; background:transparent; border:none; box-shadow:none;">
+                    <div class="gridbook-sheet">
+                        <div class="gridbook-content">
+                            <span class="handwritten" style="font-size:1.4rem; color:var(--ink-green); font-weight:bold;">Pareto Analysis</span>
+                            
+                            <div class="presets-grid" style="margin-top: 1rem; margin-bottom: 1rem;">
+                                <button class="btn-preset active" onclick="loadParetoPreset('complaints', this)">Customer Complaints</button>
+                                <button class="btn-preset" onclick="loadParetoPreset('late', this)">Late to School Reasons</button>
+                            </div>
+
+                            <!-- Pareto Canvas -->
+                            <div style="height: 280px; width:100%; border:1px solid #c8c2b0; border-radius:6px; background:#fff; overflow:hidden; position:relative; margin-bottom:1rem; box-shadow:inset 0 1px 5px rgba(0,0,0,0.05);">
+                                <canvas id="paretoCanvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Controls & Formula Concept -->
+                <div class="panel">
+                    <!-- Category count sliders -->
+                    <div class="math-card" style="margin-bottom: 1rem; padding: 12px;">
+                        <h3 style="font-size:0.95rem; margin-bottom:0.5rem;">Adjust Category Frequency:</h3>
+                        <table class="category-input-table">
+                            <tbody id="paretoInputBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="math-card" style="margin-bottom: 0;">
+                        <h3>The Pareto Principle</h3>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:0.75rem;">
+                            Named after Vilfredo Pareto, the **80/20 Rule** states that roughly **80% of consequences come from 20% of causes**.
+                        </p>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:0.75rem;">
+                            *   **Bars (Left Axis):** Frequencies sorted in descending order of magnitude.
+                        </p>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+                            *   **Line (Right Axis):** The cumulative percentage curve. Where this line crosses **80%** identifies the critical root causes to solve first!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: QUIZ PLAYGROUND -->
+        <section id="section4" style="display: none;">
+            <header>
+                <h1>Reading & Interpretation Playground</h1>
+                <p>Read values directly from your active notebook grids. Answer the following questions to verify your advanced chart mastery!</p>
+            </header>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Quiz solving card -->
+                <div class="panel">
+                    <div class="quiz-card">
+                        <div class="quiz-question-title" id="quizStepText">Question 1 of 5</div>
+                        <div class="quiz-text" id="quizPromptText">
+                            Loading question...
+                        </div>
+                        <div class="quiz-options" id="quizOptionsContainer">
+                            <!-- Options buttons populated dynamically -->
+                        </div>
+                        <div class="quiz-feedback" id="quizFeedbackText" style="min-height:30px; font-weight:600;"></div>
+                    </div>
+
+                    <div class="quiz-score-bar">
+                        <span>Current Score: <span class="score-pill" id="scoreDisp">0 / 0</span></span>
+                        <button class="btn" onclick="startNewQuiz()" style="width:auto; padding:8px 16px; box-shadow:none; background:rgba(255,255,255,0.03); border:1px solid var(--card-border); color:var(--text-color);" id="btnResetQuiz">Restart Quiz</button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Visualizer check helper -->
+                <div class="panel">
+                    <div class="math-card" style="border-color: rgba(168, 85, 247, 0.15);">
+                        <h3>Active Reference Notebook</h3>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:12px;">
+                            The quiz questions are dynamically compiled from your active notebooks.
+                        </p>
+                        <div id="quizReferenceData" style="font-family:'JetBrains Mono', monospace; font-size:0.82rem; color:var(--text-muted); display:flex; flex-direction:column; gap:8px;">
+                            <!-- Dynamic stats cheat sheet -->
+                        </div>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>Switch tabs to inspect the Stem-and-Leaf, Ogive tracer, or Pareto threshold charts!</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // NAVIGATION TOGGLES
+        const menuSec1 = document.getElementById('menuSec1');
+        const menuSec2 = document.getElementById('menuSec2');
+        const menuSec3 = document.getElementById('menuSec3');
+        const menuSec4 = document.getElementById('menuSec4');
+
+        const sec1 = document.getElementById('section1');
+        const sec2 = document.getElementById('section2');
+        const sec3 = document.getElementById('section3');
+        const sec4 = document.getElementById('section4');
+
+        menuSec1.addEventListener('click', (e) => { e.preventDefault(); toggleTab(menuSec1, sec1); });
+        menuSec2.addEventListener('click', (e) => { e.preventDefault(); toggleTab(menuSec2, sec2); resizeOgiveCanvas(); });
+        menuSec3.addEventListener('click', (e) => { e.preventDefault(); toggleTab(menuSec3, sec3); resizeParetoCanvas(); });
+        menuSec4.addEventListener('click', (e) => { e.preventDefault(); toggleTab(menuSec4, sec4); startNewQuiz(); });
+
+        function toggleTab(activeItem, activeSec) {
+            [menuSec1, menuSec2, menuSec3, menuSec4].forEach(item => item.classList.remove('active'));
+            [sec1, sec2, sec3, sec4].forEach(sec => sec.style.display = 'none');
+            activeItem.classList.add('active');
+            activeSec.style.display = 'block';
+        }
+
+        // DATA SOURCES & PRESETS
+        const stemPresets = {
+            testScores: [45, 47, 52, 55, 58, 60, 63, 67, 67, 71, 74, 75, 78, 78, 79, 80, 82, 85, 88, 91, 92, 95],
+            ages: [24, 28, 31, 31, 35, 39, 40, 42, 42, 45, 48, 50, 52, 55, 58, 61, 62, 65]
+        };
+
+        const ogivePresets = {
+            scores: [35, 42, 45, 50, 53, 58, 62, 65, 68, 71, 72, 74, 75, 77, 78, 80, 82, 83, 85, 86, 88, 89, 90, 92, 93, 95, 96, 98, 99, 100],
+            wages: [45, 55, 60, 68, 72, 80, 85, 90, 95, 100, 110, 115, 120, 128, 135, 140, 150, 160, 175, 180, 190, 200, 215, 230, 245, 260, 280, 300, 320, 350]
+        };
+
+        const paretoPresets = {
+            complaints: [
+                { name: "Late Delivery", value: 48 },
+                { name: "Poor Support", value: 25 },
+                { name: "Damaged Item", value: 16 },
+                { name: "Wrong Item", value: 7 },
+                { name: "Unclear Invoice", value: 4 }
+            ],
+            late: [
+                { name: "Overslept", value: 45 },
+                { name: "Missed Bus", value: 30 },
+                { name: "Traffic Jam", value: 18 },
+                { name: "Forgot Bag", value: 6 },
+                { name: "Rain Delay", value: 3 }
+            ]
+        };
+
+        // Active State Variables
+        let activeStemPreset = 'testScores';
+        let stemData = [...stemPresets.testScores];
+
+        let activeOgivePreset = 'scores';
+        let ogiveData = [...ogivePresets.scores];
+        let ogivePercentile = 50;
+
+        let activeParetoPreset = 'complaints';
+        let paretoData = JSON.parse(JSON.stringify(paretoPresets.complaints));
+
+        const stemLeafGrid = document.getElementById('stemLeafGrid');
+        const stemNewValue = document.getElementById('stemNewValue');
+        const stemInteractiveReconstruction = document.getElementById('stemInteractiveReconstruction');
+        const stemRawDataSummary = document.getElementById('stemRawDataSummary');
+
+        function loadStemPreset(presetName, buttonEl) {
+            activeStemPreset = presetName;
+            stemData = [...stemPresets[presetName]];
+
+            document.querySelectorAll('#section1 .btn-preset').forEach(btn => btn.classList.remove('active'));
+            if (buttonEl) buttonEl.classList.add('active');
+
+            renderStemPlot();
+        }
+
+        function addStemValue() {
+            const val = parseInt(stemNewValue.value);
+            if (val >= 10 && val <= 99) {
+                stemData.push(val);
+                stemData.sort((a,b)=>a-b);
+                stemNewValue.value = '';
+                renderStemPlot();
+            } else {
+                alert("Please enter a valid 2-digit number (10 - 99)");
+            }
+        }
+
+        function clearStemDataset() {
+            stemData = [];
+            renderStemPlot();
+        }
+
+        function renderStemPlot() {
+            stemLeafGrid.innerHTML = '';
+            
+            // Pop raw list text
+            stemRawDataSummary.innerText = stemData.length > 0 ? stemData.join(', ') : 'Empty Dataset';
+
+            if (stemData.length === 0) {
+                stemLeafGrid.innerHTML = '<div style="color:var(--pencil-graphite); font-family:\'Architects Daughter\'; font-size:1.1rem;">No data values plotted yet...</div>';
+                return;
+            }
+
+            const stems = {};
+            stemData.forEach(v => {
+                const s = Math.floor(v / 10);
+                const l = v % 10;
+                if (!stems[s]) stems[s] = [];
+                stems[s].push(l);
+            });
+
+            // Find overall stem range
+            const keys = Object.keys(stems).map(Number);
+            const minStem = Math.min(...keys);
+            const maxStem = Math.max(...keys);
+
+            for (let s = minStem; s <= maxStem; s++) {
+                const row = document.createElement('div');
+                row.className = 'stem-leaf-row';
+
+                const stemBox = document.createElement('div');
+                stemBox.className = 'stem-box';
+                stemBox.innerText = s;
+
+                const leafBox = document.createElement('div');
+                leafBox.className = 'leaf-box';
+
+                const leaves = stems[s] || [];
+                // Sort leaves ascending
+                leaves.sort((a, b) => a - b);
+
+                leaves.forEach((l, idx) => {
+                    const leafSpan = document.createElement('span');
+                    leafSpan.className = 'leaf-digit';
+                    leafSpan.innerText = l;
+
+                    // Click to show reconstruction and delete option
+                    leafSpan.onmouseover = () => {
+                        stemInteractiveReconstruction.innerHTML = `Value: <span style="font-family:'JetBrains Mono';">${s}${l}</span> (Stem ${s} | Leaf ${l})`;
+                    };
+                    leafSpan.onmouseleave = () => {
+                        stemInteractiveReconstruction.innerText = 'Hover/Click a Leaf digit!';
+                    };
+                    leafSpan.onclick = () => {
+                        // Delete value on click
+                        const valueToDelete = s * 10 + l;
+                        const dIdx = stemData.indexOf(valueToDelete);
+                        if (dIdx !== -1) {
+                            stemData.splice(dIdx, 1);
+                            renderStemPlot();
+                        }
+                    };
+
+                    leafBox.appendChild(leafSpan);
+                });
+
+                row.appendChild(stemBox);
+                row.appendChild(leafBox);
+                stemLeafGrid.appendChild(row);
+            }
+        }
+
+
+        const ogiveCanvas = document.getElementById('ogiveCanvas');
+        const ogiveCtx = ogiveCanvas.getContext('2d');
+        const ogivePercentileSlider = document.getElementById('ogivePercentileSlider');
+        const ogivePercentileLabel = document.getElementById('ogivePercentileLabel');
+        const ogiveTableBody = document.getElementById('ogiveTableBody');
+
+        function loadOgivePreset(presetName, buttonEl) {
+            activeOgivePreset = presetName;
+            ogiveData = [...ogivePresets[presetName]];
+
+            document.querySelectorAll('#section2 .btn-preset').forEach(btn => btn.classList.remove('active'));
+            if (buttonEl) buttonEl.classList.add('active');
+
+            drawOgive();
+        }
+
+        function updateOgivePercentile(val) {
+            ogivePercentile = parseInt(val);
+            if (ogivePercentile === 50) ogivePercentileLabel.innerText = "50% (Median)";
+            else if (ogivePercentile === 25) ogivePercentileLabel.innerText = "25% (Lower Quartile Q1)";
+            else if (ogivePercentile === 75) ogivePercentileLabel.innerText = "75% (Upper Quartile Q3)";
+            else ogivePercentileLabel.innerText = `${ogivePercentile}%`;
+
+            drawOgive();
+        }
+
+        function getOgiveIntervals() {
+            if (ogiveData.length === 0) return [];
+            const min = Math.min(...ogiveData);
+            const max = Math.max(...ogiveData);
+
+            // Establish class intervals
+            let step = 10;
+            if (activeOgivePreset === 'wages') {
+                step = 50;
+            }
+
+            const startVal = Math.floor(min / step) * step;
+            const endVal = Math.ceil((max + 0.1) / step) * step;
+
+            const intervals = [];
+            for (let i = startVal; i < endVal; i += step) {
+                intervals.push({
+                    start: i,
+                    end: i + step,
+                    count: 0
+                });
+            }
+
+            ogiveData.forEach(v => {
+                let placed = false;
+                for (let idx = 0; idx < intervals.length; idx++) {
+                    const int = intervals[idx];
+                    if (v >= int.start && v < int.end) {
+                        int.count++;
+                        placed = true;
+                        break;
+                    }
+                }
+                if (!placed && intervals.length > 0) {
+                    const final = intervals[intervals.length - 1];
+                    if (v === final.end) {
+                        final.count++;
+                    }
+                }
+            });
+
+            let cumSum = 0;
+            intervals.forEach(int => {
+                cumSum += int.count;
+                int.cumCount = cumSum;
+                int.cumPct = (cumSum / ogiveData.length) * 100;
+            });
+
+            return intervals;
+        }
+
+        function resizeOgiveCanvas() {
+            const container = ogiveCanvas.parentElement;
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            ogiveCanvas.width = w * (window.devicePixelRatio || 1);
+            ogiveCanvas.height = h * (window.devicePixelRatio || 1);
+            ogiveCanvas.style.width = w + 'px';
+            ogiveCanvas.style.height = h + 'px';
+            ogiveCtx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+            drawOgive();
+        }
+
+        function drawOgive() {
+            const w = ogiveCanvas.width / (window.devicePixelRatio || 1);
+            const h = ogiveCanvas.height / (window.devicePixelRatio || 1);
+            ogiveCtx.clearRect(0, 0, w, h);
+
+            if (ogiveData.length === 0) return;
+
+            const intervals = getOgiveIntervals();
+
+            let tableHtml = '';
+            intervals.forEach(int => {
+                tableHtml += `
+                    <tr>
+                        <td>${int.start} - ${int.end}</td>
+                        <td>${int.count}</td>
+                        <td>${int.cumCount}</td>
+                        <td>${int.cumPct.toFixed(0)}%</td>
+                    </tr>
+                `;
+            });
+            ogiveTableBody.innerHTML = tableHtml;
+
+            const padLeft = 40;
+            const padRight = 20;
+            const padTop = 20;
+            const padBottom = 35;
+
+            const graphW = w - padLeft - padRight;
+            const graphH = h - padTop - padBottom;
+
+            ogiveCtx.strokeStyle = "var(--paper-grid)";
+            ogiveCtx.lineWidth = 1;
+            const gridSz = 20;
+            
+            for (let x = 0; x < w; x += gridSz) {
+                ogiveCtx.beginPath(); ogiveCtx.moveTo(x, 0); ogiveCtx.lineTo(x, h); ogiveCtx.stroke();
+            }
+            for (let y = 0; y < h; y += gridSz) {
+                ogiveCtx.beginPath(); ogiveCtx.moveTo(0, y); ogiveCtx.lineTo(w, y); ogiveCtx.stroke();
+            }
+
+            ogiveCtx.strokeStyle = "var(--paper-margin)";
+            ogiveCtx.lineWidth = 1.5;
+            ogiveCtx.beginPath();
+            ogiveCtx.moveTo(padLeft - 5, 0);
+            ogiveCtx.lineTo(padLeft - 5, h);
+            ogiveCtx.stroke();
+
+            // Establish math mapping
+            const minX = intervals[0].start;
+            const maxX = intervals[intervals.length - 1].end;
+
+            function valToX(v) {
+                const ratio = (v - minX) / (maxX - minX);
+                return padLeft + ratio * graphW;
+            }
+
+            function valToY(pct) {
+                const ratio = pct / 100;
+                return padTop + graphH - ratio * graphH;
+            }
+
+            function yToPct(yPos) {
+                const ratio = (padTop + graphH - yPos) / graphH;
+                return ratio * 100;
+            }
+
+            function xToVal(xPos) {
+                const ratio = (xPos - padLeft) / graphW;
+                return minX + ratio * (maxX - minX);
+            }
+
+            ogiveCtx.strokeStyle = "var(--pencil-graphite)";
+            ogiveCtx.lineWidth = 2;
+            ogiveCtx.beginPath();
+            ogiveCtx.moveTo(padLeft, padTop);
+            ogiveCtx.lineTo(padLeft, padTop + graphH);
+            ogiveCtx.lineTo(padLeft + graphW, padTop + graphH);
+            ogiveCtx.stroke();
+
+            // Y-Axis labels (Percentages)
+            ogiveCtx.fillStyle = "var(--pencil-graphite)";
+            ogiveCtx.font = "bold 9px 'JetBrains Mono'";
+            ogiveCtx.textAlign = "right";
+            ogiveCtx.textBaseline = "middle";
+
+            for (let p = 0; p <= 100; p += 20) {
+                const y = valToY(p);
+                ogiveCtx.fillText(`${p}%`, padLeft - 8, y);
+            }
+
+            // X-Axis labels (Upper boundaries)
+            ogiveCtx.textAlign = "center";
+            ogiveCtx.textBaseline = "top";
+
+            // The Ogive starts at cumulative 0% at the lower boundary of the first interval
+            const points = [{ val: minX, pct: 0 }];
+            intervals.forEach(int => {
+                points.push({ val: int.end, pct: int.cumPct });
+            });
+
+            points.forEach(pt => {
+                const x = valToX(pt.val);
+                ogiveCtx.fillText(pt.val, x, padTop + graphH + 6);
+            });
+
+            ogiveCtx.strokeStyle = "var(--ink-blue)";
+            ogiveCtx.lineWidth = 3;
+            ogiveCtx.beginPath();
+            points.forEach((pt, idx) => {
+                const x = valToX(pt.val);
+                const y = valToY(pt.pct);
+                if (idx === 0) ogiveCtx.moveTo(x, y);
+                else ogiveCtx.lineTo(x, y);
+            });
+            ogiveCtx.stroke();
+
+            points.forEach(pt => {
+                const x = valToX(pt.val);
+                const y = valToY(pt.pct);
+                ogiveCtx.fillStyle = "var(--ink-blue)";
+                ogiveCtx.beginPath();
+                ogiveCtx.arc(x, y, 4, 0, 2*Math.PI);
+                ogiveCtx.fill();
+                ogiveCtx.strokeStyle = "#fff";
+                ogiveCtx.lineWidth = 1;
+                ogiveCtx.stroke();
+            });
+
+            // TRACE TARGET PERCENTILE (with red pen style)
+            const targetY = valToY(ogivePercentile);
+            
+            // Find corresponding value on the line segment
+            let traceVal = minX;
+            for (let i = 0; i < points.length - 1; i++) {
+                const p1 = points[i];
+                const p2 = points[i+1];
+                if (ogivePercentile >= p1.pct && ogivePercentile <= p2.pct) {
+                    const range = p2.pct - p1.pct;
+                    if (range > 0) {
+                        const t = (ogivePercentile - p1.pct) / range;
+                        traceVal = p1.val + t * (p2.val - p1.val);
+                    } else {
+                        traceVal = p1.val;
+                    }
+                    break;
+                }
+            }
+
+            const targetX = valToX(traceVal);
+
+            ogiveCtx.strokeStyle = "var(--ink-red)";
+            ogiveCtx.lineWidth = 1.5;
+            ogiveCtx.setLineDash([4, 4]);
+
+            // horizontal tracer
+            ogiveCtx.beginPath();
+            ogiveCtx.moveTo(padLeft, targetY);
+            ogiveCtx.lineTo(targetX, targetY);
+            ogiveCtx.stroke();
+
+            // vertical tracer
+            ogiveCtx.beginPath();
+            ogiveCtx.moveTo(targetX, targetY);
+            ogiveCtx.lineTo(targetX, padTop + graphH);
+            ogiveCtx.stroke();
+            ogiveCtx.setLineDash([]);
+
+            ogiveCtx.fillStyle = "var(--ink-red)";
+            ogiveCtx.beginPath();
+            ogiveCtx.arc(targetX, targetY, 6, 0, 2*Math.PI);
+            ogiveCtx.fill();
+
+            ogiveCtx.fillStyle = "var(--ink-red)";
+            ogiveCtx.font = "bold 12px 'Architects Daughter'";
+            ogiveCtx.textAlign = "left";
+            ogiveCtx.fillText(`Value = ${traceVal.toFixed(1)}`, targetX + 10, targetY - 6);
+        }
+
+        // Click on Ogive to select percentile directly
+        ogiveCanvas.addEventListener('mousedown', (e) => {
+            const rect = ogiveCanvas.getBoundingClientRect();
+            const py = e.clientY - rect.top;
+
+            const padTop = 20;
+            const padBottom = 35;
+            const graphH = rect.height - padTop - padBottom;
+
+            let pct = Math.round(((padTop + graphH - py) / graphH) * 100);
+            pct = Math.max(0, Math.min(100, pct));
+            
+            // round to nearest 5
+            pct = Math.round(pct / 5) * 5;
+
+            ogivePercentileSlider.value = pct;
+            updateOgivePercentile(pct);
+        });
+
+
+        const paretoCanvas = document.getElementById('paretoCanvas');
+        const paretoCtx = paretoCanvas.getContext('2d');
+        const paretoInputBody = document.getElementById('paretoInputBody');
+
+        function loadParetoPreset(presetName, buttonEl) {
+            activeParetoPreset = presetName;
+            paretoData = JSON.parse(JSON.stringify(paretoPresets[presetName]));
+
+            document.querySelectorAll('#section3 .btn-preset').forEach(btn => btn.classList.remove('active'));
+            if (buttonEl) buttonEl.classList.add('active');
+
+            renderParetoInputs();
+            drawParetoChart();
+        }
+
+        function renderParetoInputs() {
+            let html = '';
+            paretoData.forEach((slice, idx) => {
+                html += `
+                    <tr>
+                        <td>
+                            <input type="text" class="category-name-input" value="${slice.name}" oninput="updateParetoCategoryName(${idx}, this.value)" style="color:var(--text-color);">
+                        </td>
+                        <td>
+                            <div class="value-control">
+                                <button class="btn-value" onclick="changeParetoCategoryValue(${idx}, -5)">−</button>
+                                <span class="category-value-text" style="color:var(--text-color);">${slice.value}</span>
+                                <button class="btn-value" onclick="changeParetoCategoryValue(${idx}, 5)">+</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            paretoInputBody.innerHTML = html;
+        }
+
+        window.updateParetoCategoryName = function(idx, newName) {
+            paretoData[idx].name = newName;
+            drawParetoChart();
+        };
+
+        window.changeParetoCategoryValue = function(idx, delta) {
+            let val = paretoData[idx].value + delta;
+            if (val < 0) val = 0;
+            if (val > 200) val = 200;
+            paretoData[idx].value = val;
+            renderParetoInputs();
+            drawParetoChart();
+        };
+
+        function resizeParetoCanvas() {
+            const container = paretoCanvas.parentElement;
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            paretoCanvas.width = w * (window.devicePixelRatio || 1);
+            paretoCanvas.height = h * (window.devicePixelRatio || 1);
+            paretoCanvas.style.width = w + 'px';
+            paretoCanvas.style.height = h + 'px';
+            paretoCtx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+            drawParetoChart();
+        }
+
+        function drawParetoChart() {
+            const w = paretoCanvas.width / (window.devicePixelRatio || 1);
+            const h = paretoCanvas.height / (window.devicePixelRatio || 1);
+            paretoCtx.clearRect(0, 0, w, h);
+
+            if (paretoData.length === 0) return;
+
+            // Sort data descending by value (required for Pareto)
+            const sortedData = [...paretoData].sort((a, b) => b.value - a.value);
+
+            const total = sortedData.reduce((sum, item) => sum + item.value, 0);
+
+            const padLeft = 40;
+            const padRight = 45;
+            const padTop = 30;
+            const padBottom = 45;
+
+            const graphW = w - padLeft - padRight;
+            const graphH = h - padTop - padBottom;
+
+            paretoCtx.strokeStyle = "var(--paper-grid)";
+            paretoCtx.lineWidth = 1;
+            const gridSz = 20;
+            for (let x = 0; x < w; x += gridSz) {
+                paretoCtx.beginPath(); paretoCtx.moveTo(x, 0); paretoCtx.lineTo(x, h); paretoCtx.stroke();
+            }
+            for (let y = 0; y < h; y += gridSz) {
+                paretoCtx.beginPath(); paretoCtx.moveTo(0, y); paretoCtx.lineTo(w, y); paretoCtx.stroke();
+            }
+
+            // Red margin line on left
+            paretoCtx.strokeStyle = "var(--paper-margin)";
+            paretoCtx.lineWidth = 1.5;
+            paretoCtx.beginPath();
+            paretoCtx.moveTo(padLeft - 5, 0);
+            paretoCtx.lineTo(padLeft - 5, h);
+            paretoCtx.stroke();
+
+            // Establish primary axis max scale
+            const maxVal = Math.max(...sortedData.map(d => d.value), 10);
+            const yMax = Math.ceil(maxVal / 10) * 10;
+
+            paretoCtx.strokeStyle = "var(--pencil-graphite)";
+            paretoCtx.lineWidth = 2;
+            paretoCtx.beginPath();
+            paretoCtx.moveTo(padLeft, padTop);
+            paretoCtx.lineTo(padLeft, padTop + graphH); // left Y
+            paretoCtx.lineTo(padLeft + graphW, padTop + graphH); // X axis
+            paretoCtx.moveTo(padLeft + graphW, padTop);
+            paretoCtx.lineTo(padLeft + graphW, padTop + graphH); // right Y axis
+            paretoCtx.stroke();
+
+            // Left Y Axis labels (Counts)
+            paretoCtx.fillStyle = "var(--pencil-graphite)";
+            paretoCtx.font = "bold 9px 'JetBrains Mono'";
+            paretoCtx.textAlign = "right";
+            paretoCtx.textBaseline = "middle";
+            for (let i = 0; i <= 5; i++) {
+                const tickVal = Math.round((yMax / 5) * i);
+                const y = padTop + graphH - (i / 5) * graphH;
+                paretoCtx.fillText(tickVal, padLeft - 8, y);
+            }
+
+            // Right Y Axis labels (Cumulative Pct)
+            paretoCtx.textAlign = "left";
+            for (let p = 0; p <= 100; p += 20) {
+                const y = padTop + graphH - (p / 100) * graphH;
+                paretoCtx.fillText(`${p}%`, padLeft + graphW + 8, y);
+            }
+
+            const barW = graphW / sortedData.length;
+            let cumSum = 0;
+            const linePoints = [];
+
+            sortedData.forEach((slice, idx) => {
+                const barH = (slice.value / yMax) * graphH;
+                const x = padLeft + idx * barW + 4;
+                const y = padTop + graphH - barH;
+                const curW = barW - 8;
+
+                paretoCtx.fillStyle = "rgba(27, 77, 143, 0.08)";
+                paretoCtx.strokeStyle = "var(--ink-blue)";
+                paretoCtx.lineWidth = 1.5;
+                paretoCtx.beginPath();
+                paretoCtx.rect(x, y, curW, barH);
+                paretoCtx.fill();
+                paretoCtx.stroke();
+
+                paretoCtx.strokeStyle = "rgba(27, 77, 143, 0.2)";
+                paretoCtx.lineWidth = 1;
+                for (let hX = x + 4; hX < x + curW; hX += 6) {
+                    paretoCtx.beginPath();
+                    paretoCtx.moveTo(hX, padTop + graphH);
+                    paretoCtx.lineTo(hX - 4, y);
+                    paretoCtx.stroke();
+                }
+
+                // X label (first 4 chars)
+                paretoCtx.fillStyle = "var(--pencil-graphite)";
+                paretoCtx.font = "10px Outfit";
+                paretoCtx.textAlign = "center";
+                paretoCtx.textBaseline = "top";
+                
+                const label = slice.name.length > 8 ? slice.name.substring(0, 7) + '.' : slice.name;
+                paretoCtx.fillText(label, x + curW/2, padTop + graphH + 6);
+
+                cumSum += slice.value;
+                const cumPct = total > 0 ? (cumSum / total) * 100 : 0;
+                linePoints.push({ x: x + curW/2, y: padTop + graphH - (cumPct / 100) * graphH, pct: cumPct });
+            });
+
+            if (linePoints.length > 0) {
+                paretoCtx.strokeStyle = "var(--ink-red)";
+                paretoCtx.lineWidth = 2.5;
+                paretoCtx.beginPath();
+                // start at origin (bottom-left of first bar)
+                const startX = padLeft;
+                const startY = padTop + graphH;
+                paretoCtx.moveTo(startX, startY);
+
+                linePoints.forEach(pt => {
+                    paretoCtx.lineTo(pt.x, pt.y);
+                });
+                paretoCtx.stroke();
+
+                linePoints.forEach(pt => {
+                    paretoCtx.fillStyle = "var(--ink-red)";
+                    paretoCtx.beginPath();
+                    paretoCtx.arc(pt.x, pt.y, 4, 0, 2*Math.PI);
+                    paretoCtx.fill();
+                });
+            }
+
+            // Draw 80% horizontal threshold line
+            const thresholdY = padTop + graphH - (80 / 100) * graphH;
+            paretoCtx.strokeStyle = "var(--ink-green)";
+            paretoCtx.lineWidth = 1.5;
+            paretoCtx.setLineDash([5, 5]);
+            paretoCtx.beginPath();
+            paretoCtx.moveTo(padLeft, thresholdY);
+            paretoCtx.lineTo(padLeft + graphW, thresholdY);
+            paretoCtx.stroke();
+            paretoCtx.setLineDash([]);
+
+            // Draw 80% label annotation
+            paretoCtx.fillStyle = "var(--ink-green)";
+            paretoCtx.font = "bold 11px 'Architects Daughter'";
+            paretoCtx.textAlign = "left";
+            paretoCtx.fillText("80% Pareto Limit", padLeft + 10, thresholdY - 6);
+        }
+
+
+        let currentQuestion = null;
+        let scoreCorrect = 0;
+        let scoreTotal = 0;
+
+        function startNewQuiz() {
+            scoreCorrect = 0;
+            scoreTotal = 0;
+            updateScoreDisplay();
+            generateNextQuestion();
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('scoreDisp').innerText = `${scoreCorrect} / ${scoreTotal}`;
+        }
+
+        function generateNextQuestion() {
+            document.getElementById('quizFeedbackText').innerText = '';
+            document.getElementById('quizFeedbackText').className = 'quiz-feedback';
+            document.getElementById('btnResetQuiz').style.display = 'block';
+
+            // Randomly select question types:
+            // 0: Stem-and-leaf count or values
+            // 1: Ogive cumulative frequency / percentile
+            // 2: Pareto rule evaluation
+            const type = Math.floor(Math.random() * 3);
+
+            let question = "";
+            let options = [];
+            let correctVal = "";
+
+            if (type === 0) {
+                // Stem-and-Leaf question
+                if (stemData.length > 0) {
+                    const uniqueStems = [...new Set(stemData.map(v => Math.floor(v/10)))];
+                    const chosenStem = uniqueStems[Math.floor(Math.random() * uniqueStems.length)];
+                    const valuesInStem = stemData.filter(v => Math.floor(v/10) === chosenStem);
+
+                    const randType = Math.random() > 0.5;
+                    if (randType) {
+                        question = `In the active Stem-and-Leaf Plot, how many leaves are associated with stem **${chosenStem}**?`;
+                        correctVal = valuesInStem.length.toString();
+                        options = [correctVal, (valuesInStem.length + 1).toString(), Math.max(0, valuesInStem.length - 2).toString(), (valuesInStem.length + 3).toString()];
+                    } else {
+                        question = `In the active Stem-and-Leaf Plot, which of the following full values belongs in the stem **${chosenStem}** row?`;
+                        correctVal = valuesInStem[0].toString();
+                        
+                        // make wrong choices outside this stem row
+                        const wrong1 = `${chosenStem + 1}0`;
+                        const wrong2 = `${chosenStem - 1}5`;
+                        const wrong3 = `${chosenStem + 2}2`;
+                        options = [correctVal, wrong1, wrong2, wrong3];
+                    }
+                } else {
+                    generateStatsQuizQuestion();
+                    return;
+                }
+            } else if (type === 1) {
+                // Ogive question
+                const intervals = getOgiveIntervals();
+                if (intervals.length >= 2) {
+                    const idx = Math.floor(Math.random() * intervals.length);
+                    const int = intervals[idx];
+                    question = `According to the active Ogive cumulative frequency table, what is the **cumulative percentage** of values falling below **${int.end}**?`;
+                    correctVal = `${int.cumPct.toFixed(0)}%`;
+                    options = [correctVal, `${(int.cumPct + 15).toFixed(0)}%`, `${Math.max(0, int.cumPct - 20).toFixed(0)}%`, `${(int.cumPct + 35).toFixed(0)}%`];
+                } else {
+                    generateStatsQuizQuestion();
+                    return;
+                }
+            } else {
+                // Pareto analysis
+                const sorted = [...paretoData].sort((a,b)=>b.value-a.value);
+                const total = sorted.reduce((sum,item)=>sum+item.value, 0);
+                
+                // Which category has the absolute highest frequency?
+                const highest = sorted[0];
+                question = `In the active Pareto Chart analysis, which factor represents the **most frequent** cause of problems?`;
+                correctVal = highest.name;
+                
+                options = [correctVal, sorted[1].name, sorted[2].name, "Other Reasons"];
+            }
+
+            // Deduplicate options and shuffle
+            options = [...new Set(options)];
+            while (options.length < 4) {
+                options.push("None of these");
+                options = [...new Set(options)];
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            currentQuestion = {
+                question: question,
+                options: options,
+                answer: correctVal
+            };
+
+            // Render
+            document.getElementById('quizStepText').innerText = `Question ${scoreTotal + 1}`;
+            document.getElementById('quizPromptText').innerHTML = question;
+
+            const container = document.getElementById('quizOptionsContainer');
+            container.innerHTML = '';
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-option';
+                btn.innerText = opt;
+                btn.onclick = () => submitAnswer(opt, btn);
+                container.appendChild(btn);
+            });
+
+            const boxStats = stemData.length > 0 ? stemData.join(', ') : 'None';
+            const ogTotal = ogiveData.length;
+            const paretoTotal = paretoData.reduce((sum,i)=>sum+i.value,0);
+
+            document.getElementById('quizReferenceData').innerHTML = `
+                <div><strong>Active Stem Plot Values:</strong> ${boxStats}</div>
+                <div><strong>Ogive Dataset Size (n):</strong> ${ogTotal} values</div>
+                <div><strong>Ogive Percentile Line Position:</strong> ${ogivePercentile}%</div>
+                <div><strong>Pareto Active Dataset Total Counts:</strong> ${paretoTotal} occurrences</div>
+            `;
+        }
+
+        function generateStatsQuizQuestion() {
+            scoreTotal--;
+            generateNextQuestion();
+        }
+
+        function submitAnswer(selectedVal, optionButton) {
+            const btns = document.querySelectorAll('.btn-option');
+            btns.forEach(b => b.disabled = true);
+
+            scoreTotal++;
+
+            const feedback = document.getElementById('quizFeedbackText');
+
+            if (selectedVal === currentQuestion.answer) {
+                optionButton.classList.add('correct');
+                feedback.innerText = "Correct! Nice reading skills.";
+                feedback.style.color = "var(--ink-green)";
+                scoreCorrect++;
+            } else {
+                optionButton.classList.add('incorrect');
+                feedback.innerText = `Incorrect. The correct answer was: ${currentQuestion.answer}`;
+                feedback.style.color = "var(--ink-red)";
+
+                btns.forEach(b => {
+                    if (b.innerText === currentQuestion.answer) {
+                        b.classList.add('correct');
+                    }
+                });
+            }
+
+            updateScoreDisplay();
+
+            setTimeout(() => {
+                generateNextQuestion();
+            }, 2500);
+        }
+
+        loadStemPreset('testScores');
+        loadOgivePreset('scores');
+        loadParetoPreset('complaints');
+
+        // Delay to allow DOM container bounding boxes to render
+        setTimeout(() => {
+            resizeOgiveCanvas();
+            resizeParetoCanvas();
+        }, 100);
+    </script>
+</body>
+</html>

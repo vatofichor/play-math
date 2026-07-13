@@ -1,0 +1,1335 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Graphs & Charts - Data Science & Statistics</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "06_data_science_statistics",
+            logo: {"main":"Stat","accent":"Lab","sub":"Basic Graphs & Charts"},
+            navigation: [
+    {
+        "label": "Interactive Bar Chart Builder",
+        "desc": "Interactive Bar Chart Builder interactive section",
+        "href": "#section1"
+    },
+    {
+        "label": "Interactive Line Graph Creator",
+        "desc": "Interactive Line Graph Creator interactive section",
+        "href": "#section2"
+    },
+    {
+        "label": "Interactive Pictograph Creator",
+        "desc": "Interactive Pictograph Creator interactive section",
+        "href": "#section3"
+    },
+    {
+        "label": "Interpretation Reading Playground",
+        "desc": "Interpretation Reading Playground interactive section",
+        "href": "#section4"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Emerald green theme */
+            --color-primary: #10b981; /* Emerald */
+            --color-primary-glow: rgba(16, 185, 129, 0.35);
+            --color-amber: #ffb000;
+            --color-rose: #f43f5e;
+            --color-cyan: #38bdf8;
+            --color-purple: #a855f7;
+        }
+
+        /* Chart Styles */
+        .chart-holder {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 1rem;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Data table customizer */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            vertical-align: middle;
+        }
+
+        .category-name-input {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-color);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            outline: none;
+            width: 130px;
+        }
+
+        .category-name-input:focus {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .value-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-value {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid var(--card-border);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-color);
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-value:hover {
+            background: var(--color-primary);
+            color: var(--bg-color);
+            border-color: var(--color-primary);
+        }
+
+        .category-value-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            width: 30px;
+            text-align: center;
+        }
+
+        /* Color Pill */
+        .color-pill {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* Pictograph Styles */
+        .pictograph-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 2rem 0;
+            background: rgba(10, 11, 18, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .pictograph-row {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            padding-bottom: 12px;
+        }
+
+        .pictograph-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .pictograph-label {
+            width: 140px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--text-color);
+        }
+
+        .pictograph-icons {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+            min-height: 36px;
+        }
+
+        .picto-icon-wrapper {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            margin-right: 2px;
+            transition: transform 0.2s ease;
+        }
+
+        .picto-icon-wrapper:hover {
+            transform: scale(1.15);
+        }
+
+        .pictograph-total {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            width: 40px;
+            text-align: right;
+        }
+
+        /* Key Indicator */
+        .pictograph-key {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* Quiz Panel Styles */
+        .quiz-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-question-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-primary);
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .quiz-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-option {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            padding: 12px;
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            text-align: left;
+        }
+
+        .btn-option:hover:not(:disabled) {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: var(--color-primary);
+        }
+
+        .btn-option.correct {
+            background: rgba(16, 185, 129, 0.25) !important;
+            border-color: var(--color-primary) !important;
+            color: #ffffff;
+        }
+
+        .btn-option.incorrect {
+            background: rgba(244, 63, 94, 0.25) !important;
+            border-color: var(--color-rose) !important;
+            color: #ffffff;
+        }
+
+        .quiz-score-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 1.25rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .score-pill {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            color: var(--color-primary);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Syllabus Navigation -->
+    <aside></aside>
+
+    <!-- Main Workspace Content -->
+    <main>
+        <!-- SECTION 1: BAR CHART BUILDER -->
+        <section id="section1">
+            <header>
+                <h1>Interactive Bar Chart Builder</h1>
+                <p>Customize category values and observe the bar chart update in real time. Hover over bars to analyze coordinate heights and comparative scale values.</p>
+            </header>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Chart & Customizer -->
+                <div class="panel">
+                    <div class="presets-grid">
+                        <button class="btn-preset active" onclick="loadPreset('fruits', this)">Favorite Fruits</button>
+                        <button class="btn-preset" onclick="loadPreset('pets', this)">Favorite Pets</button>
+                        <button class="btn-preset" onclick="loadPreset('weather', this)">Weather Days</button>
+                    </div>
+
+                    <div class="chart-holder" id="canvasHolderBar" style="height: 320px; margin-bottom:1rem;">
+                        <canvas id="barChartCanvas"></canvas>
+                    </div>
+
+                    <!-- Interactive values editor -->
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width:40px;">Pill</th>
+                                <th>Category</th>
+                                <th>Count / Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Right Panel: Info Card -->
+                <div class="panel">
+                    <div class="math-card" style="border-color: rgba(16, 185, 129, 0.15);">
+                        <h3>Reading Bar Charts</h3>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6; margin-bottom:0.75rem;">
+                            *   The **X-Axis (Horizontal)** displays the different categories.
+                        </p>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6; margin-bottom:0.75rem;">
+                            *   The **Y-Axis (Vertical)** shows numerical values (scale count).
+                        </p>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">
+                            *   The **Height** of each bar matches its value. A taller bar means a larger quantity!
+                        </p>
+                    </div>
+
+                    <div class="math-card">
+                        <h3>Interactive Tip</h3>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+                            Click the **+** or **−** buttons to adjust values. Watch the chart scale adjust itself dynamically to display the new quantities.
+                        </p>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>A bar chart is best for comparing values across separate groups or items.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: LINE GRAPH CREATOR -->
+        <section id="section2" style="display: none;">
+            <header>
+                <h1>Interactive Line Graph Creator</h1>
+                <p>Track change over time using lines. Connect coordinate points to visualize growth, temperatures, or progress trends over weeks or days.</p>
+            </header>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Line Graph Canvas -->
+                <div class="panel">
+                    <div class="presets-grid">
+                        <button class="btn-preset active" onclick="loadLinePreset('plant', this)">Plant Growth (cm)</button>
+                        <button class="btn-preset" onclick="loadLinePreset('temp', this)">Weekly Temp (°C)</button>
+                    </div>
+
+                    <div class="chart-holder" id="canvasHolderLine" style="height: 320px; margin-bottom:1rem;">
+                        <canvas id="lineGraphCanvas"></canvas>
+                    </div>
+
+                    <!-- Interactive values editor -->
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width:40px;">Pill</th>
+                                <th>Interval / Time</th>
+                                <th>Value / Measure</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lineTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Right Panel: Concept Details -->
+                <div class="panel">
+                    <div class="math-card" style="border-color: rgba(16, 185, 129, 0.15);">
+                        <h3>Reading Line Graphs</h3>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6; margin-bottom:0.75rem;">
+                            *   **Intervals (X-Axis):** Represents consecutive points in time (e.g. Weeks, Days, Hours).
+                        </p>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6; margin-bottom:0.75rem;">
+                            *   **Values (Y-Axis):** The numeric measurements at each time point.
+                        </p>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">
+                            *   **Trends:** Points are connected by a line. A rising line shows **growth/increase**, while a falling line shows a **decrease**!
+                        </p>
+                    </div>
+
+                    <div class="math-card">
+                        <h3>Interactive Tip</h3>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+                            Modify line graph values below the canvas. Hover over the glowing coordinate points to inspect exact readings.
+                        </p>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>Line graphs are ideal for showing how data shifts continuously over time.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: PICTOGRAPH CREATOR -->
+        <section id="section3" style="display: none;">
+            <header>
+                <h1>Interactive Pictograph Creator</h1>
+                <p>Learn to scale quantities using key representations. Modify the key value to see how symbols divide and represent fractional parts.</p>
+            </header>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Pictograph Grid -->
+                <div class="panel">
+                    <!-- Key Controls -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:10px;">
+                        <div>
+                            <span style="font-size:0.85rem; color:var(--text-muted); margin-right:8px;">Choose Key Scale:</span>
+                            <span class="presets-grid" style="display:inline-flex; margin-bottom:0;">
+                                <button class="btn-preset active" onclick="setPictoKey(1, this)">1 Icon = 1 Unit</button>
+                                <button class="btn-preset" onclick="setPictoKey(2, this)">1 Icon = 2 Units</button>
+                                <button class="btn-preset" onclick="setPictoKey(5, this)">1 Icon = 5 Units</button>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Pictograph Rows -->
+                    <div class="pictograph-container" id="pictographGrid">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <!-- Custom Visual Legend -->
+                    <div class="pictograph-key">
+                        <div id="pictoLegendIcon">
+                            <!-- Populated dynamically -->
+                        </div>
+                        <span style="font-weight:600; color:var(--text-color);" id="pictoLegendText">
+                            Each Star represents 1 vote
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Concept Details -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Key Scale Concepts</h3>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6; margin-bottom:0.75rem;">
+                            A **Pictograph** uses pictures or symbols to represent data values.
+                        </p>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6; margin-bottom:0.75rem;">
+                            The **Key** tells us how much value a single picture represents.
+                        </p>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">
+                            If a category has an odd value under a scale of 2, a **Half Symbol** is drawn to show a count of 1!
+                        </p>
+                    </div>
+
+                    <div class="math-card">
+                        <h3>Pictograph Calculation</h3>
+                        <div style="font-family:'JetBrains Mono', monospace; font-size:1rem; color:var(--color-primary); line-height:1.6;">
+                            Symbols drawn = Value ÷ Key
+                        </div>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>Using a larger key value (e.g. 5 or 10) allows pictographs to easily display very large numbers without drawing too many icons.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: QUIZ PLAYGROUND -->
+        <section id="section4" style="display: none;">
+            <header>
+                <h1>Interpretation Reading Playground</h1>
+                <p>Read the graphs and charts you constructed. Answer the following questions to test your graph comprehension skills.</p>
+            </header>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Active solving card -->
+                <div class="panel">
+                    <div class="quiz-card">
+                        <div class="quiz-question-title" id="quizStepText">Question 1 of 5</div>
+                        <div class="quiz-text" id="quizPromptText">
+                            Which item is the most popular in the chart?
+                        </div>
+                        <div class="quiz-options" id="quizOptionsContainer">
+                            <!-- Options buttons populated dynamically -->
+                        </div>
+                        <div class="quiz-feedback" id="quizFeedbackText" style="min-height:30px; font-weight:600;"></div>
+                    </div>
+
+                    <div class="quiz-score-bar">
+                        <span>Current Score: <span class="score-pill" id="scoreDisp">0 / 0</span></span>
+                        <button class="btn" onclick="startNewQuiz()" style="width:auto; padding:8px 16px;" id="btnResetQuiz">Restart Quiz</button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Visualizer check helper -->
+                <div class="panel">
+                    <div class="math-card" style="border-color: rgba(16, 185, 129, 0.15);">
+                        <h3>Active Reference Chart</h3>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:12px;">
+                            The quiz questions are dynamically calculated from the values you set in the **Bar Chart Builder**.
+                        </p>
+                        <div id="quizReferenceList" style="display:flex; flex-direction:column; gap:6px;">
+                            <!-- Tiny active data reference -->
+                        </div>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>If you get stuck, switch back to the Bar Chart tab to visually verify the bar heights!</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- UI Logic, Canvas rendering, and Quiz engines -->
+    <script>
+        // NAVIGATION HANDLERS
+        const menuSec1 = document.getElementById('menuSec1');
+        const menuSec2 = document.getElementById('menuSec2');
+        const menuSec3 = document.getElementById('menuSec3');
+        const menuSec4 = document.getElementById('menuSec4');
+
+        const sec1 = document.getElementById('section1');
+        const sec2 = document.getElementById('section2');
+        const sec3 = document.getElementById('section3');
+        const sec4 = document.getElementById('section4');
+
+        menuSec1.addEventListener('click', (e) => {
+            e.preventDefault();
+            setActiveMenu(menuSec1, sec1);
+        });
+
+        menuSec2.addEventListener('click', (e) => {
+            e.preventDefault();
+            setActiveMenu(menuSec2, sec2);
+            resizeLineCanvas();
+        });
+
+        menuSec3.addEventListener('click', (e) => {
+            e.preventDefault();
+            setActiveMenu(menuSec3, sec3);
+            renderPictograph();
+        });
+
+        menuSec4.addEventListener('click', (e) => {
+            e.preventDefault();
+            setActiveMenu(menuSec4, sec4);
+            startNewQuiz();
+        });
+
+        function setActiveMenu(activeItem, activeSection) {
+            [menuSec1, menuSec2, menuSec3, menuSec4].forEach(m => m.classList.remove('active'));
+            [sec1, sec2, sec3, sec4].forEach(s => s.style.display = 'none');
+            activeItem.classList.add('active');
+            activeSection.style.display = 'block';
+        }
+
+        // DATA MODELS & PRESETS
+        const presets = {
+            fruits: {
+                theme: 'fruit',
+                legend: 'Favorite Fruits',
+                items: [
+                    { name: "Apples", value: 12, color: "#f43f5e" },
+                    { name: "Bananas", value: 8, color: "#ffb000" },
+                    { name: "Cherries", value: 15, color: "#e11d48" }, // Red
+                    { name: "Grapes", value: 6, color: "#a855f7" }, // Purple
+                    { name: "Oranges", value: 10, color: "#f97316" } // Orange
+                ]
+            },
+            pets: {
+                theme: 'pets',
+                legend: 'Favorite Pets',
+                items: [
+                    { name: "Dogs", value: 14, color: "#38bdf8" }, // Cyan
+                    { name: "Cats", value: 10, color: "#10b981" }, // Emerald
+                    { name: "Fish", value: 4, color: "#f59e0b" },  // Amber
+                    { name: "Birds", value: 5, color: "#a855f7" },  // Purple
+                    { name: "Rabbits", value: 8, color: "#ec4899" } // Pink
+                ]
+            },
+            weather: {
+                theme: 'weather',
+                legend: 'Weather Log',
+                items: [
+                    { name: "Sunny", value: 16, color: "#f59e0b" },  // Sun Amber
+                    { name: "Cloudy", value: 8, color: "#94a3b8" }, // Gray
+                    { name: "Rainy", value: 6, color: "#3b82f6" },  // Blue
+                    { name: "Snowy", value: 2, color: "#38bdf8" },  // Cyan
+                    { name: "Windy", value: 4, color: "#10b981" }   // Emerald
+                ]
+            }
+        };
+
+        const linePresets = {
+            plant: [
+                { name: "Week 1", value: 4, color: "#10b981" },
+                { name: "Week 2", value: 7, color: "#10b981" },
+                { name: "Week 3", value: 12, color: "#10b981" },
+                { name: "Week 4", value: 14, color: "#10b981" },
+                { name: "Week 5", value: 20, color: "#10b981" }
+            ],
+            temp: [
+                { name: "Mon", value: 15, color: "#38bdf8" },
+                { name: "Tue", value: 18, color: "#38bdf8" },
+                { name: "Wed", value: 14, color: "#38bdf8" },
+                { name: "Thu", value: 16, color: "#38bdf8" },
+                { name: "Fri", value: 21, color: "#38bdf8" }
+            ]
+        };
+
+        let currentPresetKey = 'fruits';
+        let currentData = JSON.parse(JSON.stringify(presets.fruits.items));
+        let activeTheme = 'fruit';
+
+        let currentLinePresetKey = 'plant';
+        let currentLineData = JSON.parse(JSON.stringify(linePresets.plant));
+
+        // SVGs mapping for Pictograph
+        const iconSVGs = {
+            fruit: `<svg viewBox="0 0 24 24" fill="#f43f5e" width="32" height="32" style="display:block;"><path d="M12 2c.4 0 .7.1 1 .3.5-.7 1.3-1.1 2.2-1.3.4-.1.7.2.6.6a5 5 0 0 1-1.6 3.1c1.2.8 1.8 2.2 1.8 3.8 0 3.3-2.2 5.5-4 5.5s-4-2.2-4-5.5c0-1.6.6-3 1.8-3.8A5 5 0 0 1 8.2 1.6c-.1-.4.2-.7.6-.6.9.2 1.7.6 2.2 1.3.3-.2.6-.3 1-.3zm0 14.5c.6 0 1.2.2 1.7.5.5.3.8.7 1 1.2s.2 1.1-.1 1.6a2 2 0 0 1-1 1c-.5.3-1 .4-1.6.4s-1.1-.1-1.6-.4a2 2 0 0 1-1-1 2 2 0 0 1-.1-1.6c.2-.5.5-.9 1-1.2.5-.3 1.1-.5 1.7-.5z"/></svg>`,
+            star: `<svg viewBox="0 0 24 24" fill="#38bdf8" width="32" height="32" style="display:block;"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"/></svg>`,
+            weather: `<svg viewBox="0 0 24 24" fill="#f59e0b" width="32" height="32" style="display:block;"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0-5c.55 0 1 .45 1 1v2c0 .55-.45 1-1 1s-1-.45-1-1V3c0-.55.45-1 1-1zm0 14c.55 0 1 .45 1 1v2c0 .55-.45 1-1 1s-1-.45-1-1v-2c0-.55.45-1 1-1zm8.66-9.66c.39-.39 1.02-.39 1.41 0l1.41 1.41c.39.39.39 1.02 0 1.41l-1.41 1.41c-.39.39-1.02.39-1.41 0s-.39-1.02 0-1.41l1.41-1.41zm-15.56 11.3c.39-.39 1.02-.39 1.41 0s.39 1.02 0 1.41l-1.41 1.41c-.39.39-1.02.39-1.41 0s-.39-1.02 0-1.41l1.41-1.41zM3 11h2c.55 0 1 .45 1 1s-.45 1-1 1H3c-.55 0-1-.45-1-1s.45-1 1-1zm14 0h2c.55 0 1 .45 1 1s-.45 1-1 1h-2c-.55 0-1-.45-1-1s.45-1 1-1z"/></svg>`,
+            pets: `<svg viewBox="0 0 24 24" fill="#38bdf8" width="32" height="32" style="display:block;"><path d="M12 14c-1.66 0-3 1.34-3 3 0 2 2 3.5 3 3.5s3-1.5 3-3.5c0-1.66-1.34-3-3-3zm-4.5-2c-.83 0-1.5-.67-1.5-1.5S6.67 9 7.5 9s1.5.67 1.5 1.5S8.33 12 7.5 12zm9 0c-.83 0-1.5-.67-1.5-1.5S15.67 9 16.5 9s1.5.67 1.5 1.5S17.33 12 16.5 12zm-3-5c-.83 0-1.5-.67-1.5-1.5S12.67 4 13.5 4s1.5.67 1.5 1.5S14.33 7 13.5 7zm-5 0C7.67 7 7 6.33 7 5.5S7.67 4 8.5 4s1.5.67 1.5 1.5S9.33 7 8.5 7z"/></svg>`
+        };
+
+        const barCanvas = document.getElementById('barChartCanvas');
+        const barHolder = document.getElementById('canvasHolderBar');
+        const barCtx = barCanvas.getContext('2d');
+        const dataTableBody = document.getElementById('dataTableBody');
+
+        let barHoveredIdx = -1;
+
+        function resizeBarCanvas() {
+            const rect = barHolder.getBoundingClientRect();
+            barCanvas.width = rect.width * (window.devicePixelRatio || 1);
+            barCanvas.height = rect.height * (window.devicePixelRatio || 1);
+            barCanvas.style.width = rect.width + 'px';
+            barCanvas.style.height = rect.height + 'px';
+            barCtx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+            drawBarChart();
+        }
+
+        window.addEventListener('resize', () => {
+            if (sec1.style.display !== 'none') {
+                resizeBarCanvas();
+            }
+        });
+
+        function loadPreset(key, btn) {
+            currentPresetKey = key;
+            currentData = JSON.parse(JSON.stringify(presets[key].items));
+            activeTheme = presets[key].theme;
+
+            document.querySelectorAll('#section1 .btn-preset').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            renderTableEditor();
+            drawBarChart();
+        }
+
+        function renderTableEditor() {
+            let html = '';
+            currentData.forEach((d, idx) => {
+                html += `
+                    <tr>
+                        <td><span class="color-pill" style="background:${d.color}; border:1px solid rgba(255,255,255,0.1);"></span></td>
+                        <td>
+                            <input type="text" class="category-name-input" value="${d.name}" oninput="updateCategoryName(${idx}, this.value)">
+                        </td>
+                        <td>
+                            <div class="value-control">
+                                <button class="btn-value" onclick="changeCategoryValue(${idx}, -1)">−</button>
+                                <span class="category-value-text">${d.value}</span>
+                                <button class="btn-value" onclick="changeCategoryValue(${idx}, 1)">+</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            dataTableBody.innerHTML = html;
+        }
+
+        window.updateCategoryName = function(idx, newName) {
+            currentData[idx].name = newName;
+            drawBarChart();
+        };
+
+        window.changeCategoryValue = function(idx, delta) {
+            let val = currentData[idx].value + delta;
+            if (val < 0) val = 0;
+            if (val > 25) val = 25;
+            currentData[idx].value = val;
+            
+            renderTableEditor();
+            drawBarChart();
+        };
+
+        function drawBarChart() {
+            const w = barCanvas.width / (window.devicePixelRatio || 1);
+            const h = barCanvas.height / (window.devicePixelRatio || 1);
+            barCtx.clearRect(0, 0, w, h);
+
+            const maxVal = Math.max(...currentData.map(d => d.value), 5);
+            let yMax = Math.ceil(maxVal / 5) * 5;
+
+            const paddingLeft = 50;
+            const paddingRight = 30;
+            const paddingTop = 30;
+            const paddingBottom = 40;
+
+            const chartW = w - paddingLeft - paddingRight;
+            const chartH = h - paddingTop - paddingBottom;
+
+            // Y gridlines
+            const ticks = 5;
+            barCtx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+            barCtx.lineWidth = 1;
+            barCtx.fillStyle = "var(--text-muted)";
+            barCtx.font = "12px 'JetBrains Mono'";
+            barCtx.textAlign = "right";
+            barCtx.textBaseline = "middle";
+
+            for (let i = 0; i <= ticks; i++) {
+                const val = Math.round((yMax / ticks) * i);
+                const y = paddingTop + chartH - (i / ticks) * chartH;
+
+                barCtx.beginPath();
+                barCtx.moveTo(paddingLeft, y);
+                barCtx.lineTo(paddingLeft + chartW, y);
+                barCtx.stroke();
+
+                barCtx.fillText(val.toString(), paddingLeft - 10, y);
+            }
+
+            const numBars = currentData.length;
+            const barGap = 16;
+            const totalGap = barGap * (numBars + 1);
+            const barW = (chartW - totalGap) / numBars;
+
+            barCtx.textAlign = "center";
+            barCtx.textBaseline = "top";
+
+            currentData.forEach((d, idx) => {
+                const x = paddingLeft + barGap + idx * (barW + barGap);
+                const barH = (d.value / yMax) * chartH;
+                const y = paddingTop + chartH - barH;
+
+                const grad = barCtx.createLinearGradient(x, y, x, y + barH);
+                grad.addColorStop(0, d.color);
+                grad.addColorStop(1, d.color + "22");
+
+                barCtx.fillStyle = grad;
+                barCtx.strokeStyle = d.color;
+                barCtx.lineWidth = 2.5;
+
+                barCtx.beginPath();
+                barCtx.roundRect(x, y, barW, barH, [6, 6, 0, 0]);
+                barCtx.fill();
+                barCtx.stroke();
+
+                if (barHoveredIdx === idx) {
+                    barCtx.fillStyle = "rgba(255, 255, 255, 0.1)";
+                    barCtx.beginPath();
+                    barCtx.roundRect(x, y, barW, barH, [6, 6, 0, 0]);
+                    barCtx.fill();
+                }
+
+                // Labels
+                barCtx.fillStyle = "var(--text-color)";
+                barCtx.font = "bold 13px 'Outfit'";
+                barCtx.fillText(d.name, x + barW / 2, paddingTop + chartH + 10);
+
+                if (d.value > 0) {
+                    barCtx.fillStyle = "var(--text-color)";
+                    barCtx.font = "bold 13px 'JetBrains Mono'";
+                    barCtx.fillText(d.value.toString(), x + barW / 2, y - 22);
+                }
+            });
+
+            // Axes
+            barCtx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+            barCtx.lineWidth = 2;
+            barCtx.beginPath();
+            barCtx.moveTo(paddingLeft, paddingTop + chartH);
+            barCtx.lineTo(paddingLeft + chartW, paddingTop + chartH);
+            barCtx.stroke();
+
+            barCtx.beginPath();
+            barCtx.moveTo(paddingLeft, paddingTop);
+            barCtx.lineTo(paddingLeft, paddingTop + chartH);
+            barCtx.stroke();
+        }
+
+        // Hover bar interaction
+        barCanvas.addEventListener('mousemove', (e) => {
+            const rect = barCanvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            const paddingLeft = 50;
+            const paddingRight = 30;
+            const paddingTop = 30;
+            const paddingBottom = 40;
+            const chartW = barCanvas.width / (window.devicePixelRatio || 1) - paddingLeft - paddingRight;
+            const chartH = barCanvas.height / (window.devicePixelRatio || 1) - paddingTop - paddingBottom;
+
+            const numBars = currentData.length;
+            const barGap = 16;
+            const totalGap = barGap * (numBars + 1);
+            const barW = (chartW - totalGap) / numBars;
+
+            let newHoveredIdx = -1;
+            for (let idx = 0; idx < numBars; idx++) {
+                const x = paddingLeft + barGap + idx * (barW + barGap);
+                if (mouseX >= x && mouseX <= x + barW) {
+                    const maxVal = Math.max(...currentData.map(d => d.value), 5);
+                    let yMax = Math.ceil(maxVal / 5) * 5;
+                    const barH = (currentData[idx].value / yMax) * chartH;
+                    const y = paddingTop + chartH - barH;
+
+                    if (mouseY >= y && mouseY <= paddingTop + chartH) {
+                        newHoveredIdx = idx;
+                        break;
+                    }
+                }
+            }
+
+            if (newHoveredIdx !== barHoveredIdx) {
+                barHoveredIdx = newHoveredIdx;
+                drawBarChart();
+            }
+        });
+
+        barCanvas.addEventListener('mouseleave', () => {
+            barHoveredIdx = -1;
+            drawBarChart();
+        });
+
+
+        const lineCanvas = document.getElementById('lineGraphCanvas');
+        const lineHolder = document.getElementById('canvasHolderLine');
+        const lineCtx = lineCanvas.getContext('2d');
+        const lineTableBody = document.getElementById('lineTableBody');
+
+        let lineHoveredIdx = -1;
+
+        function resizeLineCanvas() {
+            const rect = lineHolder.getBoundingClientRect();
+            lineCanvas.width = rect.width * (window.devicePixelRatio || 1);
+            lineCanvas.height = rect.height * (window.devicePixelRatio || 1);
+            lineCanvas.style.width = rect.width + 'px';
+            lineCanvas.style.height = rect.height + 'px';
+            lineCtx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+            drawLineGraph();
+        }
+
+        window.addEventListener('resize', () => {
+            if (sec2.style.display !== 'none') {
+                resizeLineCanvas();
+            }
+        });
+
+        function loadLinePreset(key, btn) {
+            currentLinePresetKey = key;
+            currentLineData = JSON.parse(JSON.stringify(linePresets[key]));
+
+            document.querySelectorAll('#section2 .btn-preset').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            renderLineTableEditor();
+            drawLineGraph();
+        }
+
+        function renderLineTableEditor() {
+            let html = '';
+            currentLineData.forEach((d, idx) => {
+                html += `
+                    <tr>
+                        <td><span class="color-pill" style="background:${d.color}; border:1px solid rgba(255,255,255,0.1);"></span></td>
+                        <td>
+                            <input type="text" class="category-name-input" value="${d.name}" oninput="updateLineName(${idx}, this.value)">
+                        </td>
+                        <td>
+                            <div class="value-control">
+                                <button class="btn-value" onclick="changeLineValue(${idx}, -1)">−</button>
+                                <span class="category-value-text">${d.value}</span>
+                                <button class="btn-value" onclick="changeLineValue(${idx}, 1)">+</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            lineTableBody.innerHTML = html;
+        }
+
+        window.updateLineName = function(idx, newName) {
+            currentLineData[idx].name = newName;
+            drawLineGraph();
+        };
+
+        window.changeLineValue = function(idx, delta) {
+            let val = currentLineData[idx].value + delta;
+            if (val < 0) val = 0;
+            if (val > 30) val = 30;
+            currentLineData[idx].value = val;
+
+            renderLineTableEditor();
+            drawLineGraph();
+        };
+
+        function drawLineGraph() {
+            const w = lineCanvas.width / (window.devicePixelRatio || 1);
+            const h = lineCanvas.height / (window.devicePixelRatio || 1);
+            lineCtx.clearRect(0, 0, w, h);
+
+            const maxVal = Math.max(...currentLineData.map(d => d.value), 5);
+            let yMax = Math.ceil(maxVal / 5) * 5;
+
+            const paddingLeft = 50;
+            const paddingRight = 30;
+            const paddingTop = 30;
+            const paddingBottom = 40;
+
+            const chartW = w - paddingLeft - paddingRight;
+            const chartH = h - paddingTop - paddingBottom;
+
+            // Y gridlines
+            const ticks = 5;
+            lineCtx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+            lineCtx.lineWidth = 1;
+            lineCtx.fillStyle = "var(--text-muted)";
+            lineCtx.font = "12px 'JetBrains Mono'";
+            lineCtx.textAlign = "right";
+            lineCtx.textBaseline = "middle";
+
+            for (let i = 0; i <= ticks; i++) {
+                const val = Math.round((yMax / ticks) * i);
+                const y = paddingTop + chartH - (i / ticks) * chartH;
+
+                lineCtx.beginPath();
+                lineCtx.moveTo(paddingLeft, y);
+                lineCtx.lineTo(paddingLeft + chartW, y);
+                lineCtx.stroke();
+
+                lineCtx.fillText(val.toString(), paddingLeft - 10, y);
+            }
+
+            const numPoints = currentLineData.length;
+            const spacing = chartW / (numPoints - 1);
+
+            // Compute point positions
+            const points = currentLineData.map((d, idx) => {
+                const x = paddingLeft + idx * spacing;
+                const y = paddingTop + chartH - (d.value / yMax) * chartH;
+                return { x, y, val: d.value, name: d.name, color: d.color };
+            });
+
+            if (points.length > 0) {
+                lineCtx.beginPath();
+                lineCtx.moveTo(points[0].x, paddingTop + chartH);
+                points.forEach(p => lineCtx.lineTo(p.x, p.y));
+                lineCtx.lineTo(points[points.length - 1].x, paddingTop + chartH);
+                lineCtx.closePath();
+
+                const fillGrad = lineCtx.createLinearGradient(0, paddingTop, 0, paddingTop + chartH);
+                fillGrad.addColorStop(0, "rgba(16, 185, 129, 0.18)");
+                fillGrad.addColorStop(1, "rgba(16, 185, 129, 0)");
+                lineCtx.fillStyle = fillGrad;
+                lineCtx.fill();
+            }
+
+            lineCtx.strokeStyle = "var(--color-primary)";
+            lineCtx.lineWidth = 3.5;
+            lineCtx.shadowColor = "var(--color-primary-glow)";
+            lineCtx.shadowBlur = 8;
+            lineCtx.beginPath();
+            points.forEach((p, idx) => {
+                if (idx === 0) lineCtx.moveTo(p.x, p.y);
+                else lineCtx.lineTo(p.x, p.y);
+            });
+            lineCtx.stroke();
+            lineCtx.shadowBlur = 0; // reset
+
+            points.forEach((p, idx) => {
+                // Circle point
+                lineCtx.fillStyle = "#ffffff";
+                lineCtx.strokeStyle = "var(--color-primary)";
+                lineCtx.lineWidth = 3;
+                lineCtx.beginPath();
+                
+                const r = lineHoveredIdx === idx ? 8 : 5.5;
+                lineCtx.arc(p.x, p.y, r, 0, Math.PI * 2);
+                lineCtx.fill();
+                lineCtx.stroke();
+
+                // Y values label on top of dots
+                lineCtx.fillStyle = "var(--text-color)";
+                lineCtx.font = "bold 13px 'JetBrains Mono'";
+                lineCtx.textAlign = "center";
+                lineCtx.textBaseline = "bottom";
+                lineCtx.fillText(p.val.toString(), p.x, p.y - 10);
+
+                // X label
+                lineCtx.fillStyle = "var(--text-muted)";
+                lineCtx.font = "bold 13px 'Outfit'";
+                lineCtx.textBaseline = "top";
+                lineCtx.fillText(p.name, p.x, paddingTop + chartH + 10);
+            });
+
+            // Axes
+            lineCtx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+            lineCtx.lineWidth = 2;
+            lineCtx.beginPath();
+            lineCtx.moveTo(paddingLeft, paddingTop + chartH);
+            lineCtx.lineTo(paddingLeft + chartW, paddingTop + chartH);
+            lineCtx.stroke();
+
+            lineCtx.beginPath();
+            lineCtx.moveTo(paddingLeft, paddingTop);
+            lineCtx.lineTo(paddingLeft, paddingTop + chartH);
+            lineCtx.stroke();
+        }
+
+        // Hover tracking for Line Graph
+        lineCanvas.addEventListener('mousemove', (e) => {
+            const rect = lineCanvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            const paddingLeft = 50;
+            const paddingRight = 30;
+            const chartW = lineCanvas.width / (window.devicePixelRatio || 1) - paddingLeft - paddingRight;
+
+            const numPoints = currentLineData.length;
+            const spacing = chartW / (numPoints - 1);
+
+            let newHoveredIdx = -1;
+            for (let idx = 0; idx < numPoints; idx++) {
+                const x = paddingLeft + idx * spacing;
+                // hit circle check within 15px radius
+                if (Math.abs(mouseX - x) <= 18) {
+                    newHoveredIdx = idx;
+                    break;
+                }
+            }
+
+            if (newHoveredIdx !== lineHoveredIdx) {
+                lineHoveredIdx = newHoveredIdx;
+                drawLineGraph();
+            }
+        });
+
+        lineCanvas.addEventListener('mouseleave', () => {
+            lineHoveredIdx = -1;
+            drawLineGraph();
+        });
+
+
+        const pictographGrid = document.getElementById('pictographGrid');
+        const pictoLegendIcon = document.getElementById('pictoLegendIcon');
+        const pictoLegendText = document.getElementById('pictoLegendText');
+
+        let pictoKeyVal = 1;
+
+        function setPictoKey(val, btn) {
+            pictoKeyVal = val;
+            document.querySelectorAll('#section3 .btn-preset').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderPictograph();
+        }
+
+        function renderPictograph() {
+            pictographGrid.innerHTML = '';
+            
+            currentData.forEach(d => {
+                const row = document.createElement('div');
+                row.className = 'pictograph-row';
+
+                const label = document.createElement('span');
+                label.className = 'pictograph-label';
+                label.innerText = d.name;
+                row.appendChild(label);
+
+                const iconsContainer = document.createElement('div');
+                iconsContainer.className = 'pictograph-icons';
+
+                const fullIcons = Math.floor(d.value / pictoKeyVal);
+                const rem = d.value % pictoKeyVal;
+                const frac = rem / pictoKeyVal;
+
+                for (let i = 0; i < fullIcons; i++) {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'picto-icon-wrapper';
+                    wrap.innerHTML = iconSVGs[activeTheme];
+                    const svg = wrap.querySelector('svg');
+                    if (svg) svg.style.fill = d.color;
+                    iconsContainer.appendChild(wrap);
+                }
+
+                if (rem > 0) {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'picto-icon-wrapper';
+                    wrap.style.width = `${32 * frac}px`;
+                    wrap.style.overflow = 'hidden';
+                    wrap.style.position = 'relative';
+                    wrap.style.height = '32px';
+
+                    const inner = document.createElement('div');
+                    inner.style.position = 'absolute';
+                    inner.style.left = '0';
+                    inner.style.top = '0';
+                    inner.style.width = '32px';
+                    inner.style.height = '32px';
+                    inner.innerHTML = iconSVGs[activeTheme];
+                    
+                    const svg = inner.querySelector('svg');
+                    if (svg) svg.style.fill = d.color;
+
+                    wrap.appendChild(inner);
+                    iconsContainer.appendChild(wrap);
+                }
+
+                row.appendChild(iconsContainer);
+
+                const total = document.createElement('span');
+                total.className = 'pictograph-total';
+                total.innerText = d.value;
+                row.appendChild(total);
+
+                pictographGrid.appendChild(row);
+            });
+
+            pictoLegendIcon.innerHTML = iconSVGs[activeTheme];
+            const legSvg = pictoLegendIcon.querySelector('svg');
+            if (legSvg) legSvg.style.fill = 'var(--color-primary)';
+            
+            pictoLegendText.innerText = `Each symbol represents ${pictoKeyVal} unit${pictoKeyVal === 1 ? '' : 's'}`;
+        }
+
+
+        let quizQuestions = [];
+        let currentQuestionIdx = 0;
+        let correctAnswersCount = 0;
+        let isQuestionAnswered = false;
+
+        const quizStepText = document.getElementById('quizStepText');
+        const quizPromptText = document.getElementById('quizPromptText');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackText = document.getElementById('quizFeedbackText');
+        const scoreDisp = document.getElementById('scoreDisp');
+        const quizReferenceList = document.getElementById('quizReferenceList');
+
+        function generateQuizQuestions() {
+            const list = [];
+            const sorted = [...currentData].sort((a, b) => b.value - a.value);
+            const sumTotal = currentData.reduce((sum, d) => sum + d.value, 0);
+
+            list.push({
+                prompt: `Which category has the <strong>most</strong> recorded votes/days?`,
+                correct: sorted[0].name,
+                options: shuffleArray(currentData.map(d => d.name))
+            });
+
+            list.push({
+                prompt: `Which category has the <strong>fewest</strong> recorded votes/days?`,
+                correct: sorted[sorted.length - 1].name,
+                options: shuffleArray(currentData.map(d => d.name))
+            });
+
+            const totalOpts = [sumTotal, sumTotal + 4, Math.max(5, sumTotal - 3), sumTotal + 8];
+            list.push({
+                prompt: `What is the <strong>total</strong> sum of all votes/days recorded in the chart?`,
+                correct: sumTotal.toString(),
+                options: shuffleArray(Array.from(new Set(totalOpts)).map(v => v.toString()))
+            });
+
+            const targetCat = currentData[Math.floor(Math.random() * currentData.length)];
+            const valOpts = [targetCat.value, targetCat.value + 2, Math.max(0, targetCat.value - 2), targetCat.value + 5];
+            list.push({
+                prompt: `How many votes/days did <strong>${targetCat.name}</strong> receive?`,
+                correct: targetCat.value.toString(),
+                options: shuffleArray(Array.from(new Set(valOpts)).map(v => v.toString()))
+            });
+
+            const diff = sorted[0].value - sorted[sorted.length - 1].value;
+            const diffOpts = [diff, diff + 1, Math.max(0, diff - 2), diff + 3];
+            list.push({
+                prompt: `How many <strong>more</strong> votes/days does <strong>${sorted[0].name}</strong> have than <strong>${sorted[sorted.length-1].name}</strong>?`,
+                correct: diff.toString(),
+                options: shuffleArray(Array.from(new Set(diffOpts)).map(v => v.toString()))
+            });
+
+            return list;
+        }
+
+        function shuffleArray(arr) {
+            return [...arr].sort(() => Math.random() - 0.5);
+        }
+
+        function startNewQuiz() {
+            quizQuestions = generateQuizQuestions();
+            currentQuestionIdx = 0;
+            correctAnswersCount = 0;
+            isQuestionAnswered = false;
+            quizFeedbackText.innerText = '';
+            
+            renderQuizQuestion();
+            renderQuizReference();
+        }
+
+        function renderQuizReference() {
+            let html = '';
+            currentData.forEach(d => {
+                html += `
+                    <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-family:'JetBrains Mono', monospace; border-bottom:1px solid rgba(255,255,255,0.02); padding:2px 0;">
+                        <span style="color:var(--text-color); font-weight:600;">${d.name}</span>
+                        <span style="color:${d.color}; font-weight:700;">${d.value}</span>
+                    </div>
+                `;
+            });
+            quizReferenceList.innerHTML = html;
+        }
+
+        function renderQuizQuestion() {
+            isQuestionAnswered = false;
+            quizFeedbackText.innerText = '';
+            scoreDisp.innerText = `${correctAnswersCount} / ${currentQuestionIdx}`;
+
+            if (currentQuestionIdx >= quizQuestions.length) {
+                quizStepText.innerText = "Quiz Completed!";
+                quizPromptText.innerHTML = `Excellent work! You finished the quiz playground.<br><br>Final Score: <span class="score-pill">${correctAnswersCount} / ${quizQuestions.length}</span>`;
+                quizOptionsContainer.innerHTML = '';
+                return;
+            }
+
+            const q = quizQuestions[currentQuestionIdx];
+            quizStepText.innerText = `Question ${currentQuestionIdx + 1} of ${quizQuestions.length}`;
+            quizPromptText.innerHTML = q.prompt;
+
+            let html = '';
+            q.options.forEach(opt => {
+                html += `<button class="btn-option" onclick="submitQuizAnswer('${opt}', this)">${opt}</button>`;
+            });
+            quizOptionsContainer.innerHTML = html;
+        }
+
+        window.submitQuizAnswer = function(opt, btn) {
+            if (isQuestionAnswered) return;
+            isQuestionAnswered = true;
+
+            const q = quizQuestions[currentQuestionIdx];
+            const buttons = quizOptionsContainer.querySelectorAll('.btn-option');
+            
+            buttons.forEach(b => {
+                b.disabled = true;
+                if (b.innerText === q.correct) {
+                    b.classList.add('correct');
+                }
+            });
+
+            if (opt === q.correct) {
+                correctAnswersCount++;
+                btn.classList.add('correct');
+                quizFeedbackText.innerText = "Correct answer! 🌟";
+                quizFeedbackText.className = "quiz-feedback feedback-correct";
+            } else {
+                btn.classList.add('incorrect');
+                quizFeedbackText.innerText = `Incorrect. The correct answer is ${q.correct}.`;
+                quizFeedbackText.className = "quiz-feedback feedback-incorrect";
+            }
+
+            currentQuestionIdx++;
+            setTimeout(renderQuizQuestion, 2000);
+        }
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            loadPreset('fruits');
+            loadLinePreset('plant');
+            setTimeout(resizeBarCanvas, 150);
+        });
+    </script>
+</body>
+</html>

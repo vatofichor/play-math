@@ -1,0 +1,1008 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Two-Way Tables & Relative Frequency - Data Science & Stats</title>
+    <script>
+        window.PAGE_CONFIG = {
+            domain: "06_data_science_statistics",
+            logo: { main: "Two-Way", accent: "Tables", sub: "Relative Frequency" }
+        };
+    </script>
+    <script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            --color-math: #a855f7;        /* Purple for Math */
+            --color-science: #38bdf8;     /* Cyan for Science */
+            --color-english: #ffb000;     /* Yellow for English */
+            --color-total: #64748b;       /* Slate for Totals */
+            --color-math-glow: rgba(168, 85, 247, 0.35);
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-accent);
+            background: rgba(168, 85, 247, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            text-shadow: 0 0 5px var(--color-accent-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 960px) {
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Table styling */
+        .two-way-grid-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Outfit', sans-serif;
+            background: rgba(255, 255, 255, 0.005);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1.25rem;
+        }
+
+        .two-way-grid-table th, .two-way-grid-table td {
+            border: 1px solid var(--card-border);
+            padding: 10px 12px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .two-way-grid-table th {
+            background: rgba(255, 255, 255, 0.015);
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .two-way-grid-table tr:hover {
+            background: rgba(255,255,255,0.005);
+        }
+
+        .cell-interactive {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .cell-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .cell-controls-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-micro {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 1px solid var(--card-border);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-color);
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-micro:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .col-header-math { border-top: 3px solid var(--color-math) !important; }
+        .col-header-science { border-top: 3px solid var(--color-science) !important; }
+        .col-header-english { border-top: 3px solid var(--color-english) !important; }
+
+        /* Canvas Chart container */
+        .canvas-panel {
+            position: relative;
+            width: 100%;
+            height: 120px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Association Alert Banner */
+        .assoc-banner {
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.65rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.25rem;
+        }
+
+        .assoc-banner.detected {
+            background: rgba(255, 176, 0, 0.06);
+            border: 1px solid rgba(255, 176, 0, 0.2);
+            color: var(--color-english);
+            box-shadow: 0 0 10px rgba(255, 176, 0, 0.1);
+        }
+
+        .assoc-banner.independent {
+            background: rgba(56, 189, 248, 0.06);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            color: var(--color-science);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.1);
+        }
+
+        /* Solver styles */
+        .solver-step {
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 2px solid var(--card-border);
+        }
+
+        .solver-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .solver-step-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .solver-step-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Quiz option styling */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Two-Way Tables & relative frequency</h1>
+            <p>Analyze categorical associations between two variables. Calculate joint, marginal, and conditional relative frequencies, and visualize proportional overlaps.</p>
+        </header>
+
+        <!-- SECTION 1: VISUAL SANDBOX -->
+        <section id="visualizer">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Frequency Grid & Conditional Proportions</h2>
+            </div>
+            <p class="section-intro">
+                Modify counts in the cells directly using the <code>+</code> and <code>&minus;</code> adjusters. Toggle display modes on the right to instantly convert values into relative percentages, and examine the stacked proportional distribution of grade preferences.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Grid & Chart -->
+                <div style="display:flex; flex-direction:column; gap: 1.25rem;">
+                    <!-- The Two Way Table -->
+                    <table class="two-way-grid-table">
+                        <thead>
+                            <tr>
+                                <th>Grade Level</th>
+                                <th class="col-header-math" style="color:var(--color-math);">Math</th>
+                                <th class="col-header-science" style="color:var(--color-science);">Science</th>
+                                <th class="col-header-english" style="color:var(--color-english);">English</th>
+                                <th style="color:var(--color-total);">Row Totals</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>7th Grade</strong></td>
+                                <td>
+                                    <div class="cell-interactive">
+                                        <span class="cell-val" id="cell_0_0">12</span>
+                                        <div class="cell-controls-row" id="ctrl_0_0">
+                                            <button class="btn-micro" onclick="adjustCell(0, 0, 1)">+</button>
+                                            <button class="btn-micro" onclick="adjustCell(0, 0, -1)">&minus;</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-interactive">
+                                        <span class="cell-val" id="cell_0_1">12</span>
+                                        <div class="cell-controls-row" id="ctrl_0_1">
+                                            <button class="btn-micro" onclick="adjustCell(0, 1, 1)">+</button>
+                                            <button class="btn-micro" onclick="adjustCell(0, 1, -1)">&minus;</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-interactive">
+                                        <span class="cell-val" id="cell_0_2">6</span>
+                                        <div class="cell-controls-row" id="ctrl_0_2">
+                                            <button class="btn-micro" onclick="adjustCell(0, 2, 1)">+</button>
+                                            <button class="btn-micro" onclick="adjustCell(0, 2, -1)">&minus;</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong class="number" id="total_row_0">30</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>8th Grade</strong></td>
+                                <td>
+                                    <div class="cell-interactive">
+                                        <span class="cell-val" id="cell_1_0">16</span>
+                                        <div class="cell-controls-row" id="ctrl_1_0">
+                                            <button class="btn-micro" onclick="adjustCell(1, 0, 1)">+</button>
+                                            <button class="btn-micro" onclick="adjustCell(1, 0, -1)">&minus;</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-interactive">
+                                        <span class="cell-val" id="cell_1_1">16</span>
+                                        <div class="cell-controls-row" id="ctrl_1_1">
+                                            <button class="btn-micro" onclick="adjustCell(1, 1, 1)">+</button>
+                                            <button class="btn-micro" onclick="adjustCell(1, 1, -1)">&minus;</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-interactive">
+                                        <span class="cell-val" id="cell_1_2">8</span>
+                                        <div class="cell-controls-row" id="ctrl_1_2">
+                                            <button class="btn-micro" onclick="adjustCell(1, 2, 1)">+</button>
+                                            <button class="btn-micro" onclick="adjustCell(1, 2, -1)">&minus;</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong class="number" id="total_row_1">40</strong>
+                                </td>
+                            </tr>
+                            <!-- Totals Row -->
+                            <tr style="background: rgba(255,255,255,0.015); font-weight:bold;">
+                                <td><strong style="color:var(--color-total);">Col Totals</strong></td>
+                                <td><span class="number" id="total_col_0">28</span></td>
+                                <td><span class="number" id="total_col_1">28</span></td>
+                                <td><span class="number" id="total_col_2">14</span></td>
+                                <td><strong style="color:var(--color-accent);" class="number" id="grand_total">70</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Canvas stacked chart -->
+                    <div class="canvas-panel">
+                        <canvas id="canvasStacked"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Controls & Presets -->
+                <div class="panel">
+                    
+                    <!-- Display modes -->
+                    <div style="margin-bottom: 1.25rem;">
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">1. Display Mode</h3>
+                        <div class="presets-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom: 6px;">
+                            <button class="btn-preset active" id="modeBtn_counts" onclick="switchDisplayMode('counts')">Raw Counts</button>
+                            <button class="btn-preset" id="modeBtn_joint" onclick="switchDisplayMode('joint')">Grand Total %</button>
+                        </div>
+                        <div class="presets-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+                            <button class="btn-preset" id="modeBtn_row" onclick="switchDisplayMode('row')">Row % (Conditional)</button>
+                            <button class="btn-preset" id="modeBtn_col" onclick="switchDisplayMode('col')">Col % (Conditional)</button>
+                        </div>
+                    </div>
+
+                    <!-- Presets data -->
+                    <div style="margin-bottom: 1.25rem;">
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">2. Relationship Preset</h3>
+                        <div class="presets-grid" style="display:grid; grid-template-columns: 1fr; gap:6px;">
+                            <button class="btn-preset active" id="btnPresetNoAssoc" onclick="switchPreset('no_assoc')">Independent (No Association)</button>
+                            <button class="btn-preset" id="btnPresetAssoc" onclick="switchPreset('assoc')">Strong Association</button>
+                            <button class="btn-preset" id="btnPresetSkew" onclick="switchPreset('skew')">Extreme Subject Skew</button>
+                        </div>
+                    </div>
+
+                    <!-- Association Detector Alert banner -->
+                    <div>
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">3. Association Diagnostics</h3>
+                        <div class="assoc-banner independent" id="lblAssocBanner">
+                            Independent (No Association)
+                        </div>
+                        <p style="font-size:0.75rem; color:var(--text-muted); line-height: 1.4;">If the subject preferences are significantly different between 7th and 8th graders, there is a statistical association. If the conditional ratios are identical, the preferences are independent of grade level.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: STEP-BY-STEP SOLVER -->
+        <section id="step-solver">
+            <div class="section-header">
+                <span class="section-tag">Algebraic Solver</span>
+                <h2>Proportions & Frequency Walkthrough</h2>
+            </div>
+            <p class="section-intro">
+                Trace how relative and conditional proportions are compiled and evaluated to check for statistical associations.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Solver Steps -->
+                <div class="panel" style="gap: 1rem;">
+                    <h3>Trace Calculations Steps</h3>
+                    <div id="solveSteps">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Right Panel: Proportions matrix -->
+                <div class="panel" id="solverRightCard">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL EVALUATION QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Two-Way Table Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Evaluate your understanding of joint, marginal, and conditional probabilities, and how to verify variables association.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Question board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Quiz question loading...</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text...</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right cheatsheet -->
+                <div class="panel">
+                    <h3>Two-Way Table Definitions</h3>
+                    <br>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">
+                        <li><strong>Joint Frequency:</strong> The entries inside the cells of the table that represent counts of subjects matching both row and column categories (e.g. 7th Graders who like Math).</li>
+                        <li><strong>Marginal Frequency:</strong> The totals along the bottom row or rightmost column representing totals of single categories.</li>
+                        <li><strong>Joint Relative Frequency:</strong> Cell count divided by grand total.</li>
+                        <li><strong>Conditional Relative Frequency:</strong> Cell count divided by its row total (or column total). Critical for verifying dependency.</li>
+                        <li><strong>Checking Association:</strong> If the conditional relative frequencies of column options differ significantly between rows, the variables are associated.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('canvasStacked');
+        const ctx = canvas.getContext('2d');
+
+        const lblAssocBanner = document.getElementById('lblAssocBanner');
+        const solveSteps = document.getElementById('solveSteps');
+        const solverRightCard = document.getElementById('solverRightCard');
+
+        // 2x3 grid: rows 0=7th, 1=8th Grade. columns 0=Math, 1=Sci, 2=Eng.
+        let grid = [
+            [12, 12, 6],  // Row 0
+            [16, 16, 8]   // Row 1
+        ];
+
+        let activeMode = 'counts'; // 'counts', 'joint', 'row', 'col'
+
+        const presets = {
+            no_assoc: [
+                [12, 12, 6],
+                [16, 16, 8]
+            ],
+            assoc: [
+                [18, 10, 2],
+                [3, 9, 18]
+            ],
+            skew: [
+                [25, 2, 1],
+                [22, 1, 1]
+            ]
+        };
+
+        function switchPreset(mode) {
+            document.getElementById('btnPresetNoAssoc').classList.remove('active');
+            document.getElementById('btnPresetAssoc').classList.remove('active');
+            document.getElementById('btnPresetSkew').classList.remove('active');
+
+            if (mode === 'no_assoc') {
+                document.getElementById('btnPresetNoAssoc').classList.add('active');
+            } else if (mode === 'assoc') {
+                document.getElementById('btnPresetAssoc').classList.add('active');
+            } else {
+                document.getElementById('btnPresetSkew').classList.add('active');
+            }
+
+            grid = presets[mode].map(row => [...row]);
+            updateAll();
+        }
+
+        function switchDisplayMode(mode) {
+            activeMode = mode;
+            ['counts', 'joint', 'row', 'col'].forEach(m => {
+                document.getElementById('modeBtn_' + m).classList.remove('active');
+            });
+            document.getElementById('modeBtn_' + mode).classList.add('active');
+            
+            // Toggle visibility of increment buttons in counts mode
+            const showCtrls = (mode === 'counts');
+            for (let r = 0; r < 2; r++) {
+                for (let c = 0; c < 3; c++) {
+                    const ctrl = document.getElementById(`ctrl_${r}_${c}`);
+                    ctrl.style.display = showCtrls ? 'flex' : 'none';
+                }
+            }
+
+            updateAll();
+        }
+
+        function adjustCell(r, c, val) {
+            const current = grid[r][c];
+            const newVal = current + val;
+            if (newVal >= 0 && newVal <= 99) {
+                grid[r][c] = newVal;
+                updateAll();
+            }
+        }
+
+        // Calculations & Ratios
+        function computeTotals() {
+            const rowTotals = [0, 0];
+            const colTotals = [0, 0, 0];
+            let grandTotal = 0;
+
+            for (let r = 0; r < 2; r++) {
+                for (let c = 0; c < 3; c++) {
+                    const count = grid[r][c];
+                    rowTotals[r] += count;
+                    colTotals[c] += count;
+                    grandTotal += count;
+                }
+            }
+
+            return { rowTotals, colTotals, grandTotal };
+        }
+
+        function updateTableDisplay(t) {
+            for (let r = 0; r < 2; r++) {
+                for (let c = 0; c < 3; c++) {
+                    const el = document.getElementById(`cell_${r}_${c}`);
+                    const count = grid[r][c];
+
+                    if (activeMode === 'counts') {
+                        el.textContent = count;
+                    } else if (activeMode === 'joint') {
+                        const ratio = t.grandTotal > 0 ? count / t.grandTotal : 0;
+                        el.textContent = (ratio * 100).toFixed(1) + "%";
+                    } else if (activeMode === 'row') {
+                        const ratio = t.rowTotals[r] > 0 ? count / t.rowTotals[r] : 0;
+                        el.textContent = (ratio * 100).toFixed(1) + "%";
+                    } else { // col
+                        const ratio = t.colTotals[c] > 0 ? count / t.colTotals[c] : 0;
+                        el.textContent = (ratio * 100).toFixed(1) + "%";
+                    }
+                }
+            }
+
+            // Totals updates
+            const rowTotal0El = document.getElementById('total_row_0');
+            const rowTotal1El = document.getElementById('total_row_1');
+            const colTotal0El = document.getElementById('total_col_0');
+            const colTotal1El = document.getElementById('total_col_1');
+            const colTotal2El = document.getElementById('total_col_2');
+            const grandTotalEl = document.getElementById('grand_total');
+
+            if (activeMode === 'counts') {
+                rowTotal0El.textContent = t.rowTotals[0];
+                rowTotal1El.textContent = t.rowTotals[1];
+                colTotal0El.textContent = t.colTotals[0];
+                colTotal1El.textContent = t.colTotals[1];
+                colTotal2El.textContent = t.colTotals[2];
+                grandTotalEl.textContent = t.grandTotal;
+            } else if (activeMode === 'joint') {
+                rowTotal0El.textContent = (t.grandTotal > 0 ? t.rowTotals[0]/t.grandTotal*100 : 0).toFixed(1) + "%";
+                rowTotal1El.textContent = (t.grandTotal > 0 ? t.rowTotals[1]/t.grandTotal*100 : 0).toFixed(1) + "%";
+                colTotal0El.textContent = (t.grandTotal > 0 ? t.colTotals[0]/t.grandTotal*100 : 0).toFixed(1) + "%";
+                colTotal1El.textContent = (t.grandTotal > 0 ? t.colTotals[1]/t.grandTotal*100 : 0).toFixed(1) + "%";
+                colTotal2El.textContent = (t.grandTotal > 0 ? t.colTotals[2]/t.grandTotal*100 : 0).toFixed(1) + "%";
+                grandTotalEl.textContent = t.grandTotal > 0 ? "100.0%" : "0.0%";
+            } else if (activeMode === 'row') {
+                rowTotal0El.textContent = "100.0%";
+                rowTotal1El.textContent = "100.0%";
+                colTotal0El.textContent = (t.grandTotal > 0 ? t.colTotals[0]/t.grandTotal*100 : 0).toFixed(1) + "%";
+                colTotal1El.textContent = (t.grandTotal > 0 ? t.colTotals[1]/t.grandTotal*100 : 0).toFixed(1) + "%";
+                colTotal2El.textContent = (t.grandTotal > 0 ? t.colTotals[2]/t.grandTotal*100 : 0).toFixed(1) + "%";
+                grandTotalEl.textContent = t.grandTotal > 0 ? "100.0%" : "0.0%";
+            } else { // col
+                rowTotal0El.textContent = (t.grandTotal > 0 ? t.rowTotals[0]/t.grandTotal*100 : 0).toFixed(1) + "%";
+                rowTotal1El.textContent = (t.grandTotal > 0 ? t.rowTotals[1]/t.grandTotal*100 : 0).toFixed(1) + "%";
+                colTotal0El.textContent = "100.0%";
+                colTotal1El.textContent = "100.0%";
+                colTotal2El.textContent = "100.0%";
+                grandTotalEl.textContent = t.grandTotal > 0 ? "100.0%" : "0.0%";
+            }
+        }
+
+        function drawStackedChart(t) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const width = canvas.width;
+            const height = canvas.height;
+            const marginL = 75;
+            const marginR = 25;
+            const marginT = 15;
+            const marginB = 30;
+            const drawW = width - marginL - marginR;
+
+            // Two rows representation
+            const barH = 20;
+            const spacing = 15;
+
+            const colors = ['var(--color-math)', 'var(--color-science)', 'var(--color-english)'];
+
+            for (let r = 0; r < 2; r++) {
+                const py = marginT + r * (barH + spacing);
+                const rowTotal = t.rowTotals[r];
+
+                // Label
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 11.5px Outfit';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(r === 0 ? "7th Grade" : "8th Grade", marginL - 10, py + barH / 2);
+
+                if (rowTotal === 0) {
+                    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+                    ctx.strokeRect(marginL, py, drawW, barH);
+                    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+                    ctx.font = 'italic 8.5px JetBrains Mono';
+                    ctx.textAlign = 'left';
+                    ctx.fillText("No data", marginL + 10, py + barH/2);
+                    continue;
+                }
+
+                let accumX = marginL;
+                for (let c = 0; c < 3; c++) {
+                    const count = grid[r][c];
+                    const pct = count / rowTotal;
+                    if (pct === 0) continue;
+                    const w = pct * drawW;
+
+                    ctx.fillStyle = colors[c];
+                    ctx.fillRect(accumX, py, w, barH);
+
+                    ctx.strokeStyle = '#08090d';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(accumX, py, w, barH);
+
+                    if (w > 38) {
+                        ctx.fillStyle = '#08090d';
+                        ctx.font = 'bold 8.5px JetBrains Mono';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(`${(pct*100).toFixed(0)}%`, accumX + w/2, py + barH/2 + 0.5);
+                    }
+
+                    accumX += w;
+                }
+            }
+
+            // Legend at bottom
+            const legendY = height - 12;
+            const items = ["Math", "Science", "English"];
+            ctx.font = '10px Outfit';
+            ctx.textAlign = 'left';
+
+            let legendX = marginL;
+            for (let c = 0; c < 3; c++) {
+                ctx.fillStyle = colors[c];
+                ctx.fillRect(legendX, legendY - 7, 10, 7);
+                ctx.fillStyle = 'rgba(255,255,255,0.6)';
+                ctx.fillText(items[c], legendX + 14, legendY);
+                legendX += 80;
+            }
+        }
+
+        // Association Detector Alerts
+        function updateAssociationDiagnostics(t) {
+            if (t.grandTotal === 0) {
+                lblAssocBanner.textContent = "Data Empty";
+                lblAssocBanner.className = "assoc-banner independent";
+                return;
+            }
+
+            const r0_tot = t.rowTotals[0] || 1;
+            const r1_tot = t.rowTotals[1] || 1;
+
+            // Conditional preferences percentages
+            const r0_math = grid[0][0] / r0_tot;
+            const r0_sci = grid[0][1] / r0_tot;
+            const r0_eng = grid[0][2] / r0_tot;
+
+            const r1_math = grid[1][0] / r1_tot;
+            const r1_sci = grid[1][1] / r1_tot;
+            const r1_eng = grid[1][2] / r1_tot;
+
+            const deltaMath = Math.abs(r0_math - r1_math);
+            const deltaSci = Math.abs(r0_sci - r1_sci);
+            const deltaEng = Math.abs(r0_eng - r1_eng);
+
+            const maxDelta = Math.max(deltaMath, deltaSci, deltaEng);
+
+            if (maxDelta > 0.05) { // 5% difference threshold
+                lblAssocBanner.textContent = `Association Detected (Delta = ${(maxDelta*100).toFixed(0)}%)`;
+                lblAssocBanner.className = "assoc-banner detected";
+            } else {
+                lblAssocBanner.textContent = "Independent (No Association)";
+                lblAssocBanner.className = "assoc-banner independent";
+            }
+
+            // Solver Steps Walkthrough
+            let solverHtml = `
+                <div class="solver-step">
+                    <div class="solver-step-title">1. Formulate frequencies totals</div>
+                    <div class="solver-step-desc">
+                        Tabulate observations counts for 7th vs 8th grades:<br>
+                        &bull; 7th Grade total = ${grid[0][0]} + ${grid[0][1]} + ${grid[0][2]} = <strong>${t.rowTotals[0]}</strong> marginal total.<br>
+                        &bull; 8th Grade total = ${grid[1][0]} + ${grid[1][1]} + ${grid[1][2]} = <strong>${t.rowTotals[1]}</strong> marginal total.<br>
+                        &bull; Grand sample size total N = <strong>${t.grandTotal}</strong> subjects.
+                    </div>
+                </div>
+                <div class="solver-step">
+                    <div class="solver-step-title">2. Calculate Joint Relative Frequencies (Grand Total relative)</div>
+                    <div class="solver-step-desc">
+                        Joint relative frequency is the cell proportion relative to the entire sample size N:
+                        <br>
+                        &bull; P(7th Grade &amp; Math) = ${grid[0][0]} / ${t.grandTotal} = <strong>${(t.grandTotal > 0 ? grid[0][0]/t.grandTotal : 0).toFixed(4)}</strong> (or <strong>${(t.grandTotal > 0 ? grid[0][0]/t.grandTotal*100 : 0).toFixed(1)}%</strong>).
+                    </div>
+                </div>
+                <div class="solver-step">
+                    <div class="solver-step-title">3. Calculate Row Conditional Relative Frequencies</div>
+                    <div class="solver-step-desc">
+                        Divide cells by their respective grade Row Totals to get subject distribution given a grade level:
+                        <br>
+                        &bull; P(Math | 7th Grade) = ${grid[0][0]} / ${t.rowTotals[0]} = <strong>${(r0_math*100).toFixed(1)}%</strong>
+                        <br>
+                        &bull; P(Math | 8th Grade) = ${grid[1][0]} / ${t.rowTotals[1]} = <strong>${(r1_math*100).toFixed(1)}%</strong>
+                    </div>
+                </div>
+                <div class="solver-step" style="border-color:${maxDelta > 0.05 ? 'var(--color-english)' : 'var(--color-science)'};">
+                    <div class="solver-step-title">4. Assess variables association</div>
+                    <div class="solver-step-desc">
+                        Compare row proportions between grade levels:<br>
+                        &bull; Max differential: |P(subject|7th) &minus; P(subject|8th)| = <strong>${(maxDelta * 100).toFixed(1)}%</strong>.
+                        <br>
+                        &bull; Conclusion: ${maxDelta > 0.05 ? 
+                            `<span style="color:var(--color-english); font-weight:700;">An association exists</span> because the favorite subject distribution differs significantly between 7th and 8th graders.` : 
+                            `<span style="color:var(--color-science); font-weight:700;">No association (Independence)</span> because both grade levels favor subjects in identical proportions.`}
+                    </div>
+                </div>
+            `;
+            solveSteps.innerHTML = solverHtml;
+
+            // Solver Right panel Table Proportions summaries
+            let tableRows = '';
+            tableRows += `
+                <tr>
+                    <td><strong>7th Grade</strong></td>
+                    <td>${(r0_math*100).toFixed(0)}%</td>
+                    <td>${(r0_sci*100).toFixed(0)}%</td>
+                    <td>${(r0_eng*100).toFixed(0)}%</td>
+                    <td>100%</td>
+                </tr>
+                <tr>
+                    <td><strong>8th Grade</strong></td>
+                    <td>${(r1_math*100).toFixed(0)}%</td>
+                    <td>${(r1_sci*100).toFixed(0)}%</td>
+                    <td>${(r1_eng*100).toFixed(0)}%</td>
+                    <td>100%</td>
+                </tr>
+            `;
+
+            solverRightCard.innerHTML = `
+                <h3>Grade Conditional Proportions Matrix</h3>
+                <br>
+                <table class="two-way-grid-table" style="font-size:0.8rem; font-family:'JetBrains Mono';">
+                    <thead>
+                        <tr>
+                            <th>Grade</th>
+                            <th style="color:var(--color-math);">Math</th>
+                            <th style="color:var(--color-science);">Science</th>
+                            <th style="color:var(--color-english);">English</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+                <br>
+                <div style="font-family:'Outfit'; font-size:0.85rem; color:var(--text-muted); line-height:1.4;">
+                    Comparing rows: <br>
+                    &bull; Math difference: **${(deltaMath*100).toFixed(0)}%** <br>
+                    &bull; Science difference: **${(deltaSci*100).toFixed(0)}%** <br>
+                    &bull; English difference: **${(deltaEng*100).toFixed(0)}%**
+                </div>
+            `;
+        }
+
+        function updateAll() {
+            const t = computeTotals();
+            updateTableDisplay(t);
+            drawStackedChart(t);
+            updateAssociationDiagnostics(t);
+        }
+
+        function resizeCanvases() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            updateAll();
+        }
+
+        // Quiz Engine Data
+        const quizQuestions = [
+            {
+                question: "In a two-way frequency table summarizing favorite subjects by grade level, what does a JOINT frequency represent?",
+                options: [
+                    "The row total for a single grade level.",
+                    "The number of subjects that match both a row category and a column category (e.g. 7th graders who choose Math).",
+                    "The percentage of all students in the entire school.",
+                    "The total number of columns in the grid."
+                ],
+                correct: 1,
+                explanation: "Joint frequencies are the intersections of row and column categories, representing the count of observations matching both criteria simultaneously."
+            },
+            {
+                question: "If a two-way table has a Grand Total of N = 80, and the cell representing 8th graders favoring Science contains the count 16. What is the JOINT relative frequency for this cell?",
+                options: [
+                    "16%",
+                    "20%",
+                    "50%",
+                    "80%"
+                ],
+                correct: 1,
+                explanation: "Joint relative frequency is calculated by dividing the cell count by the grand total: 16 / 80 = 0.20 = 20.0%."
+            },
+            {
+                question: "What is a conditional relative frequency in the context of two-way categorical tables?",
+                options: [
+                    "A cell count divided by the Grand Total.",
+                    "A cell count divided by its row total or column total (marginal frequency).",
+                    "The sum of all marginal frequencies.",
+                    "The ratio of the slope to the intercept."
+                ],
+                correct: 1,
+                explanation: "Conditional relative frequency restricts the sample space to a single row or column total (e.g. probability of favoring Math given that the student is in 7th Grade), calculated as cell count / marginal total."
+            },
+            {
+                question: "Which condition suggests that there is NO association (meaning independence) between Grade Level and Subject Preference?",
+                options: [
+                    "The conditional relative frequencies of subjects are identical or very close between 7th and 8th graders.",
+                    "The joint frequencies are all equal to zero.",
+                    "The grand total is an odd number.",
+                    "7th graders choose only Math and 8th graders choose only English."
+                ],
+                correct: 0,
+                explanation: "If the conditional probability distributions are identical (e.g., 40% Math, 40% Science, 20% English in both grades), knowing a student's grade level provides no info about their subject preference, proving independence (no association)."
+            },
+            {
+                question: "A two-way table has row totals: 7th Grade (40 students) and 8th Grade (60 students). 10 students in 7th Grade choose English, and 15 students in 8th Grade choose English. What are the row conditional relative frequencies of choosing English for each grade?",
+                options: [
+                    "7th Grade: 10%, 8th Grade: 15%",
+                    "7th Grade: 25%, 8th Grade: 25%",
+                    "7th Grade: 40%, 8th Grade: 60%",
+                    "7th Grade: 25%, 8th Grade: 15%"
+                ],
+                correct: 1,
+                explanation: "Row conditional relative frequency = cell / row total. For 7th Grade: 10 / 40 = 25.0%. For 8th Grade: 15 / 60 = 25.0%. Since these percentages are identical (25%), there is no association."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-accent); box-shadow:0 4px 15px var(--color-accent-glow); color:var(--text-color);">
+                        Restart Quiz Evaluation
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function() {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvases, 300);
+            });
+
+            switchPreset('no_assoc');
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

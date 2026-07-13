@@ -1,0 +1,973 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laws of Sines & Cosines - Trigonometry & Waves</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "04_trigonometry",
+            logo: {"main":"Wave","accent":"Lab","sub":"Laws of Sines & Cosines"},
+            navigation: [
+    {
+        "label": "Draggable Triangle Board",
+        "desc": "Draggable Triangle Board interactive section",
+        "href": "#visualizer"
+    },
+    {
+        "label": "Step-by-Step Solver",
+        "desc": "Step-by-Step Solver interactive section",
+        "href": "#step-solver"
+    },
+    {
+        "label": "Conceptual Quiz",
+        "desc": "Conceptual Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Trigonometry Amber Theme */
+            --color-amber: #ffb000;
+            --color-amber-glow: rgba(255, 176, 0, 0.35);
+            --color-accent: #ffb000;
+            --color-accent-glow: rgba(255, 176, 0, 0.35);
+
+            --color-sideA: #38bdf8; /* Cyan for side a / angle A */
+            --color-sideB: #10b981; /* Emerald for side b / angle B */
+            --color-sideC: #a855f7; /* Purple for side c / angle C */
+            --color-circum: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-amber) !important;
+            box-shadow: 0 4px 20px var(--color-amber-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-title,
+        .sidebar-drawer .syllabus-item.active a .syllabus-desc {
+            color: var(--bg-color) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-amber);
+            background: rgba(255, 176, 0, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 176, 0, 0.2);
+            text-shadow: 0 0 5px var(--color-amber-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            line-height: 1.8;
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .math-symbol {
+            font-style: italic;
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .canvas-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--text-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid var(--card-border);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .tabs-header {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 10px;
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            text-align: center;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+        }
+
+        .tab-btn.active {
+            background: var(--color-amber);
+            color: var(--bg-color);
+            border-color: var(--color-amber);
+            box-shadow: 0 4px 15px var(--color-amber-glow);
+        }
+
+        .fraction-math {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            align-items: center;
+            padding: 0 4px;
+        }
+        .fraction-math span.top {
+            border-bottom: 1px solid var(--text-color);
+            padding-bottom: 2px;
+            text-align: center;
+        }
+        .fraction-math span.bottom {
+            padding-top: 2px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-amber) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Laws of Sines & Cosines</h1>
+            <p>Solve non-right triangles. The Law of Sines maps side-to-angle ratios to the circumcircle diameter ($2R$). The Law of Cosines generalizes the Pythagorean Theorem to arbitrary angles.</p>
+        </header>
+
+        <!-- SECTION 1: DYNAMIC VISUALIZER -->
+        <section id="visualizer">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Draggable Triangle Board</h2>
+            </div>
+            <p class="section-intro">
+                Drag vertices **A** (blue), **B** (green), or **C** (purple) to reshape the triangle. Observe how side lengths, angle arcs, and ratios adapt in real-time.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Graph Canvas -->
+                <div class="panel" style="position: relative;">
+                    <div class="canvas-label">Interactive Plane: Drag Vertices A, B, or C</div>
+                    <div class="canvas-container" style="height: 380px; cursor: move;">
+                        <canvas id="triangleCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Formulas & Values -->
+                <div class="panel">
+                    <div class="tabs-header">
+                        <button class="tab-btn active" id="tabSines" onclick="switchTab('sines')">Law of Sines</button>
+                        <button class="tab-btn" id="tabCosines" onclick="switchTab('cosines')">Law of Cosines</button>
+                    </div>
+
+                    <div class="math-card">
+                        <h3 id="eqHeader">Law of Sines Equation</h3>
+                        <div class="equation-box" id="eqDisplay">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Preset Shapes -->
+                    <div class="presets-grid">
+                        <button class="btn-preset" onclick="loadPreset(0, 3.5, -3.5, -2, 3.5, -2)">Equilateral-ish</button>
+                        <button class="btn-preset" onclick="loadPreset(-1.5, 3.5, -1.5, -2.5, 3.5, -2.5)">Right Triangle</button>
+                        <button class="btn-preset" onclick="loadPreset(-3.5, 1, 0, -3, 3.5, 1)">Obtuse Triangle</button>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span id="hintText">The dashed circle is the circumcircle. The ratio of side/sin(Angle) is always equal to its diameter.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: STEP-BY-STEP SOLVER -->
+        <section id="step-solver">
+            <div class="section-header">
+                <span class="section-tag">Algebraic Solver</span>
+                <h2>Step-by-Step Solver</h2>
+            </div>
+            <p class="section-intro">
+                Trace how we compute missing properties using the active vertex coordinates.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Calculation Steps -->
+                <div class="panel">
+                    <h3 id="solverTitle">Solving Sides & Angles</h3>
+                    <br>
+                    <div class="formula-steps" id="solveSteps">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Right Panel: Side/Angle Parameters Summary -->
+                <div class="panel">
+                    <h3>Active Triangle Summary</h3>
+                    <br>
+                    <div class="math-card" style="border-color: rgba(56, 189, 248, 0.15);">
+                        <h3>Side Lengths</h3>
+                        <p style="font-size: 0.9rem; line-height: 1.6; color: var(--text-color);" id="sidesSummaryText">
+                            a = 0.00<br>b = 0.00<br>c = 0.00
+                        </p>
+                    </div>
+
+                    <div class="math-card" style="border-color: rgba(168, 85, 247, 0.15);">
+                        <h3>Vertex Angles</h3>
+                        <p style="font-size: 0.9rem; line-height: 1.6; color: var(--text-color);" id="anglesSummaryText">
+                            A = 0.0°<br>B = 0.0°<br>C = 0.0°
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Conceptual Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Test your understanding of Sines & Cosines laws, circumcircle diameter relations, and triangle cases.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Question Board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">When is it appropriate to use the Law of Cosines rather than the Law of Sines?</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text...</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Cheatsheet -->
+                <div class="panel" id="quizStatsPanel">
+                    <h3>Solving Cases Rules</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom: 0; list-style: none; display: flex; flex-direction: column; gap: 10px;">
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-sideA); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-sideA);"></span>
+                            <span>Law of Sines: SAA, ASA, SSA (ambiguous case)</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-sideC); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-sideC);"></span>
+                            <span>Law of Cosines: SAS, SSS</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-sideB); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-sideB);"></span>
+                            <span>Circumcircle diameter: 2R = a / sin(A)</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-amber); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-amber-glow);"></span>
+                            <span>Cos C = (a&sup2; + b&sup2; - c&sup2;) / 2ab</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('triangleCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const eqHeader = document.getElementById('eqHeader');
+        const eqDisplay = document.getElementById('eqDisplay');
+        const hintText = document.getElementById('hintText');
+        const solveSteps = document.getElementById('solveSteps');
+        const sidesSummaryText = document.getElementById('sidesSummaryText');
+        const anglesSummaryText = document.getElementById('anglesSummaryText');
+
+        // State
+        let activeTab = 'sines'; // 'sines' or 'cosines'
+        let draggingVertex = null; // 'A', 'B', or 'C'
+
+        // Vertex Positions on coordinate scale [-6, 6] by [-6, 6]
+        let vertA = { x: 0.0, y: 3.5 };
+        let vertB = { x: -3.5, y: -2.0 };
+        let vertC = { x: 3.5, y: -2.0 };
+
+        function loadPreset(ax, ay, bx, by, cx, cy) {
+            vertA = { x: ax, y: ay };
+            vertB = { x: bx, y: by };
+            vertC = { x: cx, y: cy };
+            updateAll();
+        }
+
+        function switchTab(tabType) {
+            activeTab = tabType;
+            if (tabType === 'sines') {
+                document.getElementById('tabSines').classList.add('active');
+                document.getElementById('tabCosines').classList.remove('active');
+                eqHeader.textContent = "Law of Sines Equation";
+                hintText.textContent = "The dashed circle is the circumcircle. The ratio of side/sin(Angle) is always equal to its diameter.";
+            } else {
+                document.getElementById('tabSines').classList.remove('active');
+                document.getElementById('tabCosines').classList.add('active');
+                eqHeader.textContent = "Law of Cosines Equation";
+                hintText.textContent = "Standard Law of Cosines: c² = a² + b² - 2ab cos(C). Try reshaping to observe Pythagorean equivalence when C = 90°.";
+            }
+            updateAll();
+        }
+
+        function resizeCanvases() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            drawAll();
+        }
+
+        // Coordinate transforms
+        function toPixel(gx, gy) {
+            const margin = 35;
+            const w = canvas.width - 2 * margin;
+            const h = canvas.height - 2 * margin;
+            const px = margin + ((gx + 6) / 12) * w;
+            const py = margin + ((6 - gy) / 12) * h;
+            return { x: px, y: py };
+        }
+
+        function toGraph(px, py) {
+            const margin = 35;
+            const w = canvas.width - 2 * margin;
+            const h = canvas.height - 2 * margin;
+            const gx = -6 + ((px - margin) / w) * 12;
+            const gy = 6 - ((py - margin) / h) * 12;
+            return { x: gx, y: gy };
+        }
+
+        // Compute triangle parameters
+        function computeParams() {
+            // Side lengths
+            // a: opposite A (segment BC)
+            // b: opposite B (segment AC)
+            // c: opposite C (segment AB)
+            const a = Math.hypot(vertB.x - vertC.x, vertB.y - vertC.y);
+            const b = Math.hypot(vertA.x - vertC.x, vertA.y - vertC.y);
+            const c = Math.hypot(vertA.x - vertB.x, vertA.y - vertB.y);
+
+            // Angles (Law of Cosines)
+            const angA = Math.acos((b * b + c * c - a * a) / (2 * b * c)) || 0;
+            const angB = Math.acos((a * a + c * c - b * b) / (2 * a * c)) || 0;
+            const angC = Math.acos((a * a + b * b - c * c) / (2 * a * b)) || 0;
+
+            // Circumcircle center and radius
+            // Formula for circumcenter
+            const D = 2 * (vertA.x * (vertB.y - vertC.y) + vertB.x * (vertC.y - vertA.y) + vertC.x * (vertA.y - vertB.y));
+            let ccX = 0, ccY = 0, ccR = 0;
+            if (Math.abs(D) > 0.001) {
+                ccX = ((vertA.x * vertA.x + vertA.y * vertA.y) * (vertB.y - vertC.y) +
+                       (vertB.x * vertB.x + vertB.y * vertB.y) * (vertC.y - vertA.y) +
+                       (vertC.x * vertC.x + vertC.y * vertC.y) * (vertA.y - vertB.y)) / D;
+                ccY = ((vertA.x * vertA.x + vertA.y * vertA.y) * (vertC.x - vertB.x) +
+                       (vertB.x * vertB.x + vertB.y * vertB.y) * (vertA.x - vertC.x) +
+                       (vertC.x * vertC.x + vertC.y * vertC.y) * (vertB.x - vertA.x)) / D;
+                ccR = Math.hypot(vertA.x - ccX, vertA.y - ccY);
+            }
+
+            return { a, b, c, angA, angB, angC, ccX, ccY, ccR };
+        }
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const margin = 35;
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.font = '9px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            for (let i = -6; i <= 6; i++) {
+                if (i === 0) continue;
+                let p1 = toPixel(i, 0);
+                ctx.beginPath();
+                ctx.moveTo(p1.x, margin);
+                ctx.lineTo(p1.x, canvas.height - margin);
+                ctx.stroke();
+                ctx.fillText(i, p1.x, canvas.height - margin + 12);
+
+                let p2 = toPixel(0, i);
+                ctx.beginPath();
+                ctx.moveTo(margin, p2.y);
+                ctx.lineTo(canvas.width - margin, p2.y);
+                ctx.stroke();
+                ctx.fillText(i, margin - 15, p2.y);
+            }
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.lineWidth = 1.5;
+            let center = toPixel(0, 0);
+
+            ctx.beginPath();
+            ctx.moveTo(margin, center.y);
+            ctx.lineTo(canvas.width - margin, center.y);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(center.x, margin);
+            ctx.lineTo(center.x, canvas.height - margin);
+            ctx.stroke();
+        }
+
+        function drawAll() {
+            drawGrid();
+
+            const p = computeParams();
+
+            // Pixel vertex positions
+            const pA = toPixel(vertA.x, vertA.y);
+            const pB = toPixel(vertB.x, vertB.y);
+            const pC = toPixel(vertC.x, vertC.y);
+
+            if (activeTab === 'sines' && p.ccR > 0) {
+                const pCenter = toPixel(p.ccX, p.ccY);
+                const pEdge = toPixel(p.ccX + p.ccR, p.ccY);
+                const rPixel = pEdge.x - pCenter.x;
+
+                ctx.strokeStyle = 'rgba(168, 85, 247, 0.2)';
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.arc(pCenter.x, pCenter.y, rPixel, 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            // Side a (opp A, green): segment BC
+            ctx.strokeStyle = 'var(--color-sideA)';
+            ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(pB.x, pB.y); ctx.lineTo(pC.x, pC.y); ctx.stroke();
+
+            // Side b (opp B, blue): segment AC
+            ctx.strokeStyle = 'var(--color-sideB)';
+            ctx.beginPath(); ctx.moveTo(pA.x, pA.y); ctx.lineTo(pC.x, pC.y); ctx.stroke();
+
+            // Side c (opp C, purple): segment AB
+            ctx.strokeStyle = 'var(--color-sideC)';
+            ctx.beginPath(); ctx.moveTo(pA.x, pA.y); ctx.lineTo(pB.x, pB.y); ctx.stroke();
+
+            function drawAngleArc(vStart, vVertex, vEnd, color) {
+                const ang1 = Math.atan2(vStart.y - vVertex.y, vStart.x - vVertex.x);
+                const ang2 = Math.atan2(vEnd.y - vVertex.y, vEnd.x - vVertex.x);
+                
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.moveTo(vVertex.x, vVertex.y);
+                // Sweep angle
+                ctx.arc(vVertex.x, vVertex.y, 25, ang1, ang2);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            // Arc A (Real vectors to paint correctly)
+            drawAngleArc(pB, pA, pC, 'rgba(56, 189, 248, 0.25)');
+            drawAngleArc(pC, pB, pA, 'rgba(16, 185, 129, 0.25)');
+            drawAngleArc(pA, pC, pB, 'rgba(168, 85, 247, 0.25)');
+
+            // Label side lengths
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 10px JetBrains Mono';
+            ctx.textAlign = 'center';
+
+            // sides midpoints
+            ctx.fillText(`a=${p.a.toFixed(1)}`, (pB.x + pC.x) / 2, (pB.y + pC.y) / 2 + 15);
+            ctx.fillText(`b=${p.b.toFixed(1)}`, (pA.x + pC.x) / 2 + 20, (pA.y + pC.y) / 2);
+            ctx.fillText(`c=${p.c.toFixed(1)}`, (pA.x + pB.x) / 2 - 20, (pA.y + pB.y) / 2);
+
+            const verts = [
+                { p: pA, name: 'A', col: 'var(--color-sideA)' },
+                { p: pB, name: 'B', col: 'var(--color-sideB)' },
+                { p: pC, name: 'C', col: 'var(--color-sideC)' }
+            ];
+
+            verts.forEach(v => {
+                ctx.shadowBlur = draggingVertex === v.name ? 12 : 4;
+                ctx.shadowColor = v.col;
+                ctx.fillStyle = v.col;
+                ctx.beginPath();
+                ctx.arc(v.p.x, v.p.y, 7, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 11px Outfit';
+                ctx.fillText(v.name, v.p.x, v.p.y - 12);
+            });
+        }
+
+        function updateSolver() {
+            const p = computeParams();
+
+            const degA = p.angA * 180 / Math.PI;
+            const degB = p.angB * 180 / Math.PI;
+            const degC = p.angC * 180 / Math.PI;
+
+            // Formulate dynamic equation views
+            if (activeTab === 'sines') {
+                const ratioA = p.a / Math.sin(p.angA);
+                const ratioB = p.b / Math.sin(p.angB);
+                const ratioC = p.c / Math.sin(p.angC);
+
+                eqDisplay.innerHTML = `
+                    <div class="fraction-math"><span class="top">a</span><span class="bottom">sin(A)</span></div> = 
+                    <div class="fraction-math"><span class="top">b</span><span class="bottom">sin(B)</span></div> = 
+                    <div class="fraction-math"><span class="top">c</span><span class="bottom">sin(C)</span></div><br>
+                    <div class="fraction-math"><span class="top">${p.a.toFixed(1)}</span><span class="bottom">sin(${degA.toFixed(0)}°)</span></div> = 
+                    <div class="fraction-math"><span class="top">${p.b.toFixed(1)}</span><span class="bottom">sin(${degB.toFixed(0)}°)</span></div> = 
+                    <div class="fraction-math"><span class="top">${p.c.toFixed(1)}</span><span class="bottom">sin(${degC.toFixed(0)}°)</span></div> = 
+                    <strong>${ratioA.toFixed(2)}</strong>
+                `;
+
+                // Solver steps
+                let html = `
+                    <div><strong>1. Identify side lengths and angles:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.6;">
+                        &bull; a = ${p.a.toFixed(2)}, A = ${degA.toFixed(1)}° (sin A = ${Math.sin(p.angA).toFixed(4)})<br>
+                        &bull; b = ${p.b.toFixed(2)}, B = ${degB.toFixed(1)}° (sin B = ${Math.sin(p.angB).toFixed(4)})<br>
+                        &bull; c = ${p.c.toFixed(2)}, C = ${degC.toFixed(1)}° (sin C = ${Math.sin(p.angC).toFixed(4)})
+                    </div>
+                    <div><strong>2. Compute Law of Sines ratios:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px;">
+                        &bull; Ratio A: ${p.a.toFixed(2)} / ${Math.sin(p.angA).toFixed(4)} = <strong>${ratioA.toFixed(4)}</strong><br>
+                        &bull; Ratio B: ${p.b.toFixed(2)} / ${Math.sin(p.angB).toFixed(4)} = <strong>${ratioB.toFixed(4)}</strong><br>
+                        &bull; Ratio C: ${p.c.toFixed(2)} / ${Math.sin(p.angC).toFixed(4)} = <strong>${ratioC.toFixed(4)}</strong>
+                    </div>
+                    <div><strong>3. Circumcircle geometry:</strong></div>
+                    <div style="margin-left: 10px; font-weight:700; color:var(--color-amber);">
+                        Circumradius R = ${(p.ccR).toFixed(2)} &nbsp;&implies;&nbsp; Diameter 2R = ${(2 * p.ccR).toFixed(4)}<br>
+                        Ratios equal the circumcircle diameter!
+                    </div>
+                `;
+                solveSteps.innerHTML = html;
+
+            } else {
+                // Law of cosines
+                const cosC = Math.cos(p.angC);
+                const rhs = p.a * p.a + p.b * p.b - 2 * p.a * p.b * cosC;
+
+                eqDisplay.innerHTML = `
+                    c² = a² + b² - 2ab cos(C)<br>
+                    ${(p.c*p.c).toFixed(1)} = ${(p.a*p.a).toFixed(1)} + ${(p.b*p.b).toFixed(1)} - 2(${p.a.toFixed(1)})(${p.b.toFixed(1)}) cos(${degC.toFixed(0)}°)
+                `;
+
+                // Solver steps
+                let html = `
+                    <div><strong>1. Law of Cosines equation for side c:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px;">
+                        c² = a² + b² - 2ab cos(C)
+                    </div>
+                    <div><strong>2. Substitute side a, b, and angle C:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.6;">
+                        a² = ${(p.a*p.a).toFixed(4)}, &nbsp; b² = ${(p.b*p.b).toFixed(4)}<br>
+                        2ab cos(C) = 2 &times; ${p.a.toFixed(2)} &times; ${p.b.toFixed(2)} &times; cos(${degC.toFixed(1)}°)<br>
+                        2ab cos(C) = ${(2*p.a*p.b*cosC).toFixed(4)}
+                    </div>
+                    <div><strong>3. Evaluate right hand side (RHS):</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px;">
+                        c² = ${(p.a*p.a).toFixed(4)} + ${(p.b*p.b).toFixed(4)} - ${(2*p.a*p.b*cosC).toFixed(4)}<br>
+                        c² = <strong>${rhs.toFixed(4)}</strong>
+                    </div>
+                    <div><strong>4. Square root to solve side c:</strong></div>
+                    <div style="margin-left: 10px; font-weight:700; color:var(--color-amber);">
+                        c = &radic;(${rhs.toFixed(4)}) = <strong>${Math.sqrt(rhs).toFixed(4)}</strong>
+                    </div>
+                `;
+                solveSteps.innerHTML = html;
+            }
+
+            sidesSummaryText.innerHTML = `
+                a = ${p.a.toFixed(2)}<br>
+                b = ${p.b.toFixed(2)}<br>
+                c = ${p.c.toFixed(2)}
+            `;
+
+            anglesSummaryText.innerHTML = `
+                A = ${degA.toFixed(1)}°<br>
+                B = ${degB.toFixed(1)}°<br>
+                C = ${degC.toFixed(1)}°
+            `;
+        }
+
+        function updateAll() {
+            updateSolver();
+            drawAll();
+        }
+
+        // Mouse direct dragging handler
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        function handleDragStart(x, y) {
+            const pA = toPixel(vertA.x, vertA.y);
+            const pB = toPixel(vertB.x, vertB.y);
+            const pC = toPixel(vertC.x, vertC.y);
+
+            const distA = Math.hypot(x - pA.x, y - pA.y);
+            const distB = Math.hypot(x - pB.x, y - pB.y);
+            const distC = Math.hypot(x - pC.x, y - pC.y);
+
+            if (distA < 15 && distA < distB && distA < distC) {
+                draggingVertex = 'A';
+            } else if (distB < 15 && distB < distC) {
+                draggingVertex = 'B';
+            } else if (distC < 15) {
+                draggingVertex = 'C';
+            }
+            if (draggingVertex) {
+                drawAll();
+            }
+        }
+
+        function handleDragMove(x, y) {
+            if (!draggingVertex) return;
+            const g = toGraph(x, y);
+
+            // Clamp coordinates to stay on screen
+            const cX = Math.max(-5.5, Math.min(5.5, g.x));
+            const cY = Math.max(-5.5, Math.min(5.5, g.y));
+
+            if (draggingVertex === 'A') {
+                vertA = { x: cX, y: cY };
+            } else if (draggingVertex === 'B') {
+                vertB = { x: cX, y: cY };
+            } else {
+                vertC = { x: cX, y: cY };
+            }
+            updateAll();
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const pos = getMousePos(e);
+            handleDragStart(pos.x, pos.y);
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!draggingVertex) return;
+            const pos = getMousePos(e);
+            handleDragMove(pos.x, pos.y);
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (draggingVertex) {
+                draggingVertex = null;
+                drawAll();
+            }
+        });
+
+        // Touch support
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                const pos = getMousePos(e.touches[0]);
+                handleDragStart(pos.x, pos.y);
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!draggingVertex) return;
+            if (e.touches.length === 1) {
+                const pos = getMousePos(e.touches[0]);
+                handleDragMove(pos.x, pos.y);
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('touchend', () => {
+            if (draggingVertex) {
+                draggingVertex = null;
+                drawAll();
+            }
+        });
+
+        // Quiz State & Data
+        const quizQuestions = [
+            {
+                question: "Which of the following triangle solving cases yields an 'ambiguous case' where zero, one, or two distinct triangles might exist?",
+                options: [
+                    "SSS (Side-Side-Side)",
+                    "ASA (Angle-Side-Angle)",
+                    "SSA (Side-Side-Angle)",
+                    "SAS (Side-Angle-Side)"
+                ],
+                correct: 2,
+                explanation: "The SSA case (two sides and a non-included angle) is known as the ambiguous case because the sine ratio yields two potential angle answers (acute and obtuse), which might lead to 0, 1, or 2 triangles."
+            },
+            {
+                question: "According to the Law of Sines circumcircle relation, if a triangle side a = 6.0 and the opposite angle A = 30 degrees, what is the circumradius R?",
+                options: [
+                    "R = 3.0",
+                    "R = 6.0",
+                    "R = 12.0",
+                    "R = 1.5"
+                ],
+                correct: 1,
+                explanation: "By the circumcircle theorem, a / sin A = 2R. Here, sin 30° = 0.5. So 2R = 6 / 0.5 = 12. Since diameter 2R = 12, the circumradius is R = 6.0."
+            },
+            {
+                question: "In a triangle, if sides are a = 3, b = 5, and the included angle C = 60 degrees, what is the value of side c² using the Law of Cosines?",
+                options: [
+                    "c² = 34",
+                    "c² = 49",
+                    "c² = 19",
+                    "c² = 25"
+                ],
+                correct: 2,
+                explanation: "Law of Cosines: c² = a² + b² - 2ab cos C. Substitute: c² = 3² + 5² - 2(3)(5) cos 60° = 9 + 25 - 30(0.5) = 34 - 15 = 19."
+            },
+            {
+                question: "If angle C of a triangle is exactly 90 degrees, how does the Law of Cosines c² = a² + b² - 2ab cos(C) simplify?",
+                options: [
+                    "c² = a² + b² - 2ab",
+                    "c² = a² + b²",
+                    "c² = a² - b²",
+                    "c² = a² + b² + 2ab"
+                ],
+                correct: 1,
+                explanation: "When C = 90°, cos(90°) = 0. The term -2ab cos(C) becomes 0, simplifying the equation to the classic Pythagorean Theorem: c² = a² + b²."
+            },
+            {
+                question: "If you are given three side lengths of a triangle (SSS), which law should you use first to find any of the angles?",
+                options: [
+                    "Law of Sines",
+                    "Law of Cosines",
+                    "Pythagorean Theorem",
+                    "SOH CAH TOA ratios"
+                ],
+                correct: 1,
+                explanation: "The Law of Sines requires at least one side-angle opposite pair, which we don't have. Thus, we must use the Law of Cosines to solve for one of the angles first."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-amber); box-shadow:0 4px 15px var(--color-amber-glow); color:var(--bg-color);">
+                        Restart Quiz Evaluation
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function() {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvases, 300);
+            });
+            updateAll();
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

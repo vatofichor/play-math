@@ -1,0 +1,1044 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Theory & Venn Diagrams - Data Science & Stats</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "06_data_science_statistics",
+            logo: {"main":"Stat","accent":"Lab","sub":"Set Theory & Venn Diagrams"},
+            navigation: [
+    {
+        "label": "Venn Operator Visualizer",
+        "desc": "Venn Operator Visualizer interactive section",
+        "href": "#venn"
+    },
+    {
+        "label": "Attribute Sorting Bay",
+        "desc": "Attribute Sorting Bay interactive section",
+        "href": "#sorting"
+    },
+    {
+        "label": "Set Theory Quiz",
+        "desc": "Set Theory Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Purple Theme override */
+            --color-purple: #a855f7;
+            --color-purple-glow: rgba(168, 85, 247, 0.35);
+            --color-accent: #a855f7;
+            --color-accent-glow: rgba(168, 85, 247, 0.35);
+
+            --color-set-a: #38bdf8; /* Cyan */
+            --color-set-b: #f43f5e; /* Rose */
+            --color-overlap: #a855f7; /* Purple */
+        }
+
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-accent) !important;
+            box-shadow: 0 4px 20px var(--color-accent-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-title {
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-desc {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-purple);
+            background: rgba(168, 85, 247, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            text-shadow: 0 0 5px var(--color-purple-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .equation-box {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-preset {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-preset:hover, .btn-preset.active {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .presets-grid {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-mode {
+            flex: 1;
+            padding: 0.6rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            font-size: 0.85rem;
+        }
+
+        .btn-mode.active {
+            background: rgba(168, 85, 247, 0.15);
+            color: var(--color-purple);
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        /* Dropdown custom styling */
+        select {
+            background: #0f172a;
+            color: #ffffff;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 0.5rem 0.85rem;
+            outline: none;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Set Theory & Venn Diagrams
+            </h1>
+            <p>Master set operators and intersections. Shading Venn operations in real-time, sort shapes based on mathematical attributes, and test set logic.</p>
+        </header>
+
+        <!-- SECTION 1: VENN OPERATOR -->
+        <section id="venn">
+            <div class="section-header">
+                <span class="section-tag">Interactive Shading</span>
+                <h2>Venn Operator Visualizer</h2>
+            </div>
+            <p class="section-intro">
+                Set theory forms the logical bedrock of data science. Use the buttons below to select a set operation and watch the overlapping circular lenses shade the corresponding region of Set A and Set B.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Venn Canvas -->
+                <div class="panel">
+                    <div class="canvas-container" style="height: 380px; background: #07060c;">
+                        <canvas id="vennCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Set Operations Selector -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Set Operator Statement</h3>
+                        <div class="equation-box" id="vennEqDisplay" style="color: var(--color-purple);">
+                            A &cap; B (Intersection)
+                        </div>
+                    </div>
+
+                    <div class="presets-grid" style="gap:8px;">
+                        <button class="btn-preset active" onclick="setVennOp('intersect')">Intersection (A &cap; B)</button>
+                        <button class="btn-preset" onclick="setVennOp('union')">Union (A &cup; B)</button>
+                        <button class="btn-preset" onclick="setVennOp('diffAB')">Difference (A \ B)</button>
+                        <button class="btn-preset" onclick="setVennOp('diffBA')">Difference (B \ A)</button>
+                        <button class="btn-preset" onclick="setVennOp('xor')">Symmetric Diff (A &Delta; B)</button>
+                        <button class="btn-preset" onclick="setVennOp('complement')">Complement (A &cup; B)'</button>
+                    </div>
+
+                    <div class="formula-steps">
+                        <div><strong>Set Operator Logic:</strong></div>
+                        <div id="vennExplanation" style="margin-top: 8px; font-size:0.85rem; line-height:1.6; color:var(--text-muted);">
+                            The Intersection (<span class="number" style="color:#fff;">A &cap; B</span>) contains only the elements that belong to Set A AND Set B simultaneously. It represents the shared overlap of both circular sets.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: SHAPE SORTING BAY -->
+        <section id="sorting">
+            <div class="section-header">
+                <span class="section-tag">Drag & Drop Game</span>
+                <h2>Attribute Sorting Bay</h2>
+            </div>
+            <p class="section-intro">
+                Select attribute criteria for Set A (left) and Set B (right). Drag shapes from the cargo bay at the bottom and place them into the correct circles. Dropping a shape in an incorrect region will return it to the bay.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Game Canvas -->
+                <div class="panel">
+                    <div class="canvas-container" style="height: 420px; background: #05060a;" id="gameContainer">
+                        <canvas id="sortingCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Set Criteria Configurations -->
+                <div class="panel">
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <label class="slider-label" style="font-size:0.95rem; font-weight:600; color:var(--color-set-a);">Set A Criteria:</label>
+                            <select id="selectSetA" onchange="updateSetCriteria()">
+                                <option value="Red" selected>Red Color</option>
+                                <option value="Blue">Blue Color</option>
+                                <option value="Triangle">Triangles</option>
+                                <option value="Circle">Circles</option>
+                            </select>
+                        </div>
+
+                        <div class="slider-row">
+                            <label class="slider-label" style="font-size:0.95rem; font-weight:600; color:var(--color-set-b);">Set B Criteria:</label>
+                            <select id="selectSetB" onchange="updateSetCriteria()">
+                                <option value="Circle" selected>Circles</option>
+                                <option value="Triangle">Triangles</option>
+                                <option value="Blue">Blue Color</option>
+                                <option value="Red">Red Color</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="formula-steps" style="margin-bottom:1rem;">
+                        <div><strong>Current Sorting Goal:</strong></div>
+                        <div id="gameRulesExplanation" style="margin-top: 8px; font-size:0.85rem; line-height:1.5; color:var(--text-muted);">
+                            - Left Circle (A): Only <span style="color:var(--color-set-a); font-weight:600;">Red Shapes</span> that are NOT circles.<br>
+                            - Right Circle (B): Only <span style="color:var(--color-set-b); font-weight:600;">Circles</span> that are NOT red.<br>
+                            - Overlap (A &cap; B): Shapes that are BOTH <span style="color:var(--color-purple); font-weight:600;">Red Circles</span>.<br>
+                            - Background: Anything else (e.g. blue triangles).
+                        </div>
+                    </div>
+
+                    <button class="btn" onclick="resetSortingGame()">Reset Sorting Cargo</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Self Evaluation</span>
+                <h2>Set Theory Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Review your core understanding of set intersections, set unions, subsets, and complement logic.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Quiz Question -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">If Set A = {1, 2, 3} and Set B = {3, 4, 5}, what is the intersection A &cap; B?</h3>
+
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong>Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation goes here.</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Core Vocabulary Review -->
+                <div class="panel">
+                    <h3>Focus Area Vocabulary</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom:0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-purple); box-shadow:0 0 6px var(--color-purple-glow);"></span>
+                                Intersection (&cap;): <strong>Shared elements (AND)</strong>
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:#38bdf8; box-shadow:0 0 6px rgba(56, 189, 248, 0.35);"></span>
+                                Union (&cup;): <strong>Combined elements (OR)</strong>
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:#ef4444; box-shadow:0 0 6px rgba(239, 68, 68, 0.35);"></span>
+                                Complement (A'): <strong>All elements NOT in set A</strong>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const vennCanvas = document.getElementById('vennCanvas');
+        const vennCtx = vennCanvas.getContext('2d');
+        const sortingCanvas = document.getElementById('sortingCanvas');
+        const sortCtx = sortingCanvas.getContext('2d');
+
+        // Selectors
+        const selectSetA = document.getElementById('selectSetA');
+        const selectSetB = document.getElementById('selectSetB');
+        const vennEqDisplay = document.getElementById('vennEqDisplay');
+        const vennExplanation = document.getElementById('vennExplanation');
+        const gameRulesExplanation = document.getElementById('gameRulesExplanation');
+
+        let activeVennOp = 'intersect'; // 'intersect', 'union', 'diffAB', 'diffBA', 'xor', 'complement'
+        let setACriteria = 'Red';
+        let setBCriteria = 'Circle';
+
+        // Sorting Game State
+        let cargoShapes = [];
+        let draggingShape = null;
+        let dragOffset = { x: 0, y: 0 };
+
+        function resizeCanvasElement(canvasElement) {
+            const container = canvasElement.parentElement;
+            canvasElement.width = container.clientWidth;
+            canvasElement.height = container.clientHeight;
+        }
+
+        // VENN SHADING SIMULATOR
+        function drawVennShading() {
+            resizeCanvasElement(vennCanvas);
+            const w = vennCanvas.width;
+            const h = vennCanvas.height;
+            vennCtx.clearRect(0, 0, w, h);
+
+            const midY = h / 2;
+            const rad = Math.min(w * 0.22, 100);
+            const offset = rad * 0.65;
+            
+            const circleAX = w / 2 - offset;
+            const circleBX = w / 2 + offset;
+
+            // Shading regions based on active operation
+            // We use clipping masks or simple geometric checks (pixel-by-pixel rendering or math arc fills)
+            // A simple and clean method is check pixels inside set boundaries on a buffer, but we can do it geometrically using Canvas compositing:
+            // Let's implement a clean composite drawing path
+            
+            vennCtx.strokeStyle = 'rgba(255,255,255,0.06)';
+            vennCtx.lineWidth = 1.5;
+            vennCtx.beginPath();
+            vennCtx.roundRect(15, 15, w - 30, h - 30, 16);
+            vennCtx.stroke();
+            
+            // Label Universe
+            vennCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            vennCtx.font = 'bold 10px JetBrains Mono';
+            vennCtx.fillText('Universe (U)', 30, 32);
+
+            // Shading logic: We construct paths for A, B, intersection, and fill them in glowing purple
+            vennCtx.save();
+            
+            // Function checks if screen coordinate is in Set A, B, or both
+            function inA(x, y) { return Math.hypot(x - circleAX, y - midY) <= rad; }
+            function inB(x, y) { return Math.hypot(x - circleBX, y - midY) <= rad; }
+
+            // To render beautiful high-performance smooth fills, we draw standard arcs or pixels
+            // For simple shading, let's draw the circles with compositing
+            // Intersection shading
+            if (activeVennOp === 'intersect') {
+                // Clip region A, draw B
+                vennCtx.beginPath();
+                vennCtx.arc(circleAX, midY, rad, 0, Math.PI * 2);
+                vennCtx.clip();
+                
+                vennCtx.fillStyle = 'rgba(168, 85, 247, 0.4)'; // glowing purple
+                vennCtx.beginPath();
+                vennCtx.arc(circleBX, midY, rad, 0, Math.PI * 2);
+                vennCtx.fill();
+            } 
+            else if (activeVennOp === 'union') {
+                vennCtx.fillStyle = 'rgba(168, 85, 247, 0.3)';
+                vennCtx.beginPath();
+                vennCtx.arc(circleAX, midY, rad, 0, Math.PI * 2);
+                vennCtx.arc(circleBX, midY, rad, 0, Math.PI * 2);
+                vennCtx.fill();
+            } 
+            else if (activeVennOp === 'diffAB') {
+                vennCtx.fillStyle = 'rgba(168, 85, 247, 0.35)';
+                vennCtx.beginPath();
+                vennCtx.arc(circleAX, midY, rad, 0, Math.PI * 2);
+                vennCtx.fill();
+
+                vennCtx.globalCompositeOperation = 'destination-out';
+                vennCtx.beginPath();
+                vennCtx.arc(circleBX, midY, rad, 0, Math.PI * 2);
+                vennCtx.fill();
+                vennCtx.globalCompositeOperation = 'source-over';
+            } 
+            else if (activeVennOp === 'diffBA') {
+                vennCtx.fillStyle = 'rgba(168, 85, 247, 0.35)';
+                vennCtx.beginPath();
+                vennCtx.arc(circleBX, midY, rad, 0, Math.PI * 2);
+                vennCtx.fill();
+
+                vennCtx.globalCompositeOperation = 'destination-out';
+                vennCtx.beginPath();
+                vennCtx.arc(circleAX, midY, rad, 0, Math.PI * 2);
+                vennCtx.fill();
+                vennCtx.globalCompositeOperation = 'source-over';
+            } 
+            else if (activeVennOp === 'xor') {
+                // XOR: inside A or B, but not both
+                // An easy way in Canvas is draw Union, then subtract double the intersection
+                vennCtx.fillStyle = 'rgba(168, 85, 247, 0.3)';
+                vennCtx.beginPath();
+                vennCtx.arc(circleAX, midY, rad, 0, Math.PI * 2);
+                vennCtx.fill();
+                vennCtx.beginPath();
+                vennCtx.arc(circleBX, midY, rad, 0, Math.PI * 2);
+                vennCtx.fill();
+
+                vennCtx.save();
+                vennCtx.beginPath();
+                vennCtx.arc(circleAX, midY, rad, 0, Math.PI * 2);
+                vennCtx.clip();
+                vennCtx.globalCompositeOperation = 'destination-out';
+                vennCtx.beginPath();
+                vennCtx.arc(circleBX, midY, rad, 0, Math.PI * 2);
+                vennCtx.fill();
+                vennCtx.restore();
+            } 
+            else if (activeVennOp === 'complement') {
+                // Color entire universe, then subtract A union B
+                vennCtx.fillStyle = 'rgba(168, 85, 247, 0.25)';
+                vennCtx.beginPath();
+                vennCtx.roundRect(15, 15, w - 30, h - 30, 16);
+                vennCtx.fill();
+
+                vennCtx.globalCompositeOperation = 'destination-out';
+                vennCtx.beginPath();
+                vennCtx.arc(circleAX, midY, rad, 0, Math.PI * 2);
+                vennCtx.arc(circleBX, midY, rad, 0, Math.PI * 2);
+                vennCtx.fill();
+                vennCtx.globalCompositeOperation = 'source-over';
+            }
+            
+            vennCtx.restore();
+
+            vennCtx.strokeStyle = 'var(--color-set-a)';
+            vennCtx.lineWidth = 2.5;
+            vennCtx.shadowBlur = 8;
+            vennCtx.shadowColor = 'var(--color-set-a)';
+            vennCtx.beginPath();
+            vennCtx.arc(circleAX, midY, rad, 0, Math.PI * 2);
+            vennCtx.stroke();
+
+            vennCtx.strokeStyle = 'var(--color-set-b)';
+            vennCtx.shadowColor = 'var(--color-set-b)';
+            vennCtx.beginPath();
+            vennCtx.arc(circleBX, midY, rad, 0, Math.PI * 2);
+            vennCtx.stroke();
+            vennCtx.shadowBlur = 0;
+
+            // Labels A & B
+            vennCtx.fillStyle = '#ffffff';
+            vennCtx.font = 'bold 14px Outfit';
+            vennCtx.fillText('Set A', circleAX - 30, midY - rad - 12);
+            vennCtx.fillText('Set B', circleBX + 10, midY - rad - 12);
+        }
+
+        function setVennOp(op) {
+            activeVennOp = op;
+            
+            document.querySelectorAll('#venn .btn-preset').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (op === 'intersect') {
+                vennEqDisplay.innerHTML = `A &cap; B (Intersection)`;
+                vennExplanation.innerHTML = `
+                    The Intersection (<span class="number" style="color:#fff;">A &cap; B</span>) contains only the elements that belong to Set A AND Set B simultaneously. It represents the shared overlap of both circular sets.
+                `;
+            } else if (op === 'union') {
+                vennEqDisplay.innerHTML = `A &cup; B (Union)`;
+                vennExplanation.innerHTML = `
+                    The Union (<span class="number" style="color:#fff;">A &cup; B</span>) groups all elements that belong to Set A, OR Set B, or both. It covers the entire combined boundaries of both circles.
+                `;
+            } else if (op === 'diffAB') {
+                vennEqDisplay.innerHTML = `A \\ B (Difference A minus B)`;
+                vennExplanation.innerHTML = `
+                    The Difference (<span class="number" style="color:#fff;">A \\ B</span>) isolates elements in Set A that are NOT in Set B. It shaves off the overlapping intersection from Set A.
+                `;
+            } else if (op === 'diffBA') {
+                vennEqDisplay.innerHTML = `B \\ A (Difference B minus A)`;
+                vennExplanation.innerHTML = `
+                    The Difference (<span class="number" style="color:#fff;">B \\ A</span>) isolates elements in Set B that are NOT in Set A. It shaves off the overlapping intersection from Set B.
+                `;
+            } else if (op === 'xor') {
+                vennEqDisplay.innerHTML = `A &Delta; B (Symmetric Difference)`;
+                vennExplanation.innerHTML = `
+                    Symmetric Difference (<span class="number" style="color:#fff;">A &Delta; B</span>) captures elements belonging to Set A or B, but NOT both. It excludes the overlapping intersection.
+                `;
+            } else if (op === 'complement') {
+                vennEqDisplay.innerHTML = `(A &cup; B)' (Complement of Union)`;
+                vennExplanation.innerHTML = `
+                    The Complement (<span class="number" style="color:#fff;">(A &cup; B)'</span>) represents everything in the Universe (U) that lies OUTSIDE the union of Set A and Set B.
+                `;
+            }
+
+            drawVennShading();
+        }
+
+        // SHAPE SORTING CARGO GAME
+        const shapesTypes = ['Triangle', 'Circle', 'Square'];
+        const shapesColors = ['Red', 'Blue'];
+
+        function initSortingGame() {
+            cargoShapes = [];
+            // Generate 8 cargo items to sort
+            for (let i = 0; i < 8; i++) {
+                const shapeType = shapesTypes[i % shapesTypes.length];
+                const shapeCol = shapesColors[Math.floor(i / 4)];
+                
+                cargoShapes.push({
+                    id: i,
+                    type: shapeType,
+                    color: shapeCol,
+                    // initial coordinates placed in cargo bay at bottom
+                    x: 60 + i * 50,
+                    y: 370,
+                    origX: 60 + i * 50,
+                    origY: 370,
+                    radius: 14,
+                    sorted: false
+                });
+            }
+        }
+
+        function drawSortingGame() {
+            const w = sortingCanvas.width;
+            const h = sortingCanvas.height;
+            sortCtx.clearRect(0, 0, w, h);
+
+            const midY = h / 2 - 30;
+            const rad = 85;
+            const offset = 55;
+            const circleAX = w / 2 - offset;
+            const circleBX = w / 2 + offset;
+
+            // 1. Draw Set A circle
+            sortCtx.strokeStyle = 'var(--color-set-a)';
+            sortCtx.fillStyle = 'rgba(56, 189, 248, 0.01)';
+            sortCtx.lineWidth = 2;
+            sortCtx.beginPath();
+            sortCtx.arc(circleAX, midY, rad, 0, Math.PI * 2);
+            sortCtx.fill();
+            sortCtx.stroke();
+
+            // 2. Draw Set B circle
+            sortCtx.strokeStyle = 'var(--color-set-b)';
+            sortCtx.fillStyle = 'rgba(244, 63, 94, 0.01)';
+            sortCtx.beginPath();
+            sortCtx.arc(circleBX, midY, rad, 0, Math.PI * 2);
+            sortCtx.fill();
+            sortCtx.stroke();
+
+            sortCtx.fillStyle = 'var(--color-set-a)';
+            sortCtx.font = 'bold 11px JetBrains Mono';
+            sortCtx.textAlign = 'center';
+            sortCtx.fillText(`A: ${setACriteria}`, circleAX - 20, midY - rad - 8);
+
+            sortCtx.fillStyle = 'var(--color-set-b)';
+            sortCtx.fillText(`B: ${setBCriteria}`, circleBX + 20, midY - rad - 8);
+
+            // 3. Draw Cargo Bay boundaries at bottom
+            sortCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            sortCtx.fillStyle = 'rgba(255, 255, 255, 0.01)';
+            sortCtx.lineWidth = 1.5;
+            sortCtx.beginPath();
+            sortCtx.roundRect(15, 330, w - 30, 75, 10);
+            sortCtx.fill();
+            sortCtx.stroke();
+
+            sortCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            sortCtx.font = '9px JetBrains Mono';
+            sortCtx.fillText('Cargo Loading Bay (Drag from here)', w / 2, 345);
+
+            // 4. Draw cargo shapes
+            cargoShapes.forEach(shape => {
+                // Don't draw the one currently dragged last, so it displays on top
+                if (draggingShape && draggingShape.id === shape.id) return;
+                drawCargoItem(sortCtx, shape);
+            });
+
+            if (draggingShape) {
+                drawCargoItem(sortCtx, draggingShape);
+            }
+        }
+
+        function drawCargoItem(ctx, shape) {
+            ctx.shadowBlur = 6;
+            ctx.shadowColor = shape.color === 'Red' ? '#ef4444' : '#3b82f6';
+            ctx.fillStyle = shape.color === 'Red' ? '#ef4444' : '#3b82f6';
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.2;
+
+            const x = shape.x;
+            const y = shape.y;
+            const r = shape.radius;
+
+            ctx.beginPath();
+            if (shape.type === 'Circle') {
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+            } else if (shape.type === 'Square') {
+                ctx.rect(x - r, y - r, r * 2, r * 2);
+            } else if (shape.type === 'Triangle') {
+                ctx.moveTo(x, y - r);
+                ctx.lineTo(x + r, y + r - 2);
+                ctx.lineTo(x - r, y + r - 2);
+                ctx.closePath();
+            }
+            ctx.fill();
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+
+        // Drop checker checks if shape matches dropped region
+        function checkSetLogic(shape, sx, sy) {
+            const h = sortingCanvas.height;
+            const w = sortingCanvas.width;
+            const midY = h / 2 - 30;
+            const rad = 85;
+            const offset = 55;
+            const circleAX = w / 2 - offset;
+            const circleBX = w / 2 + offset;
+
+            const inA = Math.hypot(sx - circleAX, sy - midY) <= rad;
+            const inB = Math.hypot(sx - circleBX, sy - midY) <= rad;
+
+            // Deduce matches based on criteria selected
+            // e.g. setACriteria = 'Red', setBCriteria = 'Circle'
+            let matchesA = false;
+            if (setACriteria === 'Red' && shape.color === 'Red') matchesA = true;
+            else if (setACriteria === 'Blue' && shape.color === 'Blue') matchesA = true;
+            else if (setACriteria === 'Triangle' && shape.type === 'Triangle') matchesA = true;
+            else if (setACriteria === 'Circle' && shape.type === 'Circle') matchesA = true;
+
+            let matchesB = false;
+            if (setBCriteria === 'Red' && shape.color === 'Red') matchesB = true;
+            else if (setBCriteria === 'Blue' && shape.color === 'Blue') matchesB = true;
+            else if (setBCriteria === 'Triangle' && shape.type === 'Triangle') matchesB = true;
+            else if (setBCriteria === 'Circle' && shape.type === 'Circle') matchesB = true;
+
+            // Correct region evaluation
+            const belongsInA_Only = matchesA && !matchesB;
+            const belongsInB_Only = matchesB && !matchesA;
+            const belongsInBoth = matchesA && matchesB;
+            const belongsInNeither = !matchesA && !matchesB;
+
+            // Actual region dropped:
+            const droppedInA_Only = inA && !inB;
+            const droppedInB_Only = inB && !inA;
+            const droppedInBoth = inA && inB;
+            const droppedInNeither = !inA && !inB;
+
+            if (belongsInBoth && droppedInBoth) return true;
+            if (belongsInA_Only && droppedInA_Only) return true;
+            if (belongsInB_Only && droppedInB_Only) return true;
+            if (belongsInNeither && droppedInNeither && sy < 320) return true; // universe outside circle
+
+            return false;
+        }
+
+        // Mouse Drag & Drop Handlers
+        function getMousePos(canvas, evt) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: evt.clientX - rect.left,
+                y: evt.clientY - rect.top
+            };
+        }
+
+        function handleMouseDown(e) {
+            const pos = getMousePos(sortingCanvas, e);
+            
+            // search backwards to grab top shape first
+            for (let i = cargoShapes.length - 1; i >= 0; i--) {
+                const shape = cargoShapes[i];
+                if (Math.hypot(pos.x - shape.x, pos.y - shape.y) <= shape.radius + 5) {
+                    draggingShape = shape;
+                    dragOffset.x = pos.x - shape.x;
+                    dragOffset.y = pos.y - shape.y;
+                    break;
+                }
+            }
+        }
+
+        function handleMouseMove(e) {
+            if (!draggingShape) return;
+            const pos = getMousePos(sortingCanvas, e);
+            draggingShape.x = pos.x - dragOffset.x;
+            draggingShape.y = pos.y - dragOffset.y;
+            drawSortingGame();
+        }
+
+        function handleMouseUp(e) {
+            if (!draggingShape) return;
+            
+            const isCorrect = checkSetLogic(draggingShape, draggingShape.x, draggingShape.y);
+
+            if (isCorrect) {
+                // Keep it at new coordinate, marked sorted
+                draggingShape.sorted = true;
+            } else {
+                // Return to original Cargo location
+                draggingShape.x = draggingShape.origX;
+                draggingShape.y = draggingShape.origY;
+                draggingShape.sorted = false;
+
+                // Flash canvas red border briefly (feedback)
+                sortingCanvas.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                setTimeout(() => {
+                    sortingCanvas.style.borderColor = 'var(--card-border)';
+                }, 200);
+            }
+
+            draggingShape = null;
+            drawSortingGame();
+        }
+
+        function updateSetCriteria() {
+            setACriteria = selectSetA.value;
+            setBCriteria = selectSetB.value;
+
+            gameRulesExplanation.innerHTML = `
+                - Left Circle (A): Only <span style="color:var(--color-set-a); font-weight:600;">${setACriteria} items</span> that do not match B.<br>
+                - Right Circle (B): Only <span style="color:var(--color-set-b); font-weight:600;">${setBCriteria} items</span> that do not match A.<br>
+                - Overlap (A &cap; B): Items satisfying <span style="color:var(--color-purple); font-weight:600;">BOTH</span> criteria.<br>
+                - Background: Anything else.
+            `;
+
+            resetSortingGame();
+        }
+
+        function resetSortingGame() {
+            initSortingGame();
+            drawSortingGame();
+        }
+
+        // DYNAMIC SET THEORY QUIZ SYSTEM
+        const quizQuestions = [
+            {
+                question: "If Set A = {1, 2, 3} and Set B = {3, 4, 5}, what is the intersection A \u2229 B?",
+                options: ["{1, 2, 3, 4, 5}", "{3}", "{1, 2, 4, 5}", "Empty Set (\u2205)"],
+                correct: 1,
+                explanation: "The intersection contains only elements that exist in both sets A and B. Number 3 is the only shared element."
+            },
+            {
+                question: "What does the Union (A \u222A B) of two sets represent?",
+                options: ["Elements belonging to Set A only", "Elements belonging to Set B only", "Elements belonging to A, B, or both", "Elements belonging to neither A nor B"],
+                correct: 2,
+                explanation: "The union represents the combination of sets, collecting all elements that belong to A OR B (including overlaps)."
+            },
+            {
+                question: "If the Universal set U = {1, 2, 3, 4} and Set A = {1, 2}, what is the complement Set A'?",
+                options: ["{1, 2}", "{3, 4}", "{1, 2, 3, 4}", "{}"],
+                correct: 1,
+                explanation: "The complement A' consists of all elements in the universe U that are NOT contained in Set A. Thus, U \\ A = {3, 4}."
+            },
+            {
+                question: "Which operation describes the symmetric difference (A \u2206 B)?",
+                options: ["Elements in both A and B", "Elements in A or B, but NOT both", "Elements in A only", "Everything outside A and B"],
+                correct: 1,
+                explanation: "Symmetric Difference extracts elements in A or B, but excludes their intersection. Formally: (A \\ B) \u222A (B \\ A)."
+            },
+            {
+                question: "In Boolean logic, what logic gate represents the Union (\u222A) set operator?",
+                options: ["AND gate", "OR gate", "XOR gate", "NOT gate"],
+                correct: 1,
+                explanation: "Union selects elements in A OR B, which corresponds directly to the logical OR operator."
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let quizScore = 0;
+        let answered = false;
+
+        function loadQuestion() {
+            answered = false;
+            const q = quizQuestions[currentQuestionIdx];
+            
+            document.getElementById('quizProgressText').textContent = `Question ${currentQuestionIdx + 1} of ${quizQuestions.length}`;
+            document.getElementById('quizScoreText').textContent = `Score: ${quizScore}/${currentQuestionIdx}`;
+            document.getElementById('quizQuestionTitle').textContent = q.question;
+            document.getElementById('quizFeedbackArea').style.display = 'none';
+
+            const container = document.getElementById('quizOptionsContainer');
+            container.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'quiz-option';
+                optDiv.innerHTML = `<span>${opt}</span>`;
+                optDiv.onclick = () => selectOption(idx, optDiv);
+                container.appendChild(optDiv);
+            });
+        }
+
+        function selectOption(selectedIdx, optionElement) {
+            if (answered) return;
+            answered = true;
+
+            const q = quizQuestions[currentQuestionIdx];
+            const options = document.querySelectorAll('.quiz-option');
+
+            options.forEach((opt, idx) => {
+                if (idx === q.correct) {
+                    opt.classList.add('correct');
+                } else if (idx === selectedIdx) {
+                    opt.classList.add('incorrect');
+                }
+            });
+
+            if (selectedIdx === q.correct) {
+                quizScore++;
+                document.getElementById('quizFeedbackArea').querySelector('strong').textContent = 'Correct Answer!';
+                document.getElementById('quizFeedbackArea').querySelector('strong').style.color = '#10b981';
+            } else {
+                document.getElementById('quizFeedbackArea').querySelector('strong').textContent = 'Incorrect Answer';
+                document.getElementById('quizFeedbackArea').querySelector('strong').style.color = '#f43f5e';
+            }
+
+            document.getElementById('quizExplanationText').textContent = q.explanation;
+            document.getElementById('quizFeedbackArea').style.display = 'block';
+            document.getElementById('quizScoreText').textContent = `Score: ${quizScore}/${currentQuestionIdx + 1}`;
+        }
+
+        document.getElementById('quizNextBtn').addEventListener('click', () => {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                const area = document.getElementById('quizContainer');
+                area.innerHTML = `
+                    <div class="quiz-score-overlay">
+                        <h2 style="font-size: 2rem; margin-bottom: 1rem; font-family:'Outfit'; font-weight:700;">Quiz Completed!</h2>
+                        <p style="font-size: 1.1rem; margin-bottom: 2rem; color:var(--text-muted);">
+                            You scored <strong class="number" style="color:var(--color-purple);">${quizScore} out of ${quizQuestions.length}</strong> correct answers.
+                        </p>
+                        <button class="btn" onclick="resetQuiz()" style="width:auto; display:inline-flex;">Restart Quiz</button>
+                    </div>
+                `;
+            }
+        });
+
+        function resetQuiz() {
+            currentQuestionIdx = 0;
+            quizScore = 0;
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = `
+                <div id="quizQuestionArea">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                        <span id="quizProgressText">Question 1 of 5</span>
+                        <span id="quizScoreText">Score: 0/0</span>
+                    </div>
+                    <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;"></h3>
+                    <div id="quizOptionsContainer"></div>
+                </div>
+                <div class="quiz-feedback" id="quizFeedbackArea">
+                    <strong>Correct Answer!</strong>
+                    <p id="quizExplanationText"></p>
+                    <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                        Next Question
+                    </button>
+                </div>
+            `;
+            document.getElementById('quizNextBtn').addEventListener('click', () => {
+                currentQuestionIdx++;
+                if (currentQuestionIdx < quizQuestions.length) {
+                    loadQuestion();
+                } else {
+                    const area = document.getElementById('quizContainer');
+                    area.innerHTML = `
+                        <div class="quiz-score-overlay">
+                            <h2 style="font-size: 2rem; margin-bottom: 1rem; font-family:'Outfit'; font-weight:700;">Quiz Completed!</h2>
+                            <p style="font-size: 1.1rem; margin-bottom: 2rem; color:var(--text-muted);">
+                                You scored <strong class="number" style="color:var(--color-purple);">${quizScore} out of ${quizQuestions.length}</strong> correct answers.
+                            </p>
+                            <button class="btn" onclick="resetQuiz()" style="width:auto; display:inline-flex;">Restart Quiz</button>
+                        </div>
+                    `;
+                }
+            });
+            loadQuestion();
+        }
+
+        // INIT & RESIZE BINDINGS
+        window.addEventListener('resize', () => {
+            setTimeout(() => {
+                drawVennShading();
+                drawSortingGame();
+            }, 300);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            drawVennShading();
+            initSortingGame();
+            drawSortingGame();
+
+            // Bind drag mouse events
+            sortingCanvas.addEventListener('mousedown', handleMouseDown);
+            sortingCanvas.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+
+            loadQuestion();
+        });
+    </script>
+</body>
+
+</html>

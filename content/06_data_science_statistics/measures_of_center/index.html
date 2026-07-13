@@ -1,0 +1,1175 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Measures of Center - Data Science & Stats</title>
+    <script>
+        window.PAGE_CONFIG = {
+            domain: "06_data_science_statistics",
+            logo: { main: "Measures", accent: "of Center", sub: "Mean, Median, Mode" }
+        };
+    </script>
+    <script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            --color-mean: #a855f7;      /* Purple for Mean & Fulcrum */
+            --color-mean-glow: rgba(168, 85, 247, 0.35);
+            --color-median: #10b981;    /* Emerald for Median */
+            --color-median-glow: rgba(16, 185, 129, 0.35);
+            --color-mode: #ffb000;      /* Amber for Mode */
+            --color-mode-glow: rgba(255, 176, 0, 0.35);
+            
+            --color-left-half: #38bdf8; /* Cyan for left of median */
+            --color-right-half: #f43f5e; /* Rose for right of median */
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-accent);
+            background: rgba(168, 85, 247, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            text-shadow: 0 0 5px var(--color-accent-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 960px) {
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Dot Plot Sandbox */
+        .plot-container {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #canvasDotPlot {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        /* Input Controls */
+        .presets-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            margin-bottom: 1.25rem;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1.25rem;
+        }
+
+        .input-text {
+            background: #0f121e;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text-color);
+            padding: 8px 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            flex-grow: 1;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .input-text:focus {
+            border-color: var(--color-accent);
+        }
+
+        /* Metrics Display */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        .metric-card {
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-info h3 {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .metric-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .legend-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* Solver steps */
+        .solver-step {
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 2px solid var(--card-border);
+        }
+
+        .solver-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .solver-step-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .solver-step-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .solver-value-list {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            display: inline-block;
+            margin: 4px 0;
+            color: var(--text-color);
+        }
+
+        /* Quiz elements */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .canvas-helper-text {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.3);
+            font-family: 'JetBrains Mono', monospace;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Measures of Center</h1>
+            <p>Explore the statistics of central tendency. Drag and place observations to observe in real-time how the Mean, Median, and Mode behave and diverge in skewed distributions.</p>
+        </header>
+
+        <!-- SECTION 1: VISUAL SANDBOX -->
+        <section id="visualizer">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Symmetrical & Skewed Distributions</h2>
+            </div>
+            <p class="section-intro">
+                Click on any column to place a dot. Click and drag an existing dot to adjust its value, or right-click a dot to delete it. Compare the three indicators of center.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Dot Plot Canvas & Legend -->
+                <div class="panel">
+                    <div class="plot-container">
+                        <div class="canvas-helper-text">CLICK to add | DRAG to move | RIGHT-CLICK to remove</div>
+                        <canvas id="canvasDotPlot"></canvas>
+                    </div>
+
+                    <div class="legend-row">
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background-color: var(--color-mean); box-shadow: 0 0 5px var(--color-mean);"></span>
+                            <span>Mean (Balance Fulcrum)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background-color: var(--color-median); box-shadow: 0 0 5px var(--color-median);"></span>
+                            <span>Median (Middle Value)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background-color: var(--color-mode); box-shadow: 0 0 5px var(--color-mode);"></span>
+                            <span>Mode (Tallest Column)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background-color: var(--color-left-half);"></span>
+                            <span>Left Half of Dataset</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background-color: var(--color-right-half);"></span>
+                            <span>Right Half of Dataset</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Presets & Controls -->
+                <div class="panel">
+                    <div style="margin-bottom: 1.25rem;">
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">1. Distribution Presets</h3>
+                        <div class="presets-grid">
+                            <button class="btn-preset active" onclick="loadPreset('symmetric')">Symmetric (Normal)</button>
+                            <button class="btn-preset" onclick="loadPreset('skewed_right')">Skewed Right</button>
+                            <button class="btn-preset" onclick="loadPreset('skewed_left')">Skewed Left</button>
+                            <button class="btn-preset" onclick="loadPreset('bimodal')">Bimodal (Two Peaks)</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.25rem;">
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">2. Load Custom Dataset</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">Enter comma-separated integers between 0 and 15:</p>
+                        <div class="input-row">
+                            <input type="text" class="input-text" id="txtCustomData" value="4, 5, 5, 6, 7, 7, 7, 8, 9, 9, 10">
+                            <button class="btn" style="width: auto; padding: 0 1.25rem;" onclick="loadCustomDataset()">Load</button>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem; display: flex; gap: 8px;">
+                        <button class="btn" style="background: rgba(255,255,255,0.05); color: var(--text-color); border: 1px solid var(--card-border); box-shadow: none;" onclick="addRandomPoint()">Add 1 Random</button>
+                        <button class="btn" style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; box-shadow: none;" onclick="clearAll()">Reset All</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: STEP-BY-STEP SOLVER -->
+        <section id="step-solver">
+            <div class="section-header">
+                <span class="section-tag">Algebraic Solver</span>
+                <h2>Central Tendency Resolution Steps</h2>
+            </div>
+            <p class="section-intro">
+                Trace how the sorted dataset is evaluated mathematically to determine each metric.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Steps -->
+                <div class="panel" style="gap: 1rem;">
+                    <h3>Trace Calculations</h3>
+                    <div id="solveSteps">
+                        <div style="font-style: italic; color: var(--text-muted);">Please add observations to see solver trace.</div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Big Outputs -->
+                <div class="panel">
+                    <h3>Summary Statistics</h3>
+                    <br>
+                    <div class="metrics-grid">
+                        <div class="metric-card" style="border-left: 4px solid var(--color-mean);">
+                            <div class="metric-info">
+                                <h3>Mean (Average)</h3>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">Sum / N</span>
+                            </div>
+                            <span class="metric-value number" id="lblMean" style="color: var(--color-mean);">0.00</span>
+                        </div>
+
+                        <div class="metric-card" style="border-left: 4px solid var(--color-median);">
+                            <div class="metric-info">
+                                <h3>Median (Middle)</h3>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">50th Percentile</span>
+                            </div>
+                            <span class="metric-value number" id="lblMedian" style="color: var(--color-median);">0.0</span>
+                        </div>
+
+                        <div class="metric-card" style="border-left: 4px solid var(--color-mode);">
+                            <div class="metric-info">
+                                <h3>Mode (Peak)</h3>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">Highest Frequency</span>
+                            </div>
+                            <span class="metric-value number" id="lblMode" style="color: var(--color-mode);">None</span>
+                        </div>
+
+                        <div class="metric-card" style="border-color: rgba(255,255,255,0.03);">
+                            <div class="metric-info">
+                                <h3>Sample Count (N)</h3>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">Observations</span>
+                            </div>
+                            <span class="metric-value number" id="lblN" style="color: var(--text-color);">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Measures of Center Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Test your understanding of skewness directions, how outliers distort averages, and which metrics are robust.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Question Board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Quiz question loading...</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text...</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Reference Card -->
+                <div class="panel">
+                    <h3>Distribution Shape Cheat Sheet</h3>
+                    <br>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">
+                        <li style="display:flex; align-items:flex-start; gap:8px;">
+                            <span style="background-color: var(--color-mean); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 5px var(--color-mean); margin-top:6px; flex-shrink:0;"></span>
+                            <span><strong>Symmetric:</strong> Mean, Median, and Mode are exactly or approximately equal. The distribution balances perfectly in the center.</span>
+                        </li>
+                        <li style="display:flex; align-items:flex-start; gap:8px;">
+                            <span style="background-color: var(--color-right-half); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 5px var(--color-right-half); margin-top:6px; flex-shrink:0;"></span>
+                            <span><strong>Skewed Right (Positive):</strong> Outliers pull the Mean to the right of the Median. Order: Mode < Median < Mean.</span>
+                        </li>
+                        <li style="display:flex; align-items:flex-start; gap:8px;">
+                            <span style="background-color: var(--color-left-half); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 5px var(--color-left-half); margin-top:6px; flex-shrink:0;"></span>
+                            <span><strong>Skewed Left (Negative):</strong> Outliers pull the Mean to the left of the Median. Order: Mean < Median < Mode.</span>
+                        </li>
+                        <li style="display:flex; align-items:flex-start; gap:8px;">
+                            <span style="background-color: var(--color-median); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 5px var(--color-median); margin-top:6px; flex-shrink:0;"></span>
+                            <span><strong>Outlier Robustness:</strong> The Median is highly resistant to extreme outliers. The Mean is sensitive and easily pulled.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('canvasDotPlot');
+        const ctx = canvas.getContext('2d');
+        const txtCustomData = document.getElementById('txtCustomData');
+        
+        const lblMean = document.getElementById('lblMean');
+        const lblMedian = document.getElementById('lblMedian');
+        const lblMode = document.getElementById('lblMode');
+        const lblN = document.getElementById('lblN');
+        const solveSteps = document.getElementById('solveSteps');
+
+        // State
+        let dataset = [4, 5, 5, 6, 7, 7, 7, 8, 9, 9, 10]; // raw dataset integers
+        const minVal = 0;
+        const maxVal = 15;
+        let dragInfo = null; // { value, stackIndex, startX, startY }
+        let hoverCol = null; // integer value hovered
+
+        // Layout bounds
+        const marginL = 40;
+        const marginR = 40;
+        const marginB = 60;
+        const axisY = 270;
+        const dotRadius = 7;
+        const dotGap = 3;
+
+        function loadCustomDataset() {
+            const valStr = txtCustomData.value;
+            const parsed = valStr.split(',')
+                .map(s => parseInt(s.trim()))
+                .filter(n => !isNaN(n) && n >= minVal && n <= maxVal);
+            
+            if (parsed.length > 0) {
+                dataset = parsed.sort((a, b) => a - b);
+                updateAll();
+            }
+        }
+
+        const presets = {
+            symmetric: [3, 4, 5, 5, 6, 6, 7, 7, 7, 7, 8, 8, 9, 9, 10, 11],
+            skewed_right: [2, 3, 3, 4, 4, 4, 5, 5, 6, 7, 8, 10, 13, 14],
+            skewed_left: [1, 2, 5, 7, 8, 9, 10, 10, 11, 11, 11, 12, 12, 13],
+            bimodal: [2, 3, 3, 3, 4, 4, 5, 7, 8, 10, 11, 11, 12, 12, 12, 13]
+        };
+
+        function loadPreset(name) {
+            const p = presets[name];
+            if (!p) return;
+            dataset = [...p].sort((a, b) => a - b);
+            
+            document.querySelectorAll('.presets-grid button').forEach(btn => btn.classList.remove('active'));
+            const targetBtn = Array.from(document.querySelectorAll('.presets-grid button'))
+                .find(btn => btn.textContent.toLowerCase().includes(name.replace('_', ' ')));
+            if (targetBtn) targetBtn.classList.add('active');
+
+            txtCustomData.value = dataset.join(', ');
+            updateAll();
+        }
+
+        function clearAll() {
+            dataset = [];
+            updateAll();
+        }
+
+        function addRandomPoint() {
+            const val = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+            dataset.push(val);
+            dataset.sort((a, b) => a - b);
+            txtCustomData.value = dataset.join(', ');
+            updateAll();
+        }
+
+        function getColHeights() {
+            const counts = {};
+            for (let i = minVal; i <= maxVal; i++) counts[i] = 0;
+            dataset.forEach(v => {
+                if (counts[v] !== undefined) counts[v]++;
+            });
+            return counts;
+        }
+
+        // Logic & Mathematics
+        function getMean() {
+            if (dataset.length === 0) return 0;
+            const sum = dataset.reduce((a, b) => a + b, 0);
+            return sum / dataset.length;
+        }
+
+        function getMedian() {
+            if (dataset.length === 0) return { val: 0, idxs: [] };
+            const n = dataset.length;
+            const mid = Math.floor(n / 2);
+            if (n % 2 !== 0) {
+                return { val: dataset[mid], idxs: [mid] };
+            } else {
+                return { val: (dataset[mid - 1] + dataset[mid]) / 2, idxs: [mid - 1, mid] };
+            }
+        }
+
+        function getModes() {
+            if (dataset.length === 0) return { val: [], count: 0 };
+            const counts = {};
+            let maxCount = 0;
+            dataset.forEach(v => {
+                counts[v] = (counts[v] || 0) + 1;
+                if (counts[v] > maxCount) maxCount = counts[v];
+            });
+
+            const modes = [];
+            for (const [vStr, count] of Object.entries(counts)) {
+                if (count === maxCount && count > 1) { // Mode requires freq > 1
+                    modes.push(parseInt(vStr));
+                }
+            }
+            return { val: modes.sort((a, b) => a - b), count: maxCount };
+        }
+
+        // Canvas Rendering
+        function drawSandbox() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const width = canvas.width;
+            const drawWidth = width - marginL - marginR;
+            const totalCols = maxVal - minVal;
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(marginL, axisY);
+            ctx.lineTo(width - marginR, axisY);
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 11px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+
+            const colWidth = drawWidth / totalCols;
+
+            for (let i = minVal; i <= maxVal; i++) {
+                const px = marginL + i * colWidth;
+
+                // Ticks
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(px, axisY - 6);
+                ctx.lineTo(px, axisY + 6);
+                ctx.stroke();
+
+                // Axis label
+                ctx.fillText(i, px, axisY + 12);
+            }
+
+            if (dataset.length === 0) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.font = 'italic 12.5px Outfit';
+                ctx.fillText("Dot plot empty. Click above any tick mark to add values.", width / 2, axisY - 60);
+                return;
+            }
+
+            const colHeights = getColHeights();
+            const meanVal = getMean();
+            const medianObj = getMedian();
+            const modesObj = getModes();
+
+            // Highlight Modes columns if any exist
+            if (modesObj.count > 1) {
+                ctx.fillStyle = 'rgba(255, 176, 0, 0.05)';
+                ctx.strokeStyle = 'rgba(255, 176, 0, 0.12)';
+                ctx.lineWidth = 1.5;
+                modesObj.val.forEach(mv => {
+                    const px = marginL + mv * colWidth;
+                    const bH = modesObj.count * (2 * dotRadius + dotGap) + 15;
+                    
+                    ctx.beginPath();
+                    ctx.roundRect(px - colWidth/2 + 2, axisY - bH, colWidth - 4, bH, 6);
+                    ctx.fill();
+                    ctx.stroke();
+                });
+            }
+
+            // Group dots and calculate their sorted indexing
+            // Let's create an array of objects representing each data point's dot coordinates
+            // Sorted to color left vs right of median
+            const dots = [];
+            const countsTracker = {};
+            for (let i = minVal; i <= maxVal; i++) countsTracker[i] = 0;
+
+            dataset.forEach((val, sortedIdx) => {
+                const stackIdx = countsTracker[val]++;
+                const px = marginL + val * colWidth;
+                const py = axisY - dotRadius - 4 - stackIdx * (2 * dotRadius + dotGap);
+                
+                // Color coding logic based on median position
+                let dotColor = '#e2e8f0'; // default white
+                let dotGlow = false;
+
+                if (medianObj.idxs.includes(sortedIdx)) {
+                    dotColor = 'var(--color-median)';
+                    dotGlow = true;
+                } else if (sortedIdx < medianObj.idxs[0]) {
+                    dotColor = 'var(--color-left-half)';
+                } else if (sortedIdx > medianObj.idxs[medianObj.idxs.length - 1]) {
+                    dotColor = 'var(--color-right-half)';
+                }
+
+                dots.push({ val, stackIdx, sortedIdx, x: px, y: py, color: dotColor, glow: dotGlow });
+            });
+
+            dots.forEach(dot => {
+                ctx.fillStyle = dot.color;
+                ctx.strokeStyle = '#08090d';
+                ctx.lineWidth = 1.5;
+                
+                if (dot.glow) {
+                    ctx.shadowColor = 'var(--color-median-glow)';
+                    ctx.shadowBlur = 8;
+                }
+
+                ctx.beginPath();
+                ctx.arc(dot.x, dot.y, dotRadius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.shadowBlur = 0; // reset
+            });
+
+            if (hoverCol !== null && dragInfo === null) {
+                const nextStackIdx = colHeights[hoverCol] || 0;
+                const px = marginL + hoverCol * colWidth;
+                const py = axisY - dotRadius - 4 - nextStackIdx * (2 * dotRadius + dotGap);
+
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([2, 2]);
+                ctx.beginPath();
+                ctx.arc(px, py, dotRadius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+                ctx.setLineDash([]); // reset
+            }
+
+            // 1. Median indicator (only if N > 0)
+            const medianPx = marginL + medianObj.val * colWidth;
+            ctx.strokeStyle = 'var(--color-median)';
+            ctx.lineWidth = 1.8;
+            ctx.setLineDash([4, 3]);
+            ctx.beginPath();
+            ctx.moveTo(medianPx, 35);
+            ctx.lineTo(medianPx, axisY);
+            ctx.stroke();
+            ctx.setLineDash([]); // reset
+
+            // Label Median at top
+            ctx.fillStyle = 'var(--color-median)';
+            ctx.font = 'bold 9px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.fillText("MEDIAN: " + medianObj.val.toFixed(1), medianPx, 22);
+
+            // 2. Mean indicator & Fulcrum physics
+            const meanPx = marginL + meanVal * colWidth;
+            
+            ctx.strokeStyle = 'var(--color-mean)';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.moveTo(meanPx, 35);
+            ctx.lineTo(meanPx, axisY);
+            ctx.stroke();
+
+            ctx.fillStyle = 'var(--color-mean)';
+            ctx.beginPath();
+            ctx.moveTo(meanPx, axisY + 2);
+            ctx.lineTo(meanPx - 8, axisY + 12);
+            ctx.lineTo(meanPx + 8, axisY + 12);
+            ctx.closePath();
+            ctx.fill();
+
+            // Label Mean
+            ctx.fillStyle = 'var(--color-mean)';
+            ctx.font = 'bold 9px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.fillText("MEAN: " + meanVal.toFixed(2), meanPx, 10);
+
+            if (modesObj.count > 1) {
+                modesObj.val.forEach(mv => {
+                    const px = marginL + mv * colWidth;
+                    const py = axisY - modesObj.count * (2 * dotRadius + dotGap) - 15;
+                    ctx.fillStyle = 'var(--color-mode)';
+                    ctx.font = 'bold 8.5px JetBrains Mono';
+                    ctx.textAlign = 'center';
+                    ctx.fillText("MODE", px, py);
+                });
+            }
+        }
+
+        // Coordinates calculations
+        function getMouseCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            return {
+                x: (e.clientX - rect.left) * scaleX,
+                y: (e.clientY - rect.top) * scaleY
+            };
+        }
+
+        function getColFromX(x) {
+            const drawWidth = canvas.width - marginL - marginR;
+            const colWidth = drawWidth / (maxVal - minVal);
+            const pct = (x - marginL) / drawWidth;
+            let col = Math.round(pct * (maxVal - minVal));
+            if (col < minVal) col = minVal;
+            if (col > maxVal) col = maxVal;
+            return col;
+        }
+
+        function findDotUnderMouse(x, y) {
+            const drawWidth = canvas.width - marginL - marginR;
+            const colWidth = drawWidth / (maxVal - minVal);
+            
+            const colHeights = getColHeights();
+            
+            for (let i = 0; i < dataset.length; i++) {
+                const val = dataset[i];
+                // Count stack index of this point
+                // Find all previous points equal to val
+                const priorCount = dataset.slice(0, i).filter(v => v === val).length;
+                
+                const px = marginL + val * colWidth;
+                const py = axisY - dotRadius - 4 - priorCount * (2 * dotRadius + dotGap);
+                
+                const dist = Math.hypot(x - px, y - py);
+                if (dist <= dotRadius + 4) {
+                    return { index: i, val: val, stackIdx: priorCount };
+                }
+            }
+            return null;
+        }
+
+        // Event Listeners
+        function handleMouseMove(e) {
+            const coords = getMouseCoords(e);
+            
+            if (dragInfo !== null) {
+                // Dragging point: update its value
+                const newCol = getColFromX(coords.x);
+                if (newCol !== dataset[dragInfo.index]) {
+                    dataset[dragInfo.index] = newCol;
+                    // Sort dataset but keep track of our dragged index
+                    const originalVal = dragInfo.val;
+                    dataset.sort((a, b) => a - b);
+                    // Find new index of our dragged element
+                    const newIndex = dataset.indexOf(newCol); // close enough
+                    dragInfo.index = newIndex;
+                    
+                    txtCustomData.value = dataset.join(', ');
+                    updateAll();
+                }
+                return;
+            }
+
+            // Hover column highlight
+            const hoverX = coords.x;
+            if (hoverX >= marginL - 10 && hoverX <= canvas.width - marginR + 10) {
+                const col = getColFromX(hoverX);
+                if (hoverCol !== col) {
+                    hoverCol = col;
+                    drawSandbox();
+                }
+            } else {
+                if (hoverCol !== null) {
+                    hoverCol = null;
+                    drawSandbox();
+                }
+            }
+        }
+
+        function handleMouseLeave() {
+            hoverCol = null;
+            dragInfo = null;
+            drawSandbox();
+        }
+
+        function handleMouseDown(e) {
+            e.preventDefault();
+            const coords = getMouseCoords(e);
+            
+            const dotUnder = findDotUnderMouse(coords.x, coords.y);
+
+            if (e.button === 2) {
+                // Right click: delete dot under mouse if exists
+                if (dotUnder !== null) {
+                    dataset.splice(dotUnder.index, 1);
+                    dataset.sort((a, b) => a - b);
+                    txtCustomData.value = dataset.join(', ');
+                    updateAll();
+                }
+                return;
+            }
+
+            if (dotUnder !== null) {
+                // Start dragging
+                dragInfo = dotUnder;
+            } else {
+                // Click in empty column: add new dot
+                const col = getColFromX(coords.x);
+                dataset.push(col);
+                dataset.sort((a, b) => a - b);
+                txtCustomData.value = dataset.join(', ');
+                updateAll();
+            }
+        }
+
+        function handleMouseUp() {
+            dragInfo = null;
+            drawSandbox();
+        }
+
+        // Metrics & Solver Step updating
+        function updateMetrics() {
+            const n = dataset.length;
+            lblN.textContent = n;
+
+            if (n === 0) {
+                lblMean.textContent = "0.00";
+                lblMedian.textContent = "0.0";
+                lblMode.textContent = "None";
+                solveSteps.innerHTML = `<div style="font-style: italic; color: var(--text-muted); padding: 10px 0;">Please add data points to generate calculations trace.</div>`;
+                return;
+            }
+
+            const meanVal = getMean();
+            const medianObj = getMedian();
+            const modesObj = getModes();
+
+            lblMean.textContent = meanVal.toFixed(2);
+            lblMedian.textContent = medianObj.val.toFixed(1);
+
+            let modeText = 'None';
+            if (modesObj.count > 1) {
+                modeText = modesObj.val.join(', ') + ` (freq ${modesObj.count})`;
+            }
+            lblMode.textContent = modeText;
+
+            // Solver Steps Formatting
+            // Mean solver
+            const sum = dataset.reduce((a, b) => a + b, 0);
+            
+            // Median solver detail
+            let medianTrace = '';
+            if (n % 2 !== 0) {
+                const mid = Math.floor(n / 2);
+                medianTrace = `
+                    Since N is odd (${n}), the Median is the exact middle value:<br>
+                    &bull; Formula position: (N + 1) / 2 = (${n} + 1) / 2 = position <strong>${mid + 1}</strong>.<br>
+                    &bull; Sorted item at position ${mid + 1} is: <strong style="color: var(--color-median); font-size:1.1rem;">${dataset[mid]}</strong>.
+                `;
+            } else {
+                const mid = Math.floor(n / 2);
+                medianTrace = `
+                    Since N is even (${n}), the Median is the average of the two middle values at positions ${mid} and ${mid + 1}:<br>
+                    &bull; Value at position ${mid} = <strong>${dataset[mid - 1]}</strong><br>
+                    &bull; Value at position ${mid + 1} = <strong>${dataset[mid]}</strong><br>
+                    &bull; Median calculation: (${dataset[mid - 1]} + ${dataset[mid]}) / 2 = <strong style="color: var(--color-median); font-size:1.1rem;">${medianObj.val.toFixed(1)}</strong>.
+                `;
+            }
+
+            // Mode solver detail
+            let modeTrace = '';
+            if (modesObj.count <= 1) {
+                modeTrace = `No values appear more than once (frequency > 1). Thus, this dataset has <strong>No Mode</strong>.`;
+            } else {
+                modeTrace = `The value(s) with the highest frequency count of <strong>${modesObj.count}</strong> occurrences: <strong style="color: var(--color-mode); font-size:1.1rem;">${modesObj.val.join(', ')}</strong>.`;
+            }
+
+            // Skewness deduction
+            let skewDesc = '';
+            const diff = meanVal - medianObj.val;
+            if (Math.abs(diff) < 0.1) {
+                skewDesc = `<strong style="color: #ffffff;">Symmetric Distribution</strong>. The mean is almost identical to the median. The distribution balances neatly in the center.`;
+            } else if (diff > 0) {
+                skewDesc = `<strong style="color: var(--color-right-half);">Skewed Right (Positive Skew)</strong>. The mean (${meanVal.toFixed(2)}) is pulled to the right of the median (${medianObj.val.toFixed(1)}) due to higher values or right-side outliers.`;
+            } else {
+                skewDesc = `<strong style="color: var(--color-left-half);">Skewed Left (Negative Skew)</strong>. The mean (${meanVal.toFixed(2)}) is pulled to the left of the median (${medianObj.val.toFixed(1)}) due to lower values or left-side outliers.`;
+            }
+
+            const stepHtml = `
+                <div class="solver-step">
+                    <div class="solver-step-title"><span style="color:var(--color-mean);">1.</span> Sort the Dataset (Ascending)</div>
+                    <div class="solver-step-desc">
+                        To calculate measures of center (especially the Median), first sort the values from smallest to largest:
+                        <br>
+                        <div class="solver-value-list">${dataset.join(', ')}</div>
+                    </div>
+                </div>
+                <div class="solver-step">
+                    <div class="solver-step-title"><span style="color:var(--color-mean);">2.</span> Calculate the Mean (Average)</div>
+                    <div class="solver-step-desc">
+                        Sum all numbers and divide by the count (N = ${n}):
+                        <br>
+                        &bull; Sum = ${dataset.join(' + ')} = <strong>${sum}</strong>
+                        <br>
+                        &bull; Mean = Sum / N = ${sum} / ${n} = <strong style="color: var(--color-mean); font-size:1.1rem;">${meanVal.toFixed(3)}</strong>
+                    </div>
+                </div>
+                <div class="solver-step">
+                    <div class="solver-step-title"><span style="color:var(--color-median);">3.</span> Determine the Median (Middle Point)</div>
+                    <div class="solver-step-desc">
+                        ${medianTrace}
+                    </div>
+                </div>
+                <div class="solver-step">
+                    <div class="solver-step-title"><span style="color:var(--color-mode);">4.</span> Find the Mode (Most Frequent)</div>
+                    <div class="solver-step-desc">
+                        ${modeTrace}
+                    </div>
+                </div>
+                <div class="solver-step" style="border-color: rgba(255,255,255,0.15);">
+                    <div class="solver-step-title">5. Analyze Distribution Skewness</div>
+                    <div class="solver-step-desc">
+                        Comparing Mean vs Median:
+                        <br>
+                        &bull; Mean &minus; Median = ${meanVal.toFixed(2)} &minus; ${medianObj.val.toFixed(1)} = <strong>${diff.toFixed(2)}</strong>.
+                        <br>
+                        &bull; Shape: ${skewDesc}
+                    </div>
+                </div>
+            `;
+            solveSteps.innerHTML = stepHtml;
+        }
+
+        function updateAll() {
+            drawSandbox();
+            updateMetrics();
+        }
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            drawSandbox();
+        }
+
+        // Quiz Engine Data
+        const quizQuestions = [
+            {
+                question: "In a skewed-right distribution (positive skew), which relationship is typically true for the measures of center?",
+                options: [
+                    "Mean < Median < Mode",
+                    "Mode < Median < Mean",
+                    "Mean = Median = Mode",
+                    "Median < Mean < Mode"
+                ],
+                correct: 1,
+                explanation: "In a skewed-right distribution, the mean is pulled rightward by extreme high values, making it the largest metric. The mode represents the peak (left side), and the median sits in the middle: Mode < Median < Mean."
+            },
+            {
+                question: "A dataset consists of values: 3, 4, 4, 5, 6, 8, 20. If we remove the outlier (20), which measure of center will change the most?",
+                options: [
+                    "The Mode",
+                    "The Median",
+                    "The Mean",
+                    "They will all change by the exact same amount."
+                ],
+                correct: 2,
+                explanation: "The Mean is highly sensitive to extreme outliers because it incorporates every value's magnitude. Removing 20 drop the mean from 7.14 down to 5.0 (change of 2.14). The median only shifts from 5 to 4.5, and the mode (4) remains unchanged."
+            },
+            {
+                question: "How is the Median calculated for an even number of observations?",
+                options: [
+                    "It is the value that appears most frequently.",
+                    "It is the average of the two middle values after sorting.",
+                    "It is calculated as Sum of values divided by N.",
+                    "It cannot be calculated; a dataset must have an odd N."
+                ],
+                correct: 1,
+                explanation: "When N is even, there is no single middle number. The median is defined as the arithmetic average of the two middle-most numbers in the sorted dataset."
+            },
+            {
+                question: "If a symmetric distribution has a Mean of 12.5 and a Median of 12.5, what can be reasonably inferred if a data point of value 50 is added?",
+                options: [
+                    "The new distribution will become skewed left.",
+                    "The Mean will increase and be greater than the new Median.",
+                    "The Median will increase more than the Mean.",
+                    "The Mode will immediately shift to 50."
+                ],
+                correct: 1,
+                explanation: "Adding a high outlier (50) pulls the mean up. The median will only shift slightly. This creates a skewed-right shape where Mean > Median."
+            },
+            {
+                question: "Can a dataset have more than one Mode?",
+                options: [
+                    "No, a dataset can only ever have a single peak.",
+                    "Yes, if multiple values tie for the highest frequency of occurrences.",
+                    "Yes, but only if the total count N is an even number.",
+                    "No, if there is a tie, the average of those values becomes the mode."
+                ],
+                correct: 1,
+                explanation: "A dataset is bimodal or multimodal if two or more values tie for the maximum frequency count (provided they occur at least twice)."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-accent); box-shadow:0 4px 15px var(--color-accent-glow); color:var(--text-color);">
+                        Restart Quiz Evaluation
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function() {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseleave', handleMouseLeave);
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mouseup', handleMouseUp);
+            canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvas, 300);
+            });
+
+            loadPreset('symmetric');
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

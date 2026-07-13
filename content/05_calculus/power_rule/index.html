@@ -1,0 +1,891 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Power Rule & Derivatives - Calculus & Limits</title>
+    <script>
+        window.PAGE_CONFIG = {
+            domain: "05_calculus",
+            logo: { main: "Power", accent: "Rule", sub: "Derivatives & Limits" }
+        };
+    </script>
+    <script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            --color-secant: #10b981; /* Green for secant line */
+            --color-tangent: #f43f5e; /* Rose for tangent line */
+            --color-curve: #6366f1; /* Indigo for curve */
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-accent);
+            background: rgba(99, 102, 241, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            text-shadow: 0 0 5px var(--color-accent-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-accent);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-accent);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .canvas-label {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--text-color);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid var(--card-border);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .graph-item {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Power Rule & Derivatives</h1>
+            <p>Trace how secant lines converge to the exact tangent line. The Power Rule states that $\frac{d}{dx}[x^n] = n x^{n-1}$. Master derivatives using the formal limit definition of slopes.</p>
+        </header>
+
+        <!-- SECTION 1: DYNAMIC VISUALIZER -->
+        <section id="visualizer">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Secant to Tangent Limit Convergence</h2>
+            </div>
+            <p class="section-intro">
+                Drag the target value **c** directly on the graph's x-axis. Adjust interval step $h$ toward 0 to watch the green dashed secant line rotate into alignment with the red tangent line.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Coordinate Grid -->
+                <div class="panel" style="padding: 10px; height: 420px;">
+                    <div class="graph-item">
+                        <div class="canvas-label" id="lblCurveFormula">Curve: y = x²</div>
+                        <canvas id="canvasDerivative"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders & Presets -->
+                <div class="panel">
+                    <div class="presets-grid" style="grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 1.25rem;">
+                        <button class="btn-preset active" id="btnPreset1" onclick="switchPreset(1)">1. Quadratic: y = x²</button>
+                        <button class="btn-preset" id="btnPreset2" onclick="switchPreset(2)">2. Cubic: y = 0.4x³</button>
+                        <button class="btn-preset" id="btnPreset3" onclick="switchPreset(3)">3. Radical: y = 2&radic;x</button>
+                        <button class="btn-preset" id="btnPreset4" onclick="switchPreset(4)">4. Reciprocal: y = 3/x</button>
+                    </div>
+
+                    <div class="math-card">
+                        <h3>Derivative Power Rule</h3>
+                        <div class="equation-box" id="eqDisplay" style="font-size: 1.05rem; line-height: 1.5; padding: 0.95rem;">
+                            d/dx (xⁿ) = n &bull; xⁿ⁻¹
+                        </div>
+                    </div>
+
+                    <!-- Sliders -->
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Secant Step (h)</span>
+                                <span class="number" id="lblH">1.00</span>
+                            </div>
+                            <input type="range" id="slideH" min="0.02" max="1.50" step="0.02" value="1.00">
+                        </div>
+
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Target Coordinate (c)</span>
+                                <span class="number" id="lblC">1.50</span>
+                            </div>
+                            <input type="range" id="slideC" min="0.40" max="3.00" step="0.05" value="1.50">
+                        </div>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>Drag the marker 'c' on the x-axis. Notice how smaller values of 'h' make the secant slope match the tangent derivative.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: STEP-BY-STEP SOLVER -->
+        <section id="step-solver">
+            <div class="section-header">
+                <span class="section-tag">Algebraic Solver</span>
+                <h2>Limit Definition & Power Rule Steps</h2>
+            </div>
+            <p class="section-intro">
+                Trace numerical secant slopes $\Delta y / \Delta x$ vs analytical derivatives $f'(c) = n c^{n-1}$.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Calculation Steps -->
+                <div class="panel">
+                    <h3>Analytical Derivative Steps</h3>
+                    <br>
+                    <div class="formula-steps" id="solveSteps">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Right Panel: Values Summary -->
+                <div class="panel">
+                    <h3>Derivative Slopes Summary</h3>
+                    <br>
+                    <div class="math-card" style="border-color: rgba(16, 185, 129, 0.15);">
+                        <h3>Secant Slope (&Delta;y / &Delta;x)</h3>
+                        <p style="font-size: 1.15rem; font-weight: 700; color: #10b981;" id="secantSummaryText">
+                            m_sec = 4.00
+                        </p>
+                    </div>
+
+                    <div class="math-card" style="border-color: rgba(244, 63, 94, 0.15);">
+                        <h3>Tangent Derivative Slope (f'(c))</h3>
+                        <p style="font-size: 1.15rem; font-weight: 700; color: #f43f5e;" id="tangentSummaryText">
+                            m_tan = 3.00
+                        </p>
+                    </div>
+
+                    <div class="math-card" style="border-color: rgba(56, 189, 248, 0.15);">
+                        <h3>Slope Difference (&Delta;m)</h3>
+                        <p style="font-size: 1.15rem; font-weight: 700; color: #38bdf8;" id="diffSummaryText">
+                            Difference = 1.00
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Derivatives Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Test your knowledge of the power rule, fractional indices, negative exponents, and tangent limits.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Question Board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Evaluate the derivative of f(x) = x⁴ using the Power Rule.</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text...</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Cheatsheet -->
+                <div class="panel" id="quizStatsPanel">
+                    <h3>Power Derivative Rules</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom: 0; list-style: none; display: flex; flex-direction: column; gap: 10px;">
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-curve); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-curve);"></span>
+                            <span>Standard Power: d/dx (x^n) = n x^(n-1)</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-tangent); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-tangent);"></span>
+                            <span>Radical: d/dx (x^0.5) = 0.5 x^(-0.5)</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-secant); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-secant);"></span>
+                            <span>Reciprocal: d/dx (1/x) = -1/x²</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const cDerivative = document.getElementById('canvasDerivative');
+        const ctxDerivative = cDerivative.getContext('2d');
+
+        // Sliders
+        const slideH = document.getElementById('slideH');
+        const slideC = document.getElementById('slideC');
+
+        const lblH = document.getElementById('lblH');
+        const lblC = document.getElementById('lblC');
+
+        const lblCurveFormula = document.getElementById('lblCurveFormula');
+        const eqDisplay = document.getElementById('eqDisplay');
+        const solveSteps = document.getElementById('solveSteps');
+        
+        const secantSummaryText = document.getElementById('secantSummaryText');
+        const tangentSummaryText = document.getElementById('tangentSummaryText');
+        const diffSummaryText = document.getElementById('diffSummaryText');
+
+        // State
+        let activePreset = 1; // 1 (quadratic), 2 (cubic), 3 (radical), 4 (reciprocal)
+        let valH = 1.00;
+        let valC = 1.50;
+
+        let isDragging = false;
+
+        function switchPreset(num) {
+            activePreset = num;
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+
+            if (num === 1) {
+                document.getElementById('btnPreset1').classList.add('active');
+                lblCurveFormula.textContent = "Curve: y = x\u00B2";
+                slideC.min = 0.40; slideC.max = 3.00;
+            } else if (num === 2) {
+                document.getElementById('btnPreset2').classList.add('active');
+                lblCurveFormula.textContent = "Curve: y = 0.4x\u00B3";
+                slideC.min = 0.40; slideC.max = 2.40;
+            } else if (num === 3) {
+                document.getElementById('btnPreset3').classList.add('active');
+                lblCurveFormula.textContent = "Curve: y = 2\u221Ax";
+                slideC.min = 0.40; slideC.max = 3.00;
+            } else {
+                document.getElementById('btnPreset4').classList.add('active');
+                lblCurveFormula.textContent = "Curve: y = 3/x";
+                slideC.min = 0.60; slideC.max = 3.00;
+            }
+
+            if (valC < parseFloat(slideC.min) || valC > parseFloat(slideC.max)) {
+                valC = (parseFloat(slideC.min) + parseFloat(slideC.max)) / 2;
+            }
+            slideC.value = valC;
+            updateAll();
+        }
+
+        // Functions evaluation
+        function evalFunc(x) {
+            if (activePreset === 1) return x * x;
+            if (activePreset === 2) return 0.4 * x * x * x;
+            if (activePreset === 3) return 2 * Math.sqrt(x);
+            return 3 / x;
+        }
+
+        // Exact derivative evaluated at c
+        function evalDerivative(x) {
+            if (activePreset === 1) return 2 * x;
+            if (activePreset === 2) return 1.2 * x * x;
+            if (activePreset === 3) return 1.0 / Math.sqrt(x);
+            return -3.0 / (x * x);
+        }
+
+        function resizeCanvases() {
+            cDerivative.width = cDerivative.parentElement.clientWidth;
+            cDerivative.height = cDerivative.parentElement.clientHeight;
+            drawAll();
+        }
+
+        // Grid coordinates: x in [0.0, 4.2], y in [-0.5, 9.5]
+        function toPixel(gx, gy) {
+            const margin = 25;
+            const w = cDerivative.width - 2 * margin;
+            const h = cDerivative.height - 2 * margin;
+
+            const px = margin + (gx / 4.2) * w;
+            const py = margin + ((9.5 - gy) / 10.0) * h;
+            return { x: px, y: py };
+        }
+
+        function toGraph(px, py) {
+            const margin = 25;
+            const w = cDerivative.width - 2 * margin;
+            const h = cDerivative.height - 2 * margin;
+
+            const gx = ((px - margin) / w) * 4.2;
+            const gy = 9.5 - ((py - margin) / h) * 10.0;
+            return { x: gx, y: gy };
+        }
+
+        function drawAll() {
+            ctxDerivative.clearRect(0, 0, cDerivative.width, cDerivative.height);
+            const margin = 25;
+
+            // 1. Draw Grid Lines
+            ctxDerivative.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctxDerivative.lineWidth = 1;
+            ctxDerivative.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctxDerivative.font = '8px JetBrains Mono';
+            ctxDerivative.textAlign = 'center';
+            ctxDerivative.textBaseline = 'middle';
+
+            for (let i = 1; i <= 4; i++) {
+                let p = toPixel(i, 0);
+                ctxDerivative.beginPath(); ctxDerivative.moveTo(p.x, margin); ctxDerivative.lineTo(p.x, cDerivative.height - margin); ctxDerivative.stroke();
+                ctxDerivative.fillText(i, p.x, cDerivative.height - margin + 8);
+            }
+            for (let i = 1; i <= 9; i += 2) {
+                let p = toPixel(0, i);
+                ctxDerivative.beginPath(); ctxDerivative.moveTo(margin, p.y); ctxDerivative.lineTo(cDerivative.width - margin, p.y); ctxDerivative.stroke();
+                ctxDerivative.fillText(i, margin - 10, p.y);
+            }
+
+            // Axes
+            ctxDerivative.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            let center = toPixel(0, 0);
+            ctxDerivative.beginPath(); ctxDerivative.moveTo(margin, center.y); ctxDerivative.lineTo(cDerivative.width - margin, center.y); ctxDerivative.stroke();
+            ctxDerivative.beginPath(); ctxDerivative.moveTo(center.x, margin); ctxDerivative.lineTo(center.x, cDerivative.height - margin); ctxDerivative.stroke();
+
+            // 2. Draw function curve
+            ctxDerivative.strokeStyle = 'var(--color-curve)';
+            ctxDerivative.lineWidth = 2.5;
+            ctxDerivative.beginPath();
+            let first = true;
+            const startX = activePreset === 4 ? 0.2 : 0.0;
+            for (let x = startX; x <= 4.2; x += 0.05) {
+                let p = toPixel(x, evalFunc(x));
+                if (first) {
+                    ctxDerivative.moveTo(p.x, p.y);
+                    first = false;
+                } else {
+                    ctxDerivative.lineTo(p.x, p.y);
+                }
+            }
+            ctxDerivative.stroke();
+
+            // Coordinate points P and Q
+            const yP = evalFunc(valC);
+            const yQ = evalFunc(valC + valH);
+
+            const pP = toPixel(valC, yP);
+            const pQ = toPixel(valC + valH, yQ);
+
+            // 3. Draw Secant Line (dashed green)
+            const mSec = (yQ - yP) / valH;
+            ctxDerivative.strokeStyle = 'var(--color-secant)';
+            ctxDerivative.lineWidth = 1.5;
+            ctxDerivative.setLineDash([4, 4]);
+
+            ctxDerivative.beginPath();
+            const sx1 = 0.2;
+            const sy1 = yP + mSec * (sx1 - valC);
+            const sx2 = 3.8;
+            const sy2 = yP + mSec * (sx2 - valC);
+            const ps1 = toPixel(sx1, sy1);
+            const ps2 = toPixel(sx2, sy2);
+            ctxDerivative.moveTo(ps1.x, ps1.y);
+            ctxDerivative.lineTo(ps2.x, ps2.y);
+            ctxDerivative.stroke();
+            ctxDerivative.setLineDash([]);
+
+            // 4. Draw Tangent Line (solid rose)
+            const mTan = evalDerivative(valC);
+            ctxDerivative.strokeStyle = 'var(--color-tangent)';
+            ctxDerivative.lineWidth = 2;
+            ctxDerivative.beginPath();
+            const tx1 = Math.max(0.2, valC - 1.2);
+            const ty1 = yP + mTan * (tx1 - valC);
+            const tx2 = Math.min(4.0, valC + 1.2);
+            const ty2 = yP + mTan * (tx2 - valC);
+            const pt1 = toPixel(tx1, ty1);
+            const pt2 = toPixel(tx2, ty2);
+            ctxDerivative.moveTo(pt1.x, pt1.y);
+            ctxDerivative.lineTo(pt2.x, pt2.y);
+            ctxDerivative.stroke();
+
+            // 5. Draw point nodes P and Q
+            ctxDerivative.fillStyle = 'var(--color-tangent)';
+            ctxDerivative.beginPath(); ctxDerivative.arc(pP.x, pP.y, 5, 0, 2 * Math.PI); ctxDerivative.fill();
+            ctxDerivative.strokeStyle = '#ffffff'; ctxDerivative.lineWidth = 1; ctxDerivative.stroke();
+
+            ctxDerivative.fillStyle = 'var(--color-secant)';
+            ctxDerivative.beginPath(); ctxDerivative.arc(pQ.x, pQ.y, 5, 0, 2 * Math.PI); ctxDerivative.fill();
+            ctxDerivative.strokeStyle = '#ffffff'; ctxDerivative.stroke();
+
+            // Draggable handle node c on x-axis
+            let pCNode = toPixel(valC, 0);
+            ctxDerivative.fillStyle = 'var(--color-accent)';
+            ctxDerivative.beginPath();
+            ctxDerivative.arc(pCNode.x, center.y, 6, 0, 2 * Math.PI);
+            ctxDerivative.fill();
+            ctxDerivative.fillStyle = '#ffffff';
+            ctxDerivative.font = 'bold 9px JetBrains Mono';
+            ctxDerivative.textAlign = 'center';
+            ctxDerivative.textBaseline = 'middle';
+            ctxDerivative.fillText("c", pCNode.x, center.y - 12);
+        }
+
+        function updateSolver() {
+            lblH.textContent = valH.toFixed(2);
+            lblC.textContent = valC.toFixed(2);
+
+            const yP = evalFunc(valC);
+            const yQ = evalFunc(valC + valH);
+            const mSec = (yQ - yP) / valH;
+            const mTan = evalDerivative(valC);
+            const diff = Math.abs(mSec - mTan);
+
+            secantSummaryText.textContent = `m_sec = ${mSec.toFixed(4)}`;
+            tangentSummaryText.textContent = `m_tan = ${mTan.toFixed(4)}`;
+            diffSummaryText.textContent = `Difference = ${diff.toFixed(4)}`;
+
+            // Formula display
+            if (activePreset === 1) {
+                eqDisplay.innerHTML = `d/dx (x²) = 2 &bull; x²⁻¹ = 2x`;
+            } else if (activePreset === 2) {
+                eqDisplay.innerHTML = `d/dx (0.4x³) = 0.4 &bull; 3 &bull; x² = 1.2x²`;
+            } else if (activePreset === 3) {
+                eqDisplay.innerHTML = `d/dx (2x⁰.⁵) = 2 &bull; 0.5 &bull; x⁻⁰.⁵ = 1/&radic;x`;
+            } else {
+                eqDisplay.innerHTML = `d/dx (3x⁻¹) = 3 &bull; (-1) &bull; x⁻² = -3/x²`;
+            }
+
+            // Calculation steps html
+            let htmlSteps = '';
+            if (activePreset === 1) {
+                htmlSteps += `
+                    <div><strong>1. Set up limit definition at c = ${valC.toFixed(2)}:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.5;">
+                        f'(c) = lim<sub>h&to;0</sub> [f(c+h) - f(c)] / h<br>
+                        = lim<sub>h&to;0</sub> [ (c+h)² - c² ] / h = lim<sub>h&to;0</sub> (2c + h)
+                    </div>
+                    <div><strong>2. Evaluate with active step h = ${valH.toFixed(2)}:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.5;">
+                        &bull; Secant slope = 2(${valC.toFixed(2)}) + ${valH.toFixed(2)} = <strong>${mSec.toFixed(4)}</strong>
+                    </div>
+                    <div style="font-weight:700; color:var(--color-accent); line-height:1.5;">
+                        &rArr; Power Rule Tangent = 2 &bull; ${valC.toFixed(2)} = <strong>${mTan.toFixed(4)}</strong><br>
+                        &rArr; Difference converges to 0 as h approaches 0!
+                    </div>
+                `;
+            } else if (activePreset === 2) {
+                htmlSteps += `
+                    <div><strong>1. Set up limit definition at c = ${valC.toFixed(2)}:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.5;">
+                        f'(c) = lim<sub>h&to;0</sub> [0.4(c+h)³ - 0.4c³] / h<br>
+                        = lim<sub>h&to;0</sub> 0.4(3c² + 3ch + h²)
+                    </div>
+                    <div><strong>2. Evaluate with active step h = ${valH.toFixed(2)}:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.5;">
+                        &bull; Secant slope = 0.4 &bull; [ 3(${valC.toFixed(2)})² + 3(${valC.toFixed(2)})(${valH.toFixed(2)}) + (${valH.toFixed(2)})² ] = <strong>${mSec.toFixed(4)}</strong>
+                    </div>
+                    <div style="font-weight:700; color:var(--color-accent); line-height:1.5;">
+                        &rArr; Power Rule Tangent = 1.2 &bull; (${valC.toFixed(2)})² = <strong>${mTan.toFixed(4)}</strong>
+                    </div>
+                `;
+            } else if (activePreset === 3) {
+                htmlSteps += `
+                    <div><strong>1. Set up limit definition at c = ${valC.toFixed(2)}:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.5;">
+                        f'(c) = lim<sub>h&to;0</sub> [ 2&radic;(c+h) - 2&radic;c ] / h
+                    </div>
+                    <div><strong>2. Evaluate with active step h = ${valH.toFixed(2)}:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.5;">
+                        &bull; Secant slope = [ 2&radic;(${valC.toFixed(2)} + ${valH.toFixed(2)}) - 2&radic;${valC.toFixed(2)} ] / ${valH.toFixed(2)} = <strong>${mSec.toFixed(4)}</strong>
+                    </div>
+                    <div style="font-weight:700; color:var(--color-accent); line-height:1.5;">
+                        &rArr; Power Rule Tangent = 1 / &radic;${valC.toFixed(2)} = <strong>${mTan.toFixed(4)}</strong>
+                    </div>
+                `;
+            } else {
+                htmlSteps += `
+                    <div><strong>1. Set up limit definition at c = ${valC.toFixed(2)}:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.5;">
+                        f'(c) = lim<sub>h&to;0</sub> [ 3/(c+h) - 3/c ] / h
+                    </div>
+                    <div><strong>2. Evaluate with active step h = ${valH.toFixed(2)}:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 12px; line-height: 1.5;">
+                        &bull; Secant slope = [ 3/(${valC.toFixed(2)} + ${valH.toFixed(2)}) - 3/${valC.toFixed(2)} ] / ${valH.toFixed(2)} = <strong>${mSec.toFixed(4)}</strong>
+                    </div>
+                    <div style="font-weight:700; color:var(--color-accent); line-height:1.5;">
+                        &rArr; Power Rule Tangent = -3 / (${valC.toFixed(2)})² = <strong>${mTan.toFixed(4)}</strong>
+                    </div>
+                `;
+            }
+
+            solveSteps.innerHTML = htmlSteps;
+        }
+
+        function updateAll() {
+            updateSolver();
+            drawAll();
+        }
+
+        // Sliders Listeners
+        slideH.addEventListener('input', (e) => {
+            valH = parseFloat(e.target.value);
+            updateAll();
+        });
+        slideC.addEventListener('input', (e) => {
+            valC = parseFloat(e.target.value);
+            updateAll();
+        });
+
+        // Tactile Dragging on Graph boundary
+        function getMousePosOnGrid(e) {
+            const rect = cDerivative.getBoundingClientRect();
+            const px = e.clientX - rect.left;
+            const py = e.clientY - rect.top;
+            return toGraph(px, py);
+        }
+
+        cDerivative.addEventListener('mousedown', (e) => {
+            const pos = getMousePosOnGrid(e);
+            const distC = Math.abs(pos.x - valC);
+
+            // Drag threshold
+            const threshold = 0.15;
+            if (distC < threshold) {
+                isDragging = true;
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const pos = getMousePosOnGrid(e);
+            valC = parseFloat(Math.max(parseFloat(slideC.min), Math.min(parseFloat(slideC.max), pos.x)).toFixed(2));
+            slideC.value = valC;
+            updateAll();
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // Touch support
+        cDerivative.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                const pos = getMousePosOnGrid(e.touches[0]);
+                const distC = Math.abs(pos.x - valC);
+                const threshold = 0.25;
+
+                if (distC < threshold) {
+                    isDragging = true;
+                    e.preventDefault();
+                }
+            }
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            if (e.touches.length === 1) {
+                const pos = getMousePosOnGrid(e.touches[0]);
+                valC = parseFloat(Math.max(parseFloat(slideC.min), Math.min(parseFloat(slideC.max), pos.x)).toFixed(2));
+                slideC.value = valC;
+                updateAll();
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        // Quiz Data
+        const quizQuestions = [
+            {
+                question: "Using the Power Rule, what is the derivative of f(x) = 5x³?",
+                options: [
+                    "15x²",
+                    "5x²",
+                    "15x³",
+                    "3x²"
+                ],
+                correct: 0,
+                explanation: "By the Power Rule, d/dx (cx^n) = c * n * x^(n-1). For 5x³, this is 5 * 3 * x² = 15x²."
+            },
+            {
+                question: "What is the derivative of f(x) = &radic;x = x^(1/2)?",
+                options: [
+                    "0.5 &radic;x",
+                    "1 / (2&radic;x)",
+                    "x^(-1/2)",
+                    "2 / &radic;x"
+                ],
+                correct: 1,
+                explanation: "d/dx (x^(1/2)) = (1/2) x^(-1/2) = 1 / (2 * x^(1/2)) = 1 / (2&radic;x)."
+            },
+            {
+                question: "Evaluate the derivative of the reciprocal function f(x) = 1/x at x = 3.",
+                options: [
+                    "-1/3",
+                    "-1/9",
+                    "1/9",
+                    "-3"
+                ],
+                correct: 1,
+                explanation: "The derivative of 1/x = x⁻¹ is -x⁻² = -1/x². At x = 3, this is -1/(3²) = -1/9."
+            },
+            {
+                question: "What is the derivative of a constant function f(x) = 7?",
+                options: [
+                    "7",
+                    "1",
+                    "0",
+                    "7x"
+                ],
+                correct: 2,
+                explanation: "A constant function has a horizontal line graph with a slope of zero everywhere. Mathematically, d/dx (c * x⁰) = 0."
+            },
+            {
+                question: "What geometric property of a curve is equal to the derivative at a given point?",
+                options: [
+                    "The area under the curve",
+                    "The slope of the tangent line",
+                    "The length of the secant line segment",
+                    "The coordinates of the y-intercept"
+                ],
+                correct: 1,
+                explanation: "By definition, the derivative of a function at a point is the limit of secant slopes, which equals the slope of the tangent line at that point."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-accent); box-shadow:0 4px 15px var(--color-accent-glow); color:var(--text-color);">
+                        Restart Quiz Evaluation
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function() {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvases, 300);
+            });
+            updateAll();
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

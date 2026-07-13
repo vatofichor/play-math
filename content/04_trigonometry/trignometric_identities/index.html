@@ -1,0 +1,1613 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOH CAH TOA & Unit Circle Relationship Explorer</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "04_trigonometry",
+            logo: {"main":"Wave","accent":"Lab","sub":"SOH CAH TOA & Unit Circle Relationship Explorer"},
+            navigation: [
+    {
+        "label": "SOH CAH TOA & The Right Triangle",
+        "desc": "SOH CAH TOA & The Right Triangle interactive section",
+        "href": "#section1"
+    },
+    {
+        "label": "The Bridge: Scaling Hypotenuse to 1",
+        "desc": "The Bridge: Scaling Hypotenuse to 1 interactive section",
+        "href": "#section2"
+    },
+    {
+        "label": "The Unit Circle: 4 Quadrants & Signs",
+        "desc": "The Unit Circle: 4 Quadrants & Signs interactive section",
+        "href": "#section3"
+    },
+    {
+        "label": "The Live Wave Generator",
+        "desc": "The Live Wave Generator interactive section",
+        "href": "#section4"
+    },
+    {
+        "label": "The Tangent Explorer (Slope & Limits)",
+        "desc": "The Tangent Explorer (Slope & Limits) interactive section",
+        "href": "#section5"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Math Theme Colors */
+            --color-primary: #ffb000; /* Amber */
+            --color-primary-glow: rgba(255, 176, 0, 0.35);
+            
+            --color-opp: #ff2a85; /* Sine - Opposite (Rose/Pink) */
+            --color-opp-glow: rgba(255, 42, 133, 0.35);
+            
+            --color-adj: #00f0ff; /* Cosine - Adjacent (Cyan) */
+            --color-adj-glow: rgba(0, 240, 255, 0.35);
+            
+            --color-tan: #39ff14; /* Tangent (Neon Green) */
+            --color-tan-glow: rgba(57, 255, 20, 0.35);
+            
+            --color-hyp: #ffb000; /* Hypotenuse (Amber) */
+        }
+
+        .control-label.sin-label { color: var(--color-opp); }
+        .control-label.cos-label { color: var(--color-adj); }
+        .control-label.tan-label { color: var(--color-tan); }
+        .control-label.hyp-label { color: var(--color-hyp); }
+
+        /* Specialized Slider Colors */
+        .sin-slider::-webkit-slider-thumb { background: var(--color-opp) !important; box-shadow: 0 0 10px var(--color-opp-glow) !important; }
+        .cos-slider::-webkit-slider-thumb { background: var(--color-adj) !important; box-shadow: 0 0 10px var(--color-adj-glow) !important; }
+        .tan-slider::-webkit-slider-thumb { background: var(--color-tan) !important; box-shadow: 0 0 10px var(--color-tan-glow) !important; }
+
+        .color-opp-text { color: var(--color-opp); font-weight: 600; }
+        .color-adj-text { color: var(--color-adj); font-weight: 600; }
+        .color-hyp-text { color: var(--color-hyp); font-weight: 600; }
+        .color-tan-text { color: var(--color-tan); font-weight: 600; }
+
+        /* Quadrant Status Grid (ASTC) */
+        .quadrant-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .quadrant-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .quadrant-box.active {
+            border-color: var(--color-primary);
+            background: rgba(255, 176, 0, 0.05);
+            box-shadow: 0 0 10px rgba(255, 176, 0, 0.1);
+        }
+
+        .quadrant-box.active .quadrant-name {
+            color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        .quadrant-name {
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .quadrant-signs {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            display: flex;
+            gap: 6px;
+        }
+
+        .sign-pos { color: #10b981; }
+        .sign-neg { color: #ef4444; }
+
+        /* Interactive Canvas overlays / buttons */
+        .canvas-overlay-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(15, 18, 30, 0.85);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .canvas-overlay-btn:hover {
+            color: var(--text-color);
+            background: rgba(255, 176, 0, 0.15);
+            border-color: var(--color-primary);
+        }
+
+        /* CSS Grid for Waves section custom styling */
+        .wave-grid-wide {
+            grid-column: 1 / -1 !important;
+        }
+
+        .canvas-container.wave-container {
+            height: 380px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Syllabus Navigation -->
+    <aside></aside>
+
+    <!-- Main Content Panel -->
+    <main>
+        <header>
+            <h1>SOH CAH TOA to Unit Circle Explorer</h1>
+            <p>Scrub, drag, and scale math primitives to see how they wrap into the full unit circle coordinate definitions.</p>
+        </header>
+
+        <!-- SECTION 1: SOH CAH TOA -->
+        <section id="section1">
+            <div class="section-header">
+                <span class="section-tag">Syllabus 01</span>
+                <h2>SOH CAH TOA & The Right Triangle</h2>
+            </div>
+            <p class="section-intro">
+                Trigonometry begins with a simple right-angled triangle. 
+                Before circles, trig is defined purely by **ratios of side lengths** relative to an angle <span class="number">&theta;</span>.
+                Scrub the sliders or drag the top vertex directly to observe how the ratios remain consistent as sides scale.
+            </p>
+
+            <div class="workspace-grid">
+                <div class="panel">
+                    <button class="canvas-overlay-btn" id="sec1ResetBtn">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                        Reset Shape
+                    </button>
+                    <div class="canvas-container" style="height: 340px;">
+                        <canvas id="canvasSohCahToa"></canvas>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-row">
+                            <div class="control-label-row">
+                                <span class="control-label hyp-label">
+                                    <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--color-hyp)"></span>
+                                    Angle &theta;
+                                </span>
+                                <span class="control-value"><span id="sec1AngleVal" class="number">35.0</span>&deg;</span>
+                            </div>
+                            <input type="range" id="sec1AngleSlider" min="5" max="85" step="0.5" value="35">
+                        </div>
+                        <div class="control-row">
+                            <div class="control-label-row">
+                                <span class="control-label">
+                                    <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#888"></span>
+                                    Hypotenuse (Scale)
+                                </span>
+                                <span class="control-value"><span id="sec1HypVal" class="number">180</span> px</span>
+                            </div>
+                            <input type="range" id="sec1HypSlider" min="100" max="250" step="1" value="180">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <!-- SOH -->
+                    <div class="math-card">
+                        <h3>
+                            <span style="color:var(--color-opp); background:rgba(255, 42, 133, 0.1); padding:2px 6px; border-radius:4px;">SOH</span>
+                            Sine Definition
+                        </h3>
+                        <div class="math-equation">
+                            <span>sin(&theta;) =</span>
+                            <div class="math-fraction">
+                                <span class="numerator color-opp-text">Opposite</span>
+                                <span class="denominator color-hyp-text">Hypotenuse</span>
+                            </div>
+                            <span>=</span>
+                            <div class="math-fraction">
+                                <span class="numerator color-opp-text math-value" id="sec1OppNum">103.2</span>
+                                <span class="denominator color-hyp-text math-value" id="sec1HypDen">180.0</span>
+                            </div>
+                            <span>=</span>
+                            <span class="color-opp-text math-value" id="sec1SinVal">0.5736</span>
+                        </div>
+                    </div>
+
+                    <!-- CAH -->
+                    <div class="math-card">
+                        <h3>
+                            <span style="color:var(--color-adj); background:rgba(0, 240, 255, 0.1); padding:2px 6px; border-radius:4px;">CAH</span>
+                            Cosine Definition
+                        </h3>
+                        <div class="math-equation">
+                            <span>cos(&theta;) =</span>
+                            <div class="math-fraction">
+                                <span class="numerator color-adj-text">Adjacent</span>
+                                <span class="denominator color-hyp-text">Hypotenuse</span>
+                            </div>
+                            <span>=</span>
+                            <div class="math-fraction">
+                                <span class="numerator color-adj-text math-value" id="sec1AdjNum">147.4</span>
+                                <span class="denominator color-hyp-text math-value" id="sec1HypDen2">180.0</span>
+                            </div>
+                            <span>=</span>
+                            <span class="color-adj-text math-value" id="sec1CosVal">0.8192</span>
+                        </div>
+                    </div>
+
+                    <!-- TOA -->
+                    <div class="math-card">
+                        <h3>
+                            <span style="color:var(--color-tan); background:rgba(57, 255, 20, 0.1); padding:2px 6px; border-radius:4px;">TOA</span>
+                            Tangent Definition
+                        </h3>
+                        <div class="math-equation">
+                            <span>tan(&theta;) =</span>
+                            <div class="math-fraction">
+                                <span class="numerator color-opp-text">Opposite</span>
+                                <span class="denominator color-adj-text">Adjacent</span>
+                            </div>
+                            <span>=</span>
+                            <div class="math-fraction">
+                                <span class="numerator color-opp-text math-value" id="sec1OppNum2">103.2</span>
+                                <span class="denominator color-adj-text math-value" id="sec1AdjDen">147.4</span>
+                            </div>
+                            <span>=</span>
+                            <span class="color-tan-text math-value" id="sec1TanVal">0.7002</span>
+                        </div>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>Interactive: You can click and drag the top corner node of the triangle in the canvas directly!</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: THE BRIDGE -->
+        <section id="section2">
+            <div class="section-header">
+                <span class="section-tag">Syllabus 02</span>
+                <h2>The Bridge: Scaling Hypotenuse to 1</h2>
+            </div>
+            <p class="section-intro">
+                Why does SOH CAH TOA turn into coordinates on a circle? 
+                Because we **scale down** the triangle until its hypotenuse is exactly <span class="number">1</span>. 
+                When <span class="color-hyp-text">Hypotenuse = 1</span>, the formulas simplify: 
+                <span class="color-opp-text">Opposite = sin(&theta;)</span> and <span class="color-adj-text">Adjacent = cos(&theta;)</span>. 
+                Scrub the morphing slider below to watch the hypotenuse shrink to radius 1.
+            </p>
+
+            <div class="workspace-grid">
+                <div class="panel">
+                    <div class="canvas-container" style="height: 340px;">
+                        <canvas id="canvasBridge"></canvas>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-row">
+                            <div class="control-label-row">
+                                <span class="control-label" style="color: var(--color-primary)">
+                                    Scale Morpher (Shrink Hypotenuse to 1)
+                                </span>
+                                <span class="control-value"><span id="sec2MorphVal" class="number">0</span>%</span>
+                            </div>
+                            <input type="range" id="sec2MorphSlider" min="0" max="100" step="1" value="0">
+                        </div>
+                        <div class="control-row">
+                            <div class="control-label-row">
+                                <span class="control-label">Angle &theta;</span>
+                                <span class="control-value"><span id="sec2AngleVal" class="number">40.0</span>&deg;</span>
+                            </div>
+                            <input type="range" id="sec2AngleSlider" min="10" max="80" step="0.5" value="40">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Original Triangle (H &gt; 1)</h3>
+                        <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.75rem;">
+                            Side lengths are scaled by a general hypotenuse <span class="color-hyp-text">H</span>:
+                        </p>
+                        <div class="math-equation">
+                            <span>Opposite = H &times; sin(&theta;) = </span>
+                            <span class="color-opp-text math-value" id="sec2OrigOpp">128.6</span>
+                        </div>
+                        <div class="math-equation">
+                            <span>Adjacent = H &times; cos(&theta;) = </span>
+                            <span class="color-adj-text math-value" id="sec2OrigAdj">153.2</span>
+                        </div>
+                        <div class="math-equation">
+                            <span>Hypotenuse = </span>
+                            <span class="color-hyp-text math-value" id="sec2OrigHyp">200.0</span>
+                        </div>
+                    </div>
+
+                    <div class="math-card" style="border-color: rgba(255,176,0,0.15)">
+                        <h3>Scaled Unit Triangle (H = 1)</h3>
+                        <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.75rem;">
+                            Divide all sides by the Hypotenuse <span class="color-hyp-text">H</span> to normalize:
+                        </p>
+                        <div class="math-equation">
+                            <span>Opposite = </span>
+                            <div class="math-fraction">
+                                <span class="numerator color-opp-text">O</span>
+                                <span class="denominator color-hyp-text">H</span>
+                            </div>
+                            <span>= sin(&theta;) = </span>
+                            <span class="color-opp-text math-value" id="sec2UnitOpp">0.6428</span>
+                        </div>
+                        <div class="math-equation">
+                            <span>Adjacent = </span>
+                            <div class="math-fraction">
+                                <span class="numerator color-adj-text">A</span>
+                                <span class="denominator color-hyp-text">H</span>
+                            </div>
+                            <span>= cos(&theta;) = </span>
+                            <span class="color-adj-text math-value" id="sec2UnitAdj">0.7660</span>
+                        </div>
+                        <div class="math-equation">
+                            <span>Hypotenuse = </span>
+                            <div class="math-fraction">
+                                <span class="numerator color-hyp-text">H</span>
+                                <span class="denominator color-hyp-text">H</span>
+                            </div>
+                            <span>= 1.0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: UNIT CIRCLE -->
+        <section id="section3">
+            <div class="section-header">
+                <span class="section-tag">Syllabus 03</span>
+                <h2>The Unit Circle: 4 Quadrants & Signs</h2>
+            </div>
+            <p class="section-intro">
+                Now place the scaled triangle inside a circle of radius **R = 1**. 
+                As the angle <span class="number">&theta;</span> rotates beyond <span class="number">90&deg;</span>, the hypotenuse remains length <span class="number">1</span>, 
+                but coordinates go negative depending on the quadrant. 
+                Drag the radial handle or use the slider to scrub through all four quadrants.
+            </p>
+
+            <div class="workspace-grid">
+                <div class="panel">
+                    <div class="canvas-container" style="height: 340px;">
+                        <canvas id="canvasUnitCircle"></canvas>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-row">
+                            <div class="control-label-row">
+                                <span class="control-label">Angle &theta; (Continuous)</span>
+                                <span class="control-value"><span id="sec3AngleVal" class="number">120.0</span>&deg;</span>
+                            </div>
+                            <input type="range" id="sec3AngleSlider" min="0" max="360" step="0.5" value="120">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Circle Point Coordinates</h3>
+                        <div class="math-equation" style="font-size: 1.25rem;">
+                            <span>P(x, y) = (cos&theta;, sin&theta;)</span>
+                        </div>
+                        <div class="math-equation" style="font-family: 'JetBrains Mono', monospace;">
+                            <span>P(</span>
+                            <span class="color-adj-text" id="sec3CoordX">-0.5000</span>
+                            <span>, </span>
+                            <span class="color-opp-text" id="sec3CoordY">0.8660</span>
+                            <span>)</span>
+                        </div>
+                    </div>
+
+                    <div class="math-card">
+                        <h3>Active Quadrant Status (ASTC)</h3>
+                        <div class="quadrant-grid">
+                            <div class="quadrant-box" id="qBox1">
+                                <span class="quadrant-name">Quadrant I (A)</span>
+                                <div class="quadrant-signs">
+                                    <span class="sign-pos">sin(+)</span> <span class="sign-pos">cos(+)</span> <span class="sign-pos">tan(+)</span>
+                                </div>
+                            </div>
+                            <div class="quadrant-box" id="qBox2">
+                                <span class="quadrant-name">Quadrant II (S)</span>
+                                <div class="quadrant-signs">
+                                    <span class="sign-pos">sin(+)</span> <span class="sign-neg">cos(-)</span> <span class="sign-neg">tan(-)</span>
+                                </div>
+                            </div>
+                            <div class="quadrant-box" id="qBox3">
+                                <span class="quadrant-name">Quadrant III (T)</span>
+                                <div class="quadrant-signs">
+                                    <span class="sign-neg">sin(-)</span> <span class="sign-neg">cos(-)</span> <span class="sign-pos">tan(+)</span>
+                                </div>
+                            </div>
+                            <div class="quadrant-box" id="qBox4">
+                                <span class="quadrant-name">Quadrant IV (C)</span>
+                                <div class="quadrant-signs">
+                                    <span class="sign-neg">sin(-)</span> <span class="sign-pos">cos(+)</span> <span class="sign-neg">tan(-)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem; line-height: 1.3;">
+                            Remember: <strong>A</strong>ll, <strong>S</strong>ine, <strong>T</strong>angent, <strong>C</strong>osine are positive in Quadrants I, II, III, and IV respectively.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: THE WAVE GENERATOR -->
+        <section id="section4">
+            <div class="section-header">
+                <span class="section-tag">Syllabus 04</span>
+                <h2>The Live Wave Generator</h2>
+            </div>
+            <p class="section-intro">
+                If we plot the y-coordinate (Sine) and x-coordinate (Cosine) of the unit circle as a function of the angle **over time / space**, 
+                we generate periodic waves. 
+                Drag the slider to sweep from <span class="number">0&deg;</span> to <span class="number">720&deg;</span> (two full periods). 
+                Watch the horizontal and vertical glowing tracer lines map coordinate positions directly onto the sine and cosine wave graphs.
+            </p>
+
+            <div class="workspace-grid">
+                <div class="panel wave-grid-wide">
+                    <div class="canvas-container wave-container">
+                        <canvas id="canvasWave"></canvas>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-row">
+                            <div class="control-label-row">
+                                <span class="control-label">Continuous Angle &theta;</span>
+                                <span class="control-value"><span id="sec4AngleVal" class="number">215.0</span>&deg; / <span id="sec4RadVal" class="number">3.75</span> rad</span>
+                            </div>
+                            <input type="range" id="sec4AngleSlider" min="0" max="720" step="1" value="215">
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:space-around; margin-top: 1rem; flex-wrap: wrap; gap:10px;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="display:inline-block; width:12px; height:12px; background:var(--color-opp); border-radius:3px;"></span>
+                            <span>y = sin(&theta;) = <span id="sec4SinDisp" class="number" style="color:var(--color-opp)">-0.5736</span></span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="display:inline-block; width:12px; height:12px; background:var(--color-adj); border-radius:3px;"></span>
+                            <span>x = cos(&theta;) = <span id="sec4CosDisp" class="number" style="color:var(--color-adj)">-0.8192</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: TANGENT EXPLORER -->
+        <section id="section5">
+            <div class="section-header">
+                <span class="section-tag">Syllabus 05</span>
+                <h2>The Tangent Explorer (Slope & Limits)</h2>
+            </div>
+            <p class="section-intro">
+                Why is the tangent function called **"tangent"**? 
+                Geometrically, it is the length of the line segment that is tangent to the circle at point <span class="number">(1, 0)</span>, 
+                extended until it intersects the secant line (radial ray). 
+                Scrub the slider towards <span class="number">90&deg;</span> and see why tangent shoots to infinity.
+            </p>
+
+            <div class="workspace-grid">
+                <div class="panel">
+                    <div class="canvas-container" style="height: 340px;">
+                        <canvas id="canvasTangent"></canvas>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-row">
+                            <div class="control-label-row">
+                                <span class="control-label tan-label">Tangent Angle &theta;</span>
+                                <span class="control-value"><span id="sec5AngleVal" class="number">45.0</span>&deg;</span>
+                            </div>
+                            <input type="range" id="sec5AngleSlider" min="-85" max="85" step="0.5" value="45">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="math-card" style="border-color: rgba(57, 255, 20, 0.15)">
+                        <h3>Geometric Tangent Line</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                            The segment of the vertical line tangent to the circle at $(1, 0)$ is:
+                        </p>
+                        <div class="math-equation">
+                            <span>tan(&theta;) = </span>
+                            <span class="color-tan-text math-value" id="sec5TanText">1.0000</span>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.75rem; margin-bottom: 0.75rem;">
+                            The length of the extended radial ray (Secant) is:
+                        </p>
+                        <div class="math-equation">
+                            <span>sec(&theta;) = </span>
+                            <span class="math-value" style="color:var(--color-primary)" id="sec5SecText">1.4142</span>
+                        </div>
+                    </div>
+
+                    <div class="math-card">
+                        <h3>Understanding the Limit at 90&deg;</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+                            As <span class="number">&theta; &rarr; 90&deg;</span>, the radial ray pointing to the point on the unit circle becomes completely vertical. 
+                            Since it is vertical, it runs parallel to our tangent line at <span class="number">x = 1</span>. 
+                            Parallel lines never intersect! 
+                            Therefore, the segment length becomes <strong>infinite</strong>:
+                            <br><br>
+                            <span class="number" style="font-size:1rem; display:block; text-align:center;">
+                                tan(89.5&deg;) &approx; 114.6<br>
+                                tan(89.9&deg;) &approx; 573.0<br>
+                                tan(90&deg;) = <span style="color:#ef4444; font-weight:700;">&infin; (Undefined)</span>
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- CORE INTERACTION SCRIPT -->
+    <script>
+        // High-DPI Canvas Helper
+        function configureCanvas(canvas) {
+            const container = canvas.parentElement;
+            const rect = container.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = rect.height + 'px';
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            
+            return {
+                ctx: ctx,
+                w: rect.width,
+                h: rect.height,
+                dpr: dpr
+            };
+        }
+
+        // --- MATH UTILS ---
+        const toRad = deg => (deg * Math.PI) / 180;
+        const toDeg = rad => (rad * 180) / Math.PI;
+
+        const s1Canvas = document.getElementById('canvasSohCahToa');
+        const s1AngleSlider = document.getElementById('sec1AngleSlider');
+        const s1HypSlider = document.getElementById('sec1HypSlider');
+        const s1AngleVal = document.getElementById('sec1AngleVal');
+        const s1HypVal = document.getElementById('sec1HypVal');
+        const s1ResetBtn = document.getElementById('sec1ResetBtn');
+
+        const s1OppNum = document.getElementById('sec1OppNum');
+        const s1HypDen = document.getElementById('sec1HypDen');
+        const s1SinVal = document.getElementById('sec1SinVal');
+        
+        const s1AdjNum = document.getElementById('sec1AdjNum');
+        const s1HypDen2 = document.getElementById('sec1HypDen2');
+        const s1CosVal = document.getElementById('sec1CosVal');
+        
+        const s1OppNum2 = document.getElementById('sec1OppNum2');
+        const s1AdjDen = document.getElementById('sec1AdjDen');
+        const s1TanVal = document.getElementById('sec1TanVal');
+
+        let s1State = {
+            angle: 35, // degrees
+            hyp: 180,  // pixels
+            isDragging: false
+        };
+
+        function drawSohCahToa() {
+            const { ctx, w, h } = configureCanvas(s1Canvas);
+            
+            // Layout origin (bottom left of the triangle)
+            const originX = 60;
+            const originY = h - 60;
+            
+            const angleRad = toRad(s1State.angle);
+            const adjLen = s1State.hyp * Math.cos(angleRad);
+            const oppLen = s1State.hyp * Math.sin(angleRad);
+            
+            const cornerX = originX + adjLen;
+            const cornerY = originY; // Right angle vertex
+            const topX = originX + adjLen;
+            const topY = originY - oppLen; // Opposite vertex P(x,y)
+            
+            ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+            ctx.lineWidth = 1;
+            for(let x=20; x<w; x+=30) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+            }
+            for(let y=20; y<h; y+=30) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+            }
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 1.5;
+            const rSize = 15;
+            ctx.beginPath();
+            ctx.moveTo(cornerX - rSize, cornerY);
+            ctx.lineTo(cornerX - rSize, cornerY - rSize);
+            ctx.lineTo(cornerX, cornerY - rSize);
+            ctx.stroke();
+            
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 3.5;
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = 'rgba(0, 240, 255, 0.4)';
+            ctx.beginPath();
+            ctx.moveTo(originX, originY);
+            ctx.lineTo(cornerX, cornerY);
+            ctx.stroke();
+            
+            ctx.strokeStyle = '#ff2a85';
+            ctx.shadowColor = 'rgba(255, 42, 133, 0.4)';
+            ctx.beginPath();
+            ctx.moveTo(cornerX, cornerY);
+            ctx.lineTo(topX, topY);
+            ctx.stroke();
+            
+            ctx.strokeStyle = '#ffb000';
+            ctx.shadowColor = 'rgba(255, 176, 0, 0.4)';
+            ctx.beginPath();
+            ctx.moveTo(originX, originY);
+            ctx.lineTo(topX, topY);
+            ctx.stroke();
+            ctx.shadowBlur = 0; // reset shadow
+            
+            ctx.strokeStyle = '#ffb000';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(originX, originY, 35, 0, -angleRad, true);
+            ctx.stroke();
+            
+            // Angle Label &theta;
+            ctx.fillStyle = '#ffb000';
+            ctx.font = '14px Outfit';
+            const labelRad = angleRad / 2;
+            const labelX = originX + 45 * Math.cos(labelRad);
+            const labelY = originY - 45 * Math.sin(labelRad) + 4;
+            ctx.fillText('\u03B8', labelX, labelY);
+            
+            // Text Labels on Sides
+            ctx.font = '500 13px JetBrains Mono';
+            
+            // Adjacent label (underneath)
+            ctx.fillStyle = '#00f0ff';
+            ctx.fillText(`A = ${adjLen.toFixed(1)}`, originX + adjLen/2 - 35, originY + 22);
+            
+            // Opposite label (to the right)
+            ctx.fillStyle = '#ff2a85';
+            ctx.fillText(`O = ${oppLen.toFixed(1)}`, topX + 12, originY - oppLen/2 + 4);
+            
+            // Hypotenuse label (above-left)
+            ctx.fillStyle = '#ffb000';
+            const hypMidX = originX + adjLen/2 - 40;
+            const hypMidY = originY - oppLen/2 - 12;
+            ctx.fillText(`H = ${s1State.hyp.toFixed(1)}`, hypMidX, hypMidY);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(originX, originY, 4, 0, 2*Math.PI);
+            ctx.arc(cornerX, cornerY, 4, 0, 2*Math.PI);
+            ctx.fill();
+            
+            // Draggable vertex (Top corner)
+            ctx.fillStyle = s1State.isDragging ? '#ffb000' : '#ffffff';
+            ctx.strokeStyle = '#ffb000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(topX, topY, 8, 0, 2*Math.PI);
+            ctx.fill();
+            ctx.stroke();
+            
+            s1AngleVal.textContent = s1State.angle.toFixed(1);
+            s1HypVal.textContent = Math.round(s1State.hyp);
+            s1AngleSlider.value = s1State.angle;
+            s1HypSlider.value = s1State.hyp;
+            
+            const sinVal = Math.sin(angleRad);
+            const cosVal = Math.cos(angleRad);
+            const tanVal = Math.tan(angleRad);
+            
+            s1OppNum.textContent = oppLen.toFixed(1);
+            s1HypDen.textContent = s1State.hyp.toFixed(1);
+            s1SinVal.textContent = sinVal.toFixed(4);
+            
+            s1AdjNum.textContent = adjLen.toFixed(1);
+            s1HypDen2.textContent = s1State.hyp.toFixed(1);
+            s1CosVal.textContent = cosVal.toFixed(4);
+            
+            s1OppNum2.textContent = oppLen.toFixed(1);
+            s1AdjDen.textContent = adjLen.toFixed(1);
+            s1TanVal.textContent = tanVal.toFixed(4);
+        }
+
+        function handleS1Interaction(x, y, isStart) {
+            const { w, h } = s1Canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            
+            const originX = 60;
+            const originY = h - 60;
+            
+            const relX = x - originX;
+            const relY = originY - y;
+            
+            if (isStart) {
+                const angleRad = toRad(s1State.angle);
+                const currentTopX = originX + s1State.hyp * Math.cos(angleRad);
+                const currentTopY = originY - s1State.hyp * Math.sin(angleRad);
+                const dist = Math.hypot(x - currentTopX, y - currentTopY);
+                if (dist < 20) {
+                    s1State.isDragging = true;
+                }
+            }
+            
+            if (s1State.isDragging) {
+                // Ensure values stay positive and within reasonable bounds
+                if (relX > 20 && relY > 20) {
+                    const dragHyp = Math.hypot(relX, relY);
+                    const dragAngle = toDeg(Math.atan2(relY, relX));
+                    
+                    // Constrain
+                    s1State.hyp = Math.min(Math.max(dragHyp, 100), 250);
+                    s1State.angle = Math.min(Math.max(dragAngle, 5), 85);
+                    drawSohCahToa();
+                }
+            }
+        }
+
+        s1AngleSlider.addEventListener('input', (e) => {
+            s1State.angle = parseFloat(e.target.value);
+            drawSohCahToa();
+        });
+        s1HypSlider.addEventListener('input', (e) => {
+            s1State.hyp = parseFloat(e.target.value);
+            drawSohCahToa();
+        });
+        s1ResetBtn.addEventListener('click', () => {
+            s1State.angle = 35;
+            s1State.hyp = 180;
+            drawSohCahToa();
+        });
+
+        // Mouse listeners
+        s1Canvas.addEventListener('mousedown', (e) => {
+            const rect = s1Canvas.getBoundingClientRect();
+            handleS1Interaction(e.clientX - rect.left, e.clientY - rect.top, true);
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (s1State.isDragging) {
+                const rect = s1Canvas.getBoundingClientRect();
+                handleS1Interaction(e.clientX - rect.left, e.clientY - rect.top, false);
+            }
+        });
+        window.addEventListener('mouseup', () => {
+            s1State.isDragging = false;
+            drawSohCahToa();
+        });
+
+        // Touch listeners
+        s1Canvas.addEventListener('touchstart', (e) => {
+            if(e.touches.length === 1) {
+                const rect = s1Canvas.getBoundingClientRect();
+                handleS1Interaction(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top, true);
+                e.preventDefault();
+            }
+        });
+        window.addEventListener('touchmove', (e) => {
+            if (s1State.isDragging && e.touches.length === 1) {
+                const rect = s1Canvas.getBoundingClientRect();
+                handleS1Interaction(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top, false);
+                e.preventDefault();
+            }
+        }, { passive: false });
+        window.addEventListener('touchend', () => {
+            s1State.isDragging = false;
+            drawSohCahToa();
+        });
+
+
+        const s2Canvas = document.getElementById('canvasBridge');
+        const s2MorphSlider = document.getElementById('sec2MorphSlider');
+        const s2AngleSlider = document.getElementById('sec2AngleSlider');
+        const s2MorphVal = document.getElementById('sec2MorphVal');
+        const s2AngleVal = document.getElementById('sec2AngleVal');
+        
+        const s2OrigOpp = document.getElementById('sec2OrigOpp');
+        const s2OrigAdj = document.getElementById('sec2OrigAdj');
+        const s2OrigHyp = document.getElementById('sec2OrigHyp');
+        
+        const s2UnitOpp = document.getElementById('sec2UnitOpp');
+        const s2UnitAdj = document.getElementById('sec2UnitAdj');
+
+        let s2State = {
+            morph: 0, // 0 to 1 (representing percentage of morphing)
+            angle: 40,
+            baseHyp: 200 // Original hypotenuse scale
+        };
+
+        function drawBridge() {
+            const { ctx, w, h } = configureCanvas(s2Canvas);
+            const originX = 60;
+            const originY = h - 60;
+            
+            const angleRad = toRad(s2State.angle);
+            
+            // Original triangle sizes
+            const origHyp = s2State.baseHyp;
+            const origOpp = origHyp * Math.sin(angleRad);
+            const origAdj = origHyp * Math.cos(angleRad);
+            
+            // Normalized (Unit Circle size) - radius of circle fits nicely in canvas
+            const unitRadius = 110; 
+            const unitHyp = unitRadius;
+            const unitOpp = unitHyp * Math.sin(angleRad);
+            const unitAdj = unitHyp * Math.cos(angleRad);
+            
+            // Interpolate values based on morph state
+            const m = s2State.morph; // 0 to 1
+            const currentHyp = origHyp - m * (origHyp - unitHyp);
+            const currentOpp = origOpp - m * (origOpp - unitOpp);
+            const currentAdj = origAdj - m * (origAdj - unitAdj);
+            
+            // Coordinates of active points
+            const cornerX = originX + currentAdj;
+            const cornerY = originY;
+            const topX = originX + currentAdj;
+            const topY = originY - currentOpp;
+
+            ctx.strokeStyle = `rgba(255, 176, 0, ${0.08 * m})`;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(originX, originY, unitRadius, 0, -Math.PI/2, true);
+            ctx.stroke();
+            
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(originX, originY);
+            ctx.lineTo(w - 20, originY);
+            ctx.moveTo(originX, originY);
+            ctx.lineTo(originX, 20);
+            ctx.stroke();
+
+            // Right Angle Symbol
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.lineWidth = 1;
+            const rSize = 12;
+            ctx.beginPath();
+            ctx.moveTo(cornerX - rSize, cornerY);
+            ctx.lineTo(cornerX - rSize, cornerY - rSize);
+            ctx.lineTo(cornerX, cornerY - rSize);
+            ctx.stroke();
+
+            // Adjacent (Cyan)
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.moveTo(originX, originY);
+            ctx.lineTo(cornerX, cornerY);
+            ctx.stroke();
+
+            // Opposite (Rose)
+            ctx.strokeStyle = '#ff2a85';
+            ctx.beginPath();
+            ctx.moveTo(cornerX, cornerY);
+            ctx.lineTo(topX, topY);
+            ctx.stroke();
+
+            // Hypotenuse (Amber)
+            ctx.strokeStyle = '#ffb000';
+            ctx.beginPath();
+            ctx.moveTo(originX, originY);
+            ctx.lineTo(topX, topY);
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(originX, originY, 4, 0, 2*Math.PI);
+            ctx.arc(cornerX, cornerY, 4, 0, 2*Math.PI);
+            ctx.arc(topX, topY, 4, 0, 2*Math.PI);
+            ctx.fill();
+
+            // Labels with morph transitions
+            ctx.font = '500 12px JetBrains Mono';
+            
+            // Adjacent labels
+            ctx.fillStyle = '#00f0ff';
+            const adjText = m > 0.85 ? 'cos(\u03B8)' : `A = ${currentAdj.toFixed(0)}`;
+            ctx.fillText(adjText, originX + currentAdj/2 - 25, originY + 20);
+
+            // Opposite labels
+            ctx.fillStyle = '#ff2a85';
+            const oppText = m > 0.85 ? 'sin(\u03B8)' : `O = ${currentOpp.toFixed(0)}`;
+            ctx.fillText(oppText, topX + 10, originY - currentOpp/2 + 4);
+
+            // Hypotenuse labels
+            ctx.fillStyle = '#ffb000';
+            const hypText = m > 0.85 ? 'Radius = 1' : `H = ${currentHyp.toFixed(0)}`;
+            ctx.fillText(hypText, originX + currentAdj/2 - 35, originY - currentOpp/2 - 10);
+
+
+            ctx.strokeStyle = '#ffb000';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(originX, originY, 25, 0, -angleRad, true);
+            ctx.stroke();
+            ctx.fillStyle = '#ffb000';
+            ctx.fillText('\u03B8', originX + 30 * Math.cos(angleRad/2), originY - 30 * Math.sin(angleRad/2) + 4);
+
+            s2MorphVal.textContent = Math.round(m * 100);
+            s2AngleVal.textContent = s2State.angle.toFixed(1);
+            s2AngleSlider.value = s2State.angle;
+            s2MorphSlider.value = m * 100;
+
+            const sinVal = Math.sin(angleRad);
+            const cosVal = Math.cos(angleRad);
+            
+            s2OrigOpp.textContent = origOpp.toFixed(1);
+            s2OrigAdj.textContent = origAdj.toFixed(1);
+            s2OrigHyp.textContent = origHyp.toFixed(1);
+
+            s2UnitOpp.textContent = sinVal.toFixed(4);
+            s2UnitAdj.textContent = cosVal.toFixed(4);
+        }
+
+        s2MorphSlider.addEventListener('input', (e) => {
+            s2State.morph = parseFloat(e.target.value) / 100;
+            drawBridge();
+        });
+        s2AngleSlider.addEventListener('input', (e) => {
+            s2State.angle = parseFloat(e.target.value);
+            drawBridge();
+        });
+
+
+        const s3Canvas = document.getElementById('canvasUnitCircle');
+        const s3AngleSlider = document.getElementById('sec3AngleSlider');
+        const s3AngleVal = document.getElementById('sec3AngleVal');
+        const s3CoordX = document.getElementById('sec3CoordX');
+        const s3CoordY = document.getElementById('sec3CoordY');
+
+        const qBox1 = document.getElementById('qBox1');
+        const qBox2 = document.getElementById('qBox2');
+        const qBox3 = document.getElementById('qBox3');
+        const qBox4 = document.getElementById('qBox4');
+
+        let s3State = {
+            angle: 120, // Degrees
+            isDragging: false
+        };
+
+        function drawUnitCircle() {
+            const { ctx, w, h } = configureCanvas(s3Canvas);
+            const centerX = w / 2;
+            const centerY = h / 2;
+            const radius = 100; // fit well in card
+
+            const rad = toRad(s3State.angle);
+            const circX = centerX + radius * Math.cos(rad);
+            const circY = centerY - radius * Math.sin(rad); // invert Y for screen coords
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(0, centerY); ctx.lineTo(w, centerY);
+            ctx.moveTo(centerX, 0); ctx.lineTo(centerX, h);
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            ctx.font = '700 12px Outfit';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.fillText('Q1 (All +)', centerX + radius + 15, centerY - radius - 10);
+            ctx.fillText('Q2 (Sin +)', centerX - radius - 75, centerY - radius - 10);
+            ctx.fillText('Q3 (Tan +)', centerX - radius - 75, centerY + radius + 20);
+            ctx.fillText('Q4 (Cos +)', centerX + radius + 15, centerY + radius + 20);
+
+            // Adjacent (Cosine) - Cyan
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(circX, centerY);
+            ctx.stroke();
+
+            // Opposite (Sine) - Rose
+            ctx.strokeStyle = '#ff2a85';
+            ctx.beginPath();
+            ctx.moveTo(circX, centerY);
+            ctx.lineTo(circX, circY);
+            ctx.stroke();
+
+            // Radial line (Hypotenuse / Radius = 1) - Amber
+            ctx.strokeStyle = '#ffb000';
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(circX, circY);
+            ctx.stroke();
+
+
+            ctx.strokeStyle = '#ffb000';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 25, 0, -rad, rad < 0);
+            ctx.stroke();
+
+            // Dot on circle (with handle properties)
+            ctx.fillStyle = s3State.isDragging ? '#ffb000' : '#ffffff';
+            ctx.strokeStyle = '#ffb000';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.arc(circX, circY, 8, 0, 2*Math.PI);
+            ctx.fill();
+            ctx.stroke();
+
+            // Tooltip coordinates P(x, y)
+            const sinVal = Math.sin(rad);
+            const cosVal = Math.cos(rad);
+            
+            ctx.fillStyle = 'rgba(10, 11, 18, 0.85)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            const text = `(${cosVal.toFixed(2)}, ${sinVal.toFixed(2)})`;
+            ctx.font = '500 11px JetBrains Mono';
+            const textWidth = ctx.measureText(text).width;
+            
+            const bx = circX - textWidth/2 - 8;
+            const by = circY - 35;
+            ctx.beginPath();
+            ctx.roundRect(bx, by, textWidth + 16, 22, 6);
+            ctx.fill();
+            ctx.stroke();
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(text, bx + 8, by + 15);
+
+            s3AngleVal.textContent = s3State.angle.toFixed(1);
+            s3AngleSlider.value = s3State.angle;
+            s3CoordX.textContent = cosVal.toFixed(4);
+            s3CoordY.textContent = sinVal.toFixed(4);
+
+            // Identify Active Quadrant
+            const angleNorm = ((s3State.angle % 360) + 360) % 360;
+            
+            qBox1.classList.remove('active');
+            qBox2.classList.remove('active');
+            qBox3.classList.remove('active');
+            qBox4.classList.remove('active');
+            
+            if (angleNorm >= 0 && angleNorm < 90) {
+                qBox1.classList.add('active');
+            } else if (angleNorm >= 90 && angleNorm < 180) {
+                qBox2.classList.add('active');
+            } else if (angleNorm >= 180 && angleNorm < 270) {
+                qBox3.classList.add('active');
+            } else {
+                qBox4.classList.add('active');
+            }
+        }
+
+        function handleS3Interaction(x, y, isStart) {
+            const { w, h } = s3Canvas.getBoundingClientRect();
+            const centerX = w / 2;
+            const centerY = h / 2;
+            const radius = 100;
+
+            const rad = toRad(s3State.angle);
+            const currentCircX = centerX + radius * Math.cos(rad);
+            const currentCircY = centerY - radius * Math.sin(rad);
+
+            if (isStart) {
+                const dist = Math.hypot(x - currentCircX, y - currentCircY);
+                if (dist < 25) {
+                    s3State.isDragging = true;
+                }
+            }
+
+            if (s3State.isDragging) {
+                const dx = x - centerX;
+                const dy = centerY - y; // invert Y axis for standard math angle
+                let angleDeg = toDeg(Math.atan2(dy, dx));
+                if (angleDeg < 0) angleDeg += 360;
+                
+                s3State.angle = angleDeg;
+                drawUnitCircle();
+            }
+        }
+
+        s3AngleSlider.addEventListener('input', (e) => {
+            s3State.angle = parseFloat(e.target.value);
+            drawUnitCircle();
+        });
+
+        // Mouse listeners
+        s3Canvas.addEventListener('mousedown', (e) => {
+            const rect = s3Canvas.getBoundingClientRect();
+            handleS3Interaction(e.clientX - rect.left, e.clientY - rect.top, true);
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (s3State.isDragging) {
+                const rect = s3Canvas.getBoundingClientRect();
+                handleS3Interaction(e.clientX - rect.left, e.clientY - rect.top, false);
+            }
+        });
+        window.addEventListener('mouseup', () => {
+            s3State.isDragging = false;
+            drawUnitCircle();
+        });
+
+        // Touch listeners
+        s3Canvas.addEventListener('touchstart', (e) => {
+            if(e.touches.length === 1) {
+                const rect = s3Canvas.getBoundingClientRect();
+                handleS3Interaction(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top, true);
+                e.preventDefault();
+            }
+        });
+        window.addEventListener('touchmove', (e) => {
+            if (s3State.isDragging && e.touches.length === 1) {
+                const rect = s3Canvas.getBoundingClientRect();
+                handleS3Interaction(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top, false);
+                e.preventDefault();
+            }
+        }, { passive: false });
+        window.addEventListener('touchend', () => {
+            s3State.isDragging = false;
+            drawUnitCircle();
+        });
+
+
+        const s4Canvas = document.getElementById('canvasWave');
+        const s4AngleSlider = document.getElementById('sec4AngleSlider');
+        const s4AngleVal = document.getElementById('sec4AngleVal');
+        const s4RadVal = document.getElementById('sec4RadVal');
+        const s4SinDisp = document.getElementById('sec4SinDisp');
+        const s4CosDisp = document.getElementById('sec4CosDisp');
+
+        let s4State = {
+            angle: 215, // Degrees (0 to 720)
+            isDraggingCircle: false
+        };
+
+        function drawWave() {
+            const { ctx, w, h } = configureCanvas(s4Canvas);
+            
+            // Partition sizes: Left is Circle, Right is Graphs
+            const circleCenterY = h / 2;
+            const circleCenterX = 130;
+            const circleRadius = 70;
+            
+            const graphStartX = 260;
+            const graphWidth = w - graphStartX - 30;
+            
+            const rad = toRad(s4State.angle);
+            const sinVal = Math.sin(rad);
+            const cosVal = Math.cos(rad);
+            
+            // Coordinates on the Unit Circle representation
+            const circX = circleCenterX + circleRadius * cosVal;
+            const circY = circleCenterY - circleRadius * sinVal;
+
+            // 1. Draw Dividing boundary line
+            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(graphStartX - 20, 0);
+            ctx.lineTo(graphStartX - 20, h);
+            ctx.stroke();
+
+            // 2. Draw Unit Circle side grid
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, circleCenterY); ctx.lineTo(graphStartX - 20, circleCenterY);
+            ctx.moveTo(circleCenterX, 0); ctx.lineTo(circleCenterX, h);
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(circleCenterX, circleCenterY, circleRadius, 0, 2*Math.PI);
+            ctx.stroke();
+
+            // 3. Draw circle projections
+            // Adjacent (Cyan)
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(circleCenterX, circleCenterY);
+            ctx.lineTo(circX, circleCenterY);
+            ctx.stroke();
+
+            // Opposite (Rose)
+            ctx.strokeStyle = '#ff2a85';
+            ctx.beginPath();
+            ctx.moveTo(circX, circleCenterY);
+            ctx.lineTo(circX, circY);
+            ctx.stroke();
+
+            // Radius (Amber)
+            ctx.strokeStyle = '#ffb000';
+            ctx.beginPath();
+            ctx.moveTo(circleCenterX, circleCenterY);
+            ctx.lineTo(circX, circY);
+            ctx.stroke();
+
+            // Rotating vertex dot
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(circX, circY, 5, 0, 2*Math.PI);
+            ctx.fill();
+
+            // 4. Draw Wave Graph side axes
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(graphStartX, circleCenterY); // X axis
+            ctx.lineTo(graphStartX + graphWidth, circleCenterY);
+            ctx.moveTo(graphStartX, 20); // Y axis
+            ctx.lineTo(graphStartX, h - 20);
+            ctx.stroke();
+
+            // Wave ticks & boundary text
+            ctx.fillStyle = varColorTextMuted();
+            ctx.font = '500 10px JetBrains Mono';
+            ctx.fillText('+1', graphStartX - 18, circleCenterY - circleRadius + 4);
+            ctx.fillText('-1', graphStartX - 18, circleCenterY + circleRadius + 4);
+            ctx.fillText('0', graphStartX + 5, circleCenterY - 6);
+            ctx.fillText('360\u00B0', graphStartX + graphWidth / 2 - 12, circleCenterY + 15);
+            ctx.fillText('720\u00B0', graphStartX + graphWidth - 25, circleCenterY + 15);
+
+            // Sine Wave Drawing (Rose)
+            ctx.strokeStyle = 'rgba(255, 42, 133, 0.35)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let step = 0; step <= graphWidth; step++) {
+                const thetaStep = (step / graphWidth) * 720;
+                const radStep = toRad(thetaStep);
+                const stepY = circleCenterY - circleRadius * Math.sin(radStep);
+                if (step === 0) ctx.moveTo(graphStartX, stepY);
+                else ctx.lineTo(graphStartX + step, stepY);
+            }
+            ctx.stroke();
+
+            // Cosine Wave Drawing (Cyan)
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.35)';
+            ctx.beginPath();
+            for (let step = 0; step <= graphWidth; step++) {
+                const thetaStep = (step / graphWidth) * 720;
+                const radStep = toRad(thetaStep);
+                const stepY = circleCenterY - circleRadius * Math.cos(radStep);
+                if (step === 0) ctx.moveTo(graphStartX, stepY);
+                else ctx.lineTo(graphStartX + step, stepY);
+            }
+            ctx.stroke();
+
+            // Active plotting points
+            const currentProgressX = graphStartX + (s4State.angle / 720) * graphWidth;
+            const currentSineY = circleCenterY - circleRadius * sinVal;
+            const currentCosineY = circleCenterY - circleRadius * cosVal;
+
+            ctx.strokeStyle = 'rgba(255, 42, 133, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(circX, circY);
+            ctx.lineTo(currentProgressX, currentSineY);
+            ctx.stroke();
+            ctx.setLineDash([]); // Reset line dash
+
+            // It maps the circle X offset to the Cosine wave height
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.3)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(circX, circleCenterY);
+            ctx.quadraticCurveTo(
+                (circX + currentProgressX) / 2, circleCenterY - 40,
+                currentProgressX, currentCosineY
+            );
+            ctx.stroke();
+
+            // Glow on active wave intersection dots
+            ctx.shadowBlur = 8;
+            ctx.fillStyle = '#ff2a85'; // Sine active point
+            ctx.shadowColor = 'rgba(255, 42, 133, 0.8)';
+            ctx.beginPath();
+            ctx.arc(currentProgressX, currentSineY, 6, 0, 2*Math.PI);
+            ctx.fill();
+
+            ctx.fillStyle = '#00f0ff'; // Cosine active point
+            ctx.shadowColor = 'rgba(0, 240, 255, 0.8)';
+            ctx.beginPath();
+            ctx.arc(currentProgressX, currentCosineY, 6, 0, 2*Math.PI);
+            ctx.fill();
+            ctx.shadowBlur = 0; // reset
+
+            s4AngleVal.textContent = s4State.angle.toFixed(0);
+            s4RadVal.textContent = rad.toFixed(2);
+            s4AngleSlider.value = s4State.angle;
+            s4SinDisp.textContent = sinVal.toFixed(4);
+            s4CosDisp.textContent = cosVal.toFixed(4);
+        }
+
+        function varColorTextMuted() {
+            return getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim();
+        }
+
+        function handleS4Interaction(x, y, isStart) {
+            const { w, h } = s4Canvas.getBoundingClientRect();
+            const circleCenterY = h / 2;
+            const circleCenterX = 130;
+            const circleRadius = 70;
+
+            const rad = toRad(s4State.angle % 360);
+            const currentCircX = circleCenterX + circleRadius * Math.cos(rad);
+            const currentCircY = circleCenterY - circleRadius * Math.sin(rad);
+
+            if (isStart) {
+                // If clicking near the unit circle point
+                const dist = Math.hypot(x - currentCircX, y - currentCircY);
+                if (dist < 20) {
+                    s4State.isDraggingCircle = true;
+                }
+            }
+
+            if (s4State.isDraggingCircle) {
+                const dx = x - circleCenterX;
+                const dy = circleCenterY - y;
+                let angleDeg = toDeg(Math.atan2(dy, dx));
+                if (angleDeg < 0) angleDeg += 360;
+
+                // For a smooth flow, preserve the 360-720 block if we were already in it
+                if (s4State.angle > 360) {
+                    s4State.angle = angleDeg + 360;
+                } else {
+                    s4State.angle = angleDeg;
+                }
+                drawWave();
+            }
+        }
+
+        s4AngleSlider.addEventListener('input', (e) => {
+            s4State.angle = parseInt(e.target.value);
+            drawWave();
+        });
+
+        // Mouse Listeners
+        s4Canvas.addEventListener('mousedown', (e) => {
+            const rect = s4Canvas.getBoundingClientRect();
+            handleS4Interaction(e.clientX - rect.left, e.clientY - rect.top, true);
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (s4State.isDraggingCircle) {
+                const rect = s4Canvas.getBoundingClientRect();
+                handleS4Interaction(e.clientX - rect.left, e.clientY - rect.top, false);
+            }
+        });
+        window.addEventListener('mouseup', () => {
+            s4State.isDraggingCircle = false;
+            drawWave();
+        });
+
+        // Touch listeners
+        s4Canvas.addEventListener('touchstart', (e) => {
+            if(e.touches.length === 1) {
+                const rect = s4Canvas.getBoundingClientRect();
+                handleS4Interaction(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top, true);
+                e.preventDefault();
+            }
+        });
+        window.addEventListener('touchmove', (e) => {
+            if (s4State.isDraggingCircle && e.touches.length === 1) {
+                const rect = s4Canvas.getBoundingClientRect();
+                handleS4Interaction(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top, false);
+                e.preventDefault();
+            }
+        }, { passive: false });
+        window.addEventListener('touchend', () => {
+            s4State.isDraggingCircle = false;
+            drawWave();
+        });
+
+
+        const s5Canvas = document.getElementById('canvasTangent');
+        const s5AngleSlider = document.getElementById('sec5AngleSlider');
+        const s5AngleVal = document.getElementById('sec5AngleVal');
+        const s5TanText = document.getElementById('sec5TanText');
+        const s5SecText = document.getElementById('sec5SecText');
+
+        let s5State = {
+            angle: 45 // Degrees (-85 to 85)
+        };
+
+        function drawTangent() {
+            const { ctx, w, h } = configureCanvas(s5Canvas);
+            const originX = 80;
+            const originY = h / 2;
+            const radius = 80; // Fit nicely in workspace
+
+            const rad = toRad(s5State.angle);
+            const cosVal = Math.cos(rad);
+            const sinVal = Math.sin(rad);
+            const tanVal = Math.tan(rad);
+            
+            // Coordinates of contact points
+            const circX = originX + radius * cosVal;
+            const circY = originY - radius * sinVal;
+
+            const tangentContactX = originX + radius;
+            const tangentContactY = originY;
+
+            // The intersection point with the secant line
+            const intersectX = originX + radius;
+            const intersectY = originY - radius * tanVal;
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(0, originY); ctx.lineTo(w, originY);
+            ctx.moveTo(originX, 0); ctx.lineTo(originX, h);
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(originX, originY, radius, 0, 2*Math.PI);
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            ctx.moveTo(tangentContactX, 10);
+            ctx.lineTo(tangentContactX, h - 10);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(originX, originY);
+            ctx.lineTo(circX, originY);
+            ctx.stroke();
+
+            ctx.strokeStyle = '#ff2a85';
+            ctx.beginPath();
+            ctx.moveTo(circX, originY);
+            ctx.lineTo(circX, circY);
+            ctx.stroke();
+
+            ctx.strokeStyle = '#ffb000';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(originX, originY);
+            ctx.lineTo(intersectX, intersectY);
+            ctx.stroke();
+
+            ctx.strokeStyle = '#39ff14';
+            ctx.lineWidth = 4;
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = 'rgba(57, 255, 20, 0.4)';
+            ctx.beginPath();
+            ctx.moveTo(tangentContactX, tangentContactY);
+            ctx.lineTo(intersectX, intersectY);
+            ctx.stroke();
+            ctx.shadowBlur = 0; // reset
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(circX, circY, 4, 0, 2*Math.PI);
+            ctx.arc(tangentContactX, tangentContactY, 4, 0, 2*Math.PI);
+            ctx.fill();
+
+            // Intersection point dot (Tangential point)
+            ctx.fillStyle = '#39ff14';
+            ctx.beginPath();
+            ctx.arc(intersectX, intersectY, 5, 0, 2*Math.PI);
+            ctx.fill();
+
+
+            ctx.strokeStyle = '#ffb000';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(originX, originY, 20, 0, -rad, rad < 0);
+            ctx.stroke();
+
+            // Label tangent segment
+            ctx.fillStyle = '#39ff14';
+            ctx.font = '600 12px JetBrains Mono';
+            ctx.fillText('tan(\u03B8)', intersectX + 10, (tangentContactY + intersectY)/2 + 4);
+
+            // Label secant line
+            ctx.fillStyle = '#ffb000';
+            ctx.fillText('sec(\u03B8)', (originX + intersectX)/2 - 15, (originY + intersectY)/2 - 10);
+
+            s5AngleVal.textContent = s5State.angle.toFixed(1);
+            s5AngleSlider.value = s5State.angle;
+            s5TanText.textContent = tanVal.toFixed(4);
+            
+            const secVal = 1 / cosVal;
+            s5SecText.textContent = secVal.toFixed(4);
+        }
+
+        s5AngleSlider.addEventListener('input', (e) => {
+            s5State.angle = parseFloat(e.target.value);
+            drawTangent();
+        });
+
+
+        // WINDOW RESIZE HANDLING & INITIALIZATION
+        function initAll() {
+            drawSohCahToa();
+            drawBridge();
+            drawUnitCircle();
+            drawWave();
+            drawTangent();
+        }
+
+        window.addEventListener('resize', initAll);
+        document.addEventListener('DOMContentLoaded', initAll);
+
+
+        // SYLLABUS MENU ACTIVE STATE SCROLL LISTENER
+        const sections = document.querySelectorAll('section');
+        const navItems = document.querySelectorAll('.syllabus-item');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.scrollY >= (sectionTop - sectionHeight / 3)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-section') === current) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

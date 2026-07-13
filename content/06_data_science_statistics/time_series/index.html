@@ -1,0 +1,1026 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Time Series Forecasting - Data Science & Stats</title>
+    <script>
+        window.PAGE_CONFIG = {
+            domain: "06_data_science_statistics",
+            logo: { main: "Time", accent: "Series", sub: "Forecasting & Smoothing" }
+        };
+    </script>
+    <script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            --color-raw: #38bdf8;          /* Cyan for raw data line */
+            --color-raw-glow: rgba(56, 189, 248, 0.35);
+            --color-smooth: #10b981;       /* Emerald for smoothed line */
+            --color-smooth-glow: rgba(16, 185, 129, 0.35);
+            --color-forecast: #ffb000;     /* Amber for forecast projections */
+            --color-forecast-glow: rgba(255, 176, 0, 0.35);
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-accent);
+            background: rgba(168, 85, 247, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            text-shadow: 0 0 5px var(--color-accent-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 960px) {
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Canvas Panel */
+        .canvas-panel {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Sliders control panel */
+        .control-row-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 1.25rem;
+        }
+
+        .input-select {
+            background: #0f121e;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text-color);
+            padding: 8px 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            width: 100%;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+
+        .input-select:focus {
+            border-color: var(--color-accent);
+        }
+
+        /* Solver steps */
+        .solver-step {
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 2px solid var(--card-border);
+        }
+
+        .solver-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .solver-step-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .solver-step-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Quiz option styling */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Time Series Forecasting</h1>
+            <p>Model sequential temporal changes. Smooth historical noise using moving averages or exponential factors, and fit linear trend regressions to forecast future intervals.</p>
+        </header>
+
+        <!-- SECTION 1: VISUAL SANDBOX -->
+        <section id="visualizer">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Data Point Manipulation & Smoothed Projections</h2>
+            </div>
+            <p class="section-intro">
+                Drag any of the solid blue historical data points vertically to modify values. The smoothed fit line (emerald) and forecasted projection (dotted orange) will update in real-time.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Chart Canvas -->
+                <div class="canvas-panel">
+                    <canvas id="canvasTimeSeries"></canvas>
+                </div>
+
+                <!-- Right Panel: Configurations & Diagnostics -->
+                <div class="panel">
+                    <div style="margin-bottom: 1.25rem;">
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">1. Data Shape Preset</h3>
+                        <div class="presets-grid" style="display:grid; grid-template-columns: 1fr; gap:6px;">
+                            <div style="display:flex; gap:6px;">
+                                <button class="btn-preset active" id="btnPresetSeasonal" onclick="switchPreset('seasonal')" style="flex:1;">Upward Seasonal Peaks</button>
+                                <button class="btn-preset" id="btnPresetCyclical" onclick="switchPreset('cyclical')" style="flex:1;">Cyclical Economy</button>
+                            </div>
+                            <button class="btn-preset" id="btnPresetNoise" onclick="switchPreset('noise')">Flat Random Noise</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.25rem;">
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">2. Smoothing Algorithm</h3>
+                        <div class="control-row-split">
+                            <div>
+                                <span style="font-size: 0.8rem; color: var(--text-muted); display:block; margin-bottom:4px;">Method:</span>
+                                <select class="input-select" id="selMethod" onchange="updateAll()">
+                                    <option value="sma" selected>Simple Moving Avg (SMA)</option>
+                                    <option value="ses">Exponential Smoothing (SES)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.8rem; color: var(--text-muted); display:block; margin-bottom:4px;">Forecast Horizon:</span>
+                                <select class="input-select" id="selHorizon" onchange="updateAll()">
+                                    <option value="4">4 months (25-28)</option>
+                                    <option value="6" selected>6 months (25-30)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Smooth parameter slider -->
+                        <div style="margin-top: 1rem;">
+                            <div style="display:flex; justify-content:space-between; font-size: 0.85rem; margin-bottom:4px;">
+                                <span id="lblParamName" style="color:var(--text-muted);">SMA Period (k months):</span>
+                                <span class="number" id="lblParamVal">3</span>
+                            </div>
+                            <input type="range" class="wedge-slider" id="slideParam" min="2" max="6" step="1" value="3" oninput="updateAll()">
+                        </div>
+                    </div>
+
+                    <!-- Diagnostics Cards -->
+                    <div>
+                        <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-color); margin-bottom: 0.5rem;">3. Diagnostics Summary</h3>
+                        
+                        <div class="math-card" style="border-color: rgba(16, 185, 129, 0.12); margin-bottom: 0.5rem; padding: 10px 12px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.8rem; color:var(--text-muted);">Mean Absolute Error (MAE):</span>
+                            <strong style="color:var(--color-smooth); font-size:1.15rem;" class="number" id="lblMAE">MAE = 4.31</strong>
+                        </div>
+
+                        <div class="math-card" style="border-color: rgba(255, 176, 0, 0.12); margin-bottom: 0; padding: 10px 12px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.8rem; color:var(--text-muted);">Linear Trend Line:</span>
+                            <strong style="color:var(--color-forecast); font-size:1.05rem;" class="number" id="lblTrendEq">y = 1.25x + 35.4</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: STEP-BY-STEP SOLVER -->
+        <section id="step-solver">
+            <div class="section-header">
+                <span class="section-tag">Algebraic Solver</span>
+                <h2>Smoothing & Forecasting Trace Walkthrough</h2>
+            </div>
+            <p class="section-intro">
+                Trace how historical noise smoothing algorithms are calculated and how slope parameters are fitted to project future values.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Calculation Steps -->
+                <div class="panel" style="gap: 1rem;">
+                    <h3>Trace Calculations Steps</h3>
+                    <div id="solveSteps">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Right Panel: Data Table -->
+                <div class="panel">
+                    <h3>Historical vs. Smoothed Data Table</h3>
+                    <br>
+                    <div id="solverRightCard" style="max-height: 400px; overflow-y: auto;">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL EVALUATION QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Time Series Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Test your conceptual knowledge of trends, cyclical seasonality, smoothing variables, and phase lags.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Question board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Quiz question loading...</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text...</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Cheatsheet -->
+                <div class="panel">
+                    <h3>Time Series Cheat Sheet</h3>
+                    <br>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">
+                        <li><strong>Trend:</strong> The long-term upward or downward direction of data (modeled as $y = mx + c$).</li>
+                        <li><strong>Seasonality:</strong> Repeating cycles that occur within a calendar year or fixed interval (e.g. summer sales spikes).</li>
+                        <li><strong>Smoothing:</strong> Moving averages filter out short-term random noise to reveal trends.</li>
+                        <li><strong>Phase Lag:</strong> Smoothed lines always lag behind original peaks because they incorporate past historical data points.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('canvasTimeSeries');
+        const ctx = canvas.getContext('2d');
+
+        const selMethod = document.getElementById('selMethod');
+        const selHorizon = document.getElementById('selHorizon');
+        const slideParam = document.getElementById('slideParam');
+        const lblParamName = document.getElementById('lblParamName');
+        const lblParamVal = document.getElementById('lblParamVal');
+
+        const lblMAE = document.getElementById('lblMAE');
+        const lblTrendEq = document.getElementById('lblTrendEq');
+        const solveSteps = document.getElementById('solveSteps');
+        const solverRightCard = document.getElementById('solverRightCard');
+
+        let presetMode = 'seasonal';
+        const numHistorical = 24;
+        let dataY = []; // 24 monthly sales coordinates
+
+        // Presets data definitions
+        const presets = {
+            seasonal: [30, 35, 45, 52, 60, 78, 64, 48, 42, 38, 44, 48, 45, 50, 62, 68, 76, 92, 78, 62, 55, 50, 58, 62],
+            cyclical: [40, 48, 58, 65, 68, 65, 58, 48, 40, 32, 22, 15, 12, 15, 22, 32, 40, 48, 58, 65, 68, 65, 58, 48],
+            noise: [48, 52, 44, 56, 50, 46, 54, 48, 52, 45, 55, 49, 51, 47, 53, 46, 54, 48, 52, 45, 55, 49, 51, 47]
+        };
+
+        // Coordinate dragging state
+        let draggingIndex = -1;
+
+        function switchPreset(mode) {
+            presetMode = mode;
+            document.getElementById('btnPresetSeasonal').classList.remove('active');
+            document.getElementById('btnPresetCyclical').classList.remove('active');
+            document.getElementById('btnPresetNoise').classList.remove('active');
+
+            if (mode === 'seasonal') {
+                document.getElementById('btnPresetSeasonal').classList.add('active');
+            } else if (mode === 'cyclical') {
+                document.getElementById('btnPresetCyclical').classList.add('active');
+            } else {
+                document.getElementById('btnPresetNoise').classList.add('active');
+            }
+
+            dataY = [...presets[mode]];
+            updateAll();
+        }
+
+        // Calculations & Smoothing
+        function computeMovingAverage(y, k) {
+            const smoothed = [];
+            for (let t = 0; t < y.length; t++) {
+                if (t < k - 1) {
+                    smoothed.push(null); // not enough points to smooth
+                } else {
+                    let sum = 0;
+                    for (let j = 0; j < k; j++) {
+                        sum += y[t - j];
+                    }
+                    smoothed.push(sum / k);
+                }
+            }
+            return smoothed;
+        }
+
+        function computeExponentialSmoothing(y, alpha) {
+            const smoothed = [];
+            if (y.length === 0) return smoothed;
+
+            // F_1 = Y_1
+            smoothed.push(y[0]);
+            
+            for (let t = 1; t < y.length; t++) {
+                const prevSmooth = smoothed[t - 1];
+                const val = alpha * y[t - 1] + (1 - alpha) * prevSmooth;
+                smoothed.push(val);
+            }
+            return smoothed;
+        }
+
+        function computeLinearRegression(y) {
+            const n = y.length;
+            let sumT = 0;
+            let sumY = 0;
+            let sumTY = 0;
+            let sumTT = 0;
+
+            for (let i = 0; i < n; i++) {
+                const t = i + 1; // months 1 to 24
+                sumT += t;
+                sumY += y[i];
+                sumTY += t * y[i];
+                sumTT += t * t;
+            }
+
+            const slope = (n * sumTY - sumT * sumY) / (n * sumTT - sumT * sumT);
+            const intercept = (sumY - slope * sumT) / n;
+
+            return { slope, intercept };
+        }
+
+        // Main rendering & updates
+        function updateAll() {
+            const method = selMethod.value;
+            const horizon = parseInt(selHorizon.value);
+            const paramEl = slideParam;
+
+            // Adjust slider range based on method
+            if (method === 'sma') {
+                lblParamName.textContent = 'SMA Window (k months):';
+                paramEl.min = 2;
+                paramEl.max = 6;
+                paramEl.step = 1;
+                // keep within bounds if coming from ses fraction values
+                if (parseFloat(paramEl.value) < 2) paramEl.value = 3;
+                var paramVal = parseInt(paramEl.value);
+                lblParamVal.textContent = `${paramVal} months`;
+            } else {
+                lblParamName.textContent = 'SES Factor (alpha \u03B1):';
+                paramEl.min = 0.1;
+                paramEl.max = 0.9;
+                paramEl.step = 0.1;
+                // keep bounds
+                if (parseFloat(paramEl.value) > 0.9) paramEl.value = 0.4;
+                var paramVal = parseFloat(paramEl.value);
+                lblParamVal.textContent = paramVal.toFixed(1);
+            }
+
+            // 1. Calculate smoothed curve
+            let smoothed = [];
+            if (method === 'sma') {
+                smoothed = computeMovingAverage(dataY, paramVal);
+            } else {
+                smoothed = computeExponentialSmoothing(dataY, paramVal);
+            }
+
+            // 2. Calculate Mean Absolute Error (MAE)
+            let maeSum = 0;
+            let maeCount = 0;
+            for (let t = 0; t < dataY.length; t++) {
+                if (smoothed[t] !== null && smoothed[t] !== undefined) {
+                    maeSum += Math.abs(dataY[t] - smoothed[t]);
+                    maeCount++;
+                }
+            }
+            const mae = maeCount > 0 ? maeSum / maeCount : 0;
+            lblMAE.textContent = `MAE = ${mae.toFixed(2)}`;
+
+            // 3. Compute Linear Trend Forecasts
+            const { slope, intercept } = computeLinearRegression(dataY);
+            lblTrendEq.textContent = `y = ${slope.toFixed(2)}t + ${intercept.toFixed(1)}`;
+
+            const forecast = [];
+            for (let t = 25; t <= 24 + horizon; t++) {
+                forecast.push({
+                    t,
+                    y: slope * t + intercept
+                });
+            }
+
+            drawChart(method, smoothed, forecast);
+            updateSolver(method, paramVal, slope, intercept, mae, smoothed, forecast);
+        }
+
+        function drawChart(method, smoothed, forecast) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const width = canvas.width;
+            const height = canvas.height;
+            const marginX = 40;
+            const marginY = 40;
+            const drawW = width - 2 * marginX;
+            const drawH = height - 2 * marginY;
+
+            // X scale spans months 1 to 30
+            const totalMonths = 30;
+            
+            // Y scale: values 0 to 100
+            const minYVal = 0;
+            const maxYVal = 100;
+            const rangeY = maxYVal - minYVal;
+
+            function getCoords(t, val) {
+                const px = marginX + ((t - 1) / (totalMonths - 1)) * drawW;
+                const py = height - marginY - (val / maxYVal) * drawH;
+                return { x: px, y: py };
+            }
+
+            ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+            ctx.lineWidth = 1;
+            ctx.font = '8px JetBrains Mono';
+            ctx.fillStyle = 'rgba(255,255,255,0.25)';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            for (let y = 0; y <= 100; y += 20) {
+                const py = height - marginY - (y / 100) * drawH;
+                ctx.beginPath();
+                ctx.moveTo(marginX, py);
+                ctx.lineTo(width - marginX, py);
+                ctx.stroke();
+                ctx.fillText(y, marginX - 6, py);
+            }
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            for (let t = 1; t <= 30; t += 3) {
+                const px = marginX + ((t - 1) / 29) * drawW;
+                ctx.beginPath();
+                ctx.moveTo(px, height - marginY);
+                ctx.lineTo(px, height - marginY + 4);
+                ctx.stroke();
+                ctx.fillText(`M${t}`, px, height - marginY + 6);
+            }
+
+            // Vertical divider splits history vs forecast
+            const boundaryX = marginX + (23 / 29) * drawW;
+            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(boundaryX, marginT = 15);
+            ctx.lineTo(boundaryX, height - marginY);
+            ctx.stroke();
+            ctx.setLineDash([]); // reset
+
+            // Label Forecast area
+            ctx.fillStyle = 'rgba(255,255,255,0.15)';
+            ctx.font = 'italic bold 9px Outfit';
+            ctx.textAlign = 'left';
+            ctx.fillText("Forecast Horizon", boundaryX + 8, marginT + 12);
+
+            // 1. Draw Smoothed Fit Line (Emerald)
+            ctx.strokeStyle = 'var(--color-smooth)';
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            let firstSmooth = true;
+            for (let i = 0; i < numHistorical; i++) {
+                const val = smoothed[i];
+                if (val === null || val === undefined) continue;
+                const pt = getCoords(i + 1, val);
+                if (firstSmooth) {
+                    ctx.moveTo(pt.x, pt.y);
+                    firstSmooth = false;
+                } else {
+                    ctx.lineTo(pt.x, pt.y);
+                }
+            }
+            ctx.stroke();
+
+            // 2. Draw Forecast Projections segment (Amber dotted)
+            ctx.strokeStyle = 'var(--color-forecast)';
+            ctx.lineWidth = 2.5;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            
+            // Connect to last historical smoothed point for continuous drawing
+            const lastHistoricalVal = dataY[23];
+            const startPt = getCoords(24, lastHistoricalVal);
+            ctx.moveTo(startPt.x, startPt.y);
+
+            forecast.forEach(f => {
+                const pt = getCoords(f.t, f.y);
+                ctx.lineTo(pt.x, pt.y);
+            });
+            ctx.stroke();
+            ctx.setLineDash([]); // reset
+
+            forecast.forEach(f => {
+                const pt = getCoords(f.t, f.y);
+                ctx.fillStyle = '#08090d';
+                ctx.strokeStyle = 'var(--color-forecast)';
+                ctx.lineWidth = 2.2;
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            });
+
+            // 3. Draw Raw data line (Cyan)
+            ctx.strokeStyle = 'var(--color-raw)';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            for (let i = 0; i < numHistorical; i++) {
+                const pt = getCoords(i + 1, dataY[i]);
+                if (i === 0) ctx.moveTo(pt.x, pt.y);
+                else ctx.lineTo(pt.x, pt.y);
+            }
+            ctx.stroke();
+
+            for (let i = 0; i < numHistorical; i++) {
+                const pt = getCoords(i + 1, dataY[i]);
+                ctx.fillStyle = 'var(--color-raw)';
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, draggingIndex === i ? 6 : 4.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Coordinate Axis lines
+            ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(marginX, marginY - 15);
+            ctx.lineTo(marginX, height - marginY);
+            ctx.lineTo(width - marginX, height - marginY);
+            ctx.stroke();
+        }
+
+        // Dragging handlers (direct coordinates changes)
+        function getMousePos(evt) {
+            const rect = canvas.getBoundingClientRect();
+            // Scale appropriately based on CSS styles
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            return {
+                x: (evt.clientX - rect.left) * scaleX,
+                y: (evt.clientY - rect.top) * scaleY
+            };
+        }
+
+        canvas.addEventListener('mousedown', evt => {
+            const mouse = getMousePos(evt);
+            const width = canvas.width;
+            const height = canvas.height;
+            const marginX = 40;
+            const marginY = 40;
+            const drawW = width - 2 * marginX;
+            const drawH = height - 2 * marginY;
+
+            // Find closest historical point
+            let closestIdx = -1;
+            let minDist = 12; // activation threshold px
+
+            for (let i = 0; i < numHistorical; i++) {
+                const px = marginX + (i / 29) * drawW;
+                const py = height - marginY - (dataY[i] / 100) * drawH;
+                const dist = Math.hypot(mouse.x - px, mouse.y - py);
+                if (dist < minDist) {
+                    minDist = dist;
+                    closestIdx = i;
+                }
+            }
+
+            if (closestIdx !== -1) {
+                draggingIndex = closestIdx;
+                canvas.style.cursor = 'ns-resize';
+                updateAll();
+            }
+        });
+
+        canvas.addEventListener('mousemove', evt => {
+            if (draggingIndex === -1) {
+                // Change cursor to pointer if hovering close to a point
+                const mouse = getMousePos(evt);
+                const width = canvas.width;
+                const height = canvas.height;
+                const marginX = 40;
+                const marginY = 40;
+                const drawW = width - 2 * marginX;
+                const drawH = height - 2 * marginY;
+                let hover = false;
+                for (let i = 0; i < numHistorical; i++) {
+                    const px = marginX + (i / 29) * drawW;
+                    const py = height - marginY - (dataY[i] / 100) * drawH;
+                    if (Math.hypot(mouse.x - px, mouse.y - py) < 10) {
+                        hover = true;
+                        break;
+                    }
+                }
+                canvas.style.cursor = hover ? 'pointer' : 'default';
+                return;
+            }
+
+            const mouse = getMousePos(evt);
+            const height = canvas.height;
+            const marginY = 40;
+            const drawH = height - 2 * marginY;
+
+            // Map mouse.y back to value scale (0 to 100)
+            const relativeY = height - marginY - mouse.y;
+            let val = (relativeY / drawH) * 100;
+            val = Math.max(0, Math.min(100, val)); // bound
+
+            dataY[draggingIndex] = Math.round(val);
+            updateAll();
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (draggingIndex !== -1) {
+                draggingIndex = -1;
+                canvas.style.cursor = 'default';
+                updateAll();
+            }
+        });
+
+        // Solver output updates
+        function updateSolver(method, paramVal, slope, intercept, mae, smoothed, forecast) {
+            let solveHtml = '';
+            
+            if (method === 'sma') {
+                solveHtml = `
+                    <div class="solver-step">
+                        <div class="solver-step-title">1. Time Series Decomposition Analysis</div>
+                        <div class="solver-step-desc">
+                            Temporal data exhibits distinct components: Linear upward/downward direction (**Trend**), recurring cyclical frequencies (**Seasonality**), and high frequency deviations (**Noise**).
+                        </div>
+                    </div>
+                    <div class="solver-step">
+                        <div class="solver-step-title">2. Calculate Simple Moving Average (SMA with k = ${paramVal})</div>
+                        <div class="solver-step-desc">
+                            SMA smooths data by averaging historical values over a rolling window size:
+                            <br>
+                            &bull; Formula: F<sub>t</sub> = (Y<sub>t</sub> + Y<sub>t-1</sub> + ... + Y<sub>t-k+1</sub>) / k
+                            <br>
+                            &bull; Walkthrough for Month 12:
+                            <br>
+                            &nbsp;&nbsp; Sum of previous ${paramVal} values: [${Array.from({length: paramVal}, (_, i) => dataY[11 - i]).join(' + ')}] = ${Array.from({length: paramVal}, (_, i) => dataY[11 - i]).reduce((a,b)=>a+b,0)}
+                            <br>
+                            &nbsp;&nbsp; F<sub>12</sub> = ${Array.from({length: paramVal}, (_, i) => dataY[11 - i]).reduce((a,b)=>a+b,0)} / ${paramVal} = <strong>${smoothed[11].toFixed(2)}</strong>.
+                        </div>
+                    </div>
+                    <div class="solver-step">
+                        <div class="solver-step-title">3. Estimate Linear Regression Trend Projection</div>
+                        <div class="solver-step-desc">
+                            Fit a straight line equation y = mt + c from the 24 months of historical coordinates:
+                            <br>
+                            &bull; Slope (m) = <strong>${slope.toFixed(4)}</strong> (average change per month).
+                            <br>
+                            &bull; Intercept (c) = <strong>${intercept.toFixed(2)}</strong>.
+                            <br>
+                            &bull; Equation: y = <strong>${slope.toFixed(2)}</strong> &times; t + <strong>${intercept.toFixed(1)}</strong>.
+                        </div>
+                    </div>
+                    <div class="solver-step" style="border-color: var(--color-forecast);">
+                        <div class="solver-step-title">4. Calculate Forecast projections</div>
+                        <div class="solver-step-desc">
+                            Evaluate the trend equation for upcoming intervals (months 25 to 30):<br>
+                            ${forecast.map(f => `&bull; Month ${f.t}: F = ${slope.toFixed(2)} &times; ${f.t} + ${intercept.toFixed(1)} = <strong>${f.y.toFixed(1)}</strong>`).join('<br>')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Exponential Smoothing
+                solveHtml = `
+                    <div class="solver-step">
+                        <div class="solver-step-title">1. Time Series Decomposition Analysis</div>
+                        <div class="solver-step-desc">
+                            Decomposes data into trend vectors, seasonal peaks, and random deviations.
+                        </div>
+                    </div>
+                    <div class="solver-step">
+                        <div class="solver-step-title">2. Calculate Exponential Smoothing (SES with &alpha; = ${paramVal.toFixed(1)})</div>
+                        <div class="solver-step-desc">
+                            SES applies exponentially decreasing weights to older data points:
+                            <br>
+                            &bull; Formula: F<sub>t</sub> = &alpha; Y<sub>t-1</sub> + (1 - &alpha;) F<sub>t-1</sub>
+                            <br>
+                            &bull; Walkthrough for Month 12:
+                            <br>
+                            &nbsp;&nbsp; Observed Y<sub>11</sub> = ${dataY[10]}, Smoothed forecast F<sub>11</sub> = ${smoothed[10].toFixed(2)}
+                            <br>
+                            &nbsp;&nbsp; F<sub>12</sub> = ${paramVal} &times; ${dataY[10]} + (1 - ${paramVal}) &times; ${smoothed[10].toFixed(2)}
+                            <br>
+                            &nbsp;&nbsp; F<sub>12</sub> = ${ (paramVal * dataY[10]).toFixed(2) } + ${ ((1-paramVal)*smoothed[10]).toFixed(2) } = <strong>${smoothed[11].toFixed(2)}</strong>.
+                        </div>
+                    </div>
+                    <div class="solver-step">
+                        <div class="solver-step-title">3. Estimate Linear Regression Trend Projection</div>
+                        <div class="solver-step-desc">
+                            Fit a straight line equation y = mt + c from the 24 months of historical coordinates:
+                            <br>
+                            &bull; Slope (m) = <strong>${slope.toFixed(4)}</strong> (average change per month).
+                            <br>
+                            &bull; Intercept (c) = <strong>${intercept.toFixed(2)}</strong>.
+                            <br>
+                            &bull; Equation: y = <strong>${slope.toFixed(2)}</strong> &times; t + <strong>${intercept.toFixed(1)}</strong>.
+                        </div>
+                    </div>
+                    <div class="solver-step" style="border-color: var(--color-forecast);">
+                        <div class="solver-step-title">4. Calculate Forecast projections</div>
+                        <div class="solver-step-desc">
+                            Evaluate the trend equation for upcoming intervals (months 25 to 30):<br>
+                            ${forecast.map(f => `&bull; Month ${f.t}: F = ${slope.toFixed(2)} &times; ${f.t} + ${intercept.toFixed(1)} = <strong>${f.y.toFixed(1)}</strong>`).join('<br>')}
+                        </div>
+                    </div>
+                `;
+            }
+            solveSteps.innerHTML = solveHtml;
+
+            // Renders data table in right panel
+            let tableHtml = `
+                <table class="stats-table" style="width:100%; border-collapse:collapse; font-size:0.8rem; font-family:'JetBrains Mono'; text-align:right;">
+                    <thead>
+                        <tr style="border-bottom:1px solid var(--card-border);">
+                            <th style="text-align:left; padding:4px 0;">Month</th>
+                            <th style="padding:4px 0;">Raw value (Y)</th>
+                            <th style="padding:4px 0;">Smoothed (F)</th>
+                            <th style="padding:4px 0;">Error |Y - F|</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            for (let i = 0; i < numHistorical; i++) {
+                const sVal = smoothed[i];
+                const sStr = sVal !== null ? sVal.toFixed(1) : '-';
+                const errStr = sVal !== null ? Math.abs(dataY[i] - sVal).toFixed(1) : '-';
+                tableHtml += `
+                    <tr style="border-bottom: 1px dashed rgba(255,255,255,0.03);">
+                        <td style="text-align:left; padding:4px 0;">Month ${i+1}</td>
+                        <td>${dataY[i]}</td>
+                        <td style="color:var(--color-smooth);">${sStr}</td>
+                        <td style="color:#f43f5e;">${errStr}</td>
+                    </tr>
+                `;
+            }
+            tableHtml += `</tbody></table>`;
+            solverRightCard.innerHTML = tableHtml;
+        }
+
+        function resizeCanvases() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            updateAll();
+        }
+
+        // Quiz Engine Data
+        const quizQuestions = [
+            {
+                question: "In a time series representing sales peaks every June, which component of the time series describes these repeating annual peaks?",
+                options: [
+                    "Trend component",
+                    "Seasonality component",
+                    "Noise/Irregular component",
+                    "Autoregressive component"
+                ],
+                correct: 1,
+                explanation: "Seasonality represents patterns that repeat at regular intervals, such as seasonal weather changes or annual calendar shopping cycles."
+            },
+            {
+                question: "What is the key impact of increasing the period window k of a Simple Moving Average (SMA) from 2 to 6 months?",
+                options: [
+                    "The smoothed curve becomes more volatile and responsive to spikes.",
+                    "The smoothed curve becomes flatter/smoother but introduces more phase lag.",
+                    "The smoothed curve shifts backwards in time, preceding raw peaks.",
+                    "The Mean Absolute Error (MAE) drops immediately to zero."
+                ],
+                correct: 1,
+                explanation: "A larger SMA window averages more points, filtering out noise better, but it lags behind changes in direction and blunts peak heights because it carries older data forward."
+            },
+            {
+                question: "For a Simple Exponential Smoothing (SES) forecast, which value of alpha would place the most weight on the most recent month's actual value?",
+                options: [
+                    "alpha = 0.1",
+                    "alpha = 0.5",
+                    "alpha = 0.9",
+                    "alpha = 0.0"
+                ],
+                correct: 2,
+                explanation: "In SES, the formula is F_(t+1) = alpha*Y_t + (1-alpha)*F_t. A higher alpha (e.g. 0.9) places 90% of the weight on the most recent observation, making it highly responsive to recent changes."
+            },
+            {
+                question: "A linear regression trend line is calculated as y = 2.5t + 40.0. What is the predicted forecast value for month t = 26?",
+                options: [
+                    "105.0",
+                    "90.0",
+                    "65.0",
+                    "40.0"
+                ],
+                correct: 0,
+                explanation: "Evaluating the trend equation at t = 26: y = 2.5 * 26 + 40.0 = 65.0 + 40.0 = 105.0."
+            },
+            {
+                question: "Why is a naive linear trend projection (y = mt + c) sometimes insufficient for seasonal time series forecasts?",
+                options: [
+                    "Because it cannot capture the linear slope of growth.",
+                    "Because it only models a straight line direction and fails to capture periodic peaks/valleys.",
+                    "Because it is too mathematically complex for standard calculators.",
+                    "Because it completely ignores the standard error parameters."
+                ],
+                correct: 1,
+                explanation: "Linear regression model projections only capture the general trend direction. They do not model seasonal cycles, which means they will predict a straight line forecast instead of matching future seasonal waves."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-accent); box-shadow:0 4px 15px var(--color-accent-glow); color:var(--text-color);">
+                        Restart Quiz Evaluation
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function() {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvases, 300);
+            });
+
+            switchPreset('seasonal');
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

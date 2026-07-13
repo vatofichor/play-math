@@ -1,0 +1,1062 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euler's Formula & Identity - Trigonometry & Waves</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "04_trigonometry",
+            logo: {"main":"Wave","accent":"Lab","sub":"Euler's Formula & Identity"},
+            navigation: [
+    {
+        "label": "Euler's Complex Plane",
+        "desc": "Euler's Complex Plane interactive section",
+        "href": "#visualizer"
+    },
+    {
+        "label": "Euler's & Taylor expansion Steps",
+        "desc": "Euler's & Taylor expansion Steps interactive section",
+        "href": "#step-solver"
+    },
+    {
+        "label": "Euler's Identity Quiz",
+        "desc": "Euler's Identity Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Trigonometry Amber Theme */
+            --color-amber: #ffb000;
+            --color-amber-glow: rgba(255, 176, 0, 0.35);
+            --color-accent: #ffb000;
+            --color-accent-glow: rgba(255, 176, 0, 0.35);
+
+            --color-real: #38bdf8; /* Cyan for Real */
+            --color-imag: #f43f5e; /* Rose for Imaginary */
+            --color-spiral: #a855f7; /* Purple for Taylor Spiral */
+        }
+
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-amber) !important;
+            box-shadow: 0 4px 20px var(--color-amber-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-title,
+        .sidebar-drawer .syllabus-item.active a .syllabus-desc {
+            color: var(--bg-color) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-amber);
+            background: rgba(255, 176, 0, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 176, 0, 0.2);
+            text-shadow: 0 0 5px var(--color-amber-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row.angle-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-amber);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-amber);
+        }
+        .slider-row.terms-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-spiral);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-spiral);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .identity-highlight {
+            background: linear-gradient(135deg, rgba(255, 176, 0, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%);
+            border: 1px solid rgba(255, 176, 0, 0.25);
+            box-shadow: 0 0 15px rgba(255, 176, 0, 0.15);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-top: 1rem;
+            display: none;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .math-symbol {
+            font-style: italic;
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .canvas-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--text-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid var(--card-border);
+            pointer-events: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-amber) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Euler's Formula & Identity</h1>
+            <p>Connect exponentiation and trigonometry. Euler's Formula, $e^{i\theta} = \cos\theta + i\sin\theta$, maps circular coordinates in the complex plane, yielding the famous identity $e^{i\pi} + 1 = 0$.</p>
+        </header>
+
+        <!-- SECTION 1: DYNAMIC VISUALIZER -->
+        <section id="visualizer">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Euler's Complex Plane</h2>
+            </div>
+            <p class="section-intro">
+                Drag the vector on the circle directly or adjust the angle slider. Witness the real component (cosine) and imaginary component (sine) project onto the axes. Increase Taylor terms to see the spiral converge!
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Dual Canvas Plotter -->
+                <div class="panel" style="gap: 1.5rem;">
+                    <div style="position: relative;">
+                        <div class="canvas-label">Unit Circle Plot: z = e^(i&theta;) = cos(&theta;) + i sin(&theta;)</div>
+                        <div class="canvas-container" style="height: 320px; cursor: crosshair;">
+                            <canvas id="circleCanvas"></canvas>
+                        </div>
+                    </div>
+                    <div style="position: relative;">
+                        <div class="canvas-label">Taylor Series Spiral: &Sigma; (i&theta;)^k / k!</div>
+                        <div class="canvas-container" style="height: 280px;">
+                            <canvas id="taylorCanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders & Presets -->
+                <div class="panel">
+                    <div class="presets-grid">
+                        <button class="btn-preset active" id="btnPreset0" onclick="loadPreset(0, 'btnPreset0')">&theta; = 0</button>
+                        <button class="btn-preset" id="btnPresetPi6" onclick="loadPreset(0.5236, 'btnPresetPi6')">&theta; = &pi;/6 (30&deg;)</button>
+                        <button class="btn-preset" id="btnPresetPi4" onclick="loadPreset(0.7854, 'btnPresetPi4')">&theta; = &pi;/4 (45&deg;)</button>
+                        <button class="btn-preset" id="btnPresetPi2" onclick="loadPreset(1.5708, 'btnPresetPi2')">&theta; = &pi;/2 (90&deg;)</button>
+                        <button class="btn-preset" id="btnPresetPi" onclick="loadPreset(3.1416, 'btnPresetPi')">&theta; = &pi; (180&deg;)</button>
+                        <button class="btn-preset" id="btnPreset2Pi" onclick="loadPreset(6.2832, 'btnPreset2Pi')">&theta; = 2&pi; (360&deg;)</button>
+                    </div>
+
+                    <div class="math-card">
+                        <h3>Active Complex Value</h3>
+                        <div class="equation-box" id="eqDisplay">
+                            e^(i&theta;) = cos(0) + i sin(0) = 1.00 + 0.00i
+                        </div>
+                    </div>
+
+                    <!-- Sliders -->
+                    <div class="slider-group">
+                        <div class="slider-row angle-slider">
+                            <div class="slider-label">
+                                <span>Angle (<span class="math-symbol">&theta;</span> in Radians)</span>
+                                <span class="number" id="lblAngle">0.00 rad</span>
+                            </div>
+                            <input type="range" id="slideAngle" min="0" max="6.2832" step="0.01" value="0">
+                        </div>
+                        <div class="slider-row terms-slider">
+                            <div class="slider-label">
+                                <span>Taylor Series Terms (<span class="math-symbol">N</span>)</span>
+                                <span class="number" id="lblTerms">6</span>
+                            </div>
+                            <input type="range" id="slideTerms" min="1" max="10" step="1" value="6">
+                        </div>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>Drag the glowing vector node directly around the unit circle to see its coordinates sweep.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: STEP-BY-STEP SOLVER -->
+        <section id="step-solver">
+            <div class="section-header">
+                <span class="section-tag">Algebraic Solver</span>
+                <h2>Euler's & Taylor expansion Steps</h2>
+            </div>
+            <p class="section-intro">
+                Trace the numeric evaluation of Euler's formula and observe how imaginary terms group dynamically to form the circular spiral.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Calculation Steps -->
+                <div class="panel">
+                    <h3>Numeric Substitution & Evaluation</h3>
+                    <br>
+                    <div class="formula-steps" id="solveSteps">
+                        <!-- Populated dynamically -->
+                    </div>
+                    
+                    <div class="identity-highlight" id="identityCard">
+                        <h4 style="color:var(--color-amber); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            Euler's Identity Derived!
+                        </h4>
+                        <p style="font-size:0.85rem; line-height:1.5;">
+                            When &theta; = &pi; (180&deg;), we have:<br>
+                            e<sup>i&pi;</sup> = cos(&pi;) + i sin(&pi;) = -1 + 0i = -1.<br>
+                            Adding 1 to both sides yields: <strong>e<sup>i&pi;</sup> + 1 = 0</strong>.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Converged Value -->
+                <div class="panel">
+                    <h3>Approximation Details</h3>
+                    <br>
+                    <div class="math-card" style="border-color: rgba(56, 189, 248, 0.15);">
+                        <h3>Real Component (cos &theta;)</h3>
+                        <p class="number" style="font-size: 1.25rem; font-weight: 700; color: var(--color-real);" id="realSummaryText">
+                            cos(0.00) = 1.00
+                        </p>
+                    </div>
+
+                    <div class="math-card" style="border-color: rgba(244, 63, 94, 0.15);">
+                        <h3>Imaginary Component (sin &theta;)</h3>
+                        <p class="number" style="font-size: 1.25rem; font-weight: 700; color: var(--color-imag);" id="imagSummaryText">
+                            sin(0.00) = 0.00
+                        </p>
+                    </div>
+
+                    <div class="math-card" style="border-color: rgba(168, 85, 247, 0.15);">
+                        <h3>Taylor Approximation Tip</h3>
+                        <p class="number" style="font-size: 1.25rem; font-weight: 700; color: var(--color-spiral);" id="taylorSummaryText">
+                            z_approx = 1.00 + 0.00i
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Euler's Identity Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Test your understanding of complex coordinates, Taylor expansions, and identity relations.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Question Board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">What is the complex value of e^(i&pi;/2)?</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text...</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Cheatsheet -->
+                <div class="panel" id="quizStatsPanel">
+                    <h3>Euler & Complex Plane Cheat Sheet</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom: 0; list-style: none; display: flex; flex-direction: column; gap: 10px;">
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-amber); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-amber);"></span>
+                            <span>Euler's Formula: e<sup>i&theta;</sup> = cos(&theta;) + i sin(&theta;)</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-real); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-real);"></span>
+                            <span>Real Part (cos &theta;) = Re(z)</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-imag); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-imag);"></span>
+                            <span>Imaginary Part (sin &theta;) = Im(z)</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-spiral); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-spiral);"></span>
+                            <span>Euler's Identity: e<sup>i&pi;</sup> + 1 = 0</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('circleCanvas');
+        const ctx = canvas.getContext('2d');
+        const tCanvas = document.getElementById('taylorCanvas');
+        const tCtx = tCanvas.getContext('2d');
+
+        // Sliders
+        const slideAngle = document.getElementById('slideAngle');
+        const slideTerms = document.getElementById('slideTerms');
+        const lblAngle = document.getElementById('lblAngle');
+        const lblTerms = document.getElementById('lblTerms');
+
+        // solver displays
+        const eqDisplay = document.getElementById('eqDisplay');
+        const solveSteps = document.getElementById('solveSteps');
+        const identityCard = document.getElementById('identityCard');
+        const realSummaryText = document.getElementById('realSummaryText');
+        const imagSummaryText = document.getElementById('imagSummaryText');
+        const taylorSummaryText = document.getElementById('taylorSummaryText');
+
+        // Values state
+        let theta = 0; // angle in radians
+        let numTerms = 6;
+
+        let dragging = false;
+
+        function loadPreset(angleVal, btnId) {
+            theta = angleVal;
+            slideAngle.value = theta;
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+            if (btnId) document.getElementById(btnId).classList.add('active');
+            updateAll();
+        }
+
+        function resizeCanvases() {
+            [canvas, tCanvas].forEach(c => {
+                c.width = c.parentElement.clientWidth;
+                c.height = c.parentElement.clientHeight;
+            });
+            drawAll();
+        }
+
+        // Coordinate scaling: Unit circle coordinates are mapped to pixel coordinates
+        // Circle coordinates: x in [-1.5, 1.5], y in [-1.5, 1.5]
+        function toPixelCircle(x, y, c) {
+            const size = Math.min(c.width, c.height);
+            const scale = (size - 60) / 3; // map [-1.5, 1.5] to fit
+            const px = c.width / 2 + x * scale;
+            const py = c.height / 2 - y * scale;
+            return { x: px, y: py };
+        }
+
+        function toGraphCircle(px, py, c) {
+            const size = Math.min(c.width, c.height);
+            const scale = (size - 60) / 3;
+            const gx = (px - c.width / 2) / scale;
+            const gy = (c.height / 2 - py) / scale;
+            return { x: gx, y: gy };
+        }
+
+        // Returns an array of complex numbers [{re, im}] representing the partial sums
+        function getTaylorPartialSums(ang, termsCount) {
+            let sums = [{ re: 0, im: 0 }];
+            let currRe = 0;
+            let currIm = 0;
+
+            // factorial helper
+            function fact(n) {
+                let f = 1;
+                for (let i = 1; i <= n; i++) f *= i;
+                return f;
+            }
+
+            // (i * theta)^k / k!
+            // i^k has pattern: 1, i, -1, -i, ...
+            for (let k = 0; k < termsCount; k++) {
+                let termVal = Math.pow(ang, k) / fact(k);
+                let pattern = k % 4;
+
+                let termRe = 0;
+                let termIm = 0;
+
+                if (pattern === 0) {
+                    termRe = termVal;
+                } else if (pattern === 1) {
+                    termIm = termVal;
+                } else if (pattern === 2) {
+                    termRe = -termVal;
+                } else if (pattern === 3) {
+                    termIm = -termVal;
+                }
+
+                currRe += termRe;
+                currIm += termIm;
+                sums.push({ re: currRe, im: currIm });
+            }
+
+            return sums;
+        }
+
+        function drawGrid(c, context, maxLimit = 1.5) {
+            context.clearRect(0, 0, c.width, c.height);
+
+            context.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+            context.lineWidth = 1;
+            context.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            context.font = '9px JetBrains Mono';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+
+
+            const steps = [-1.0, -0.5, 0.5, 1.0];
+            steps.forEach(val => {
+                // Vertical
+                let p1 = toPixelCircle(val, 0, c);
+                context.beginPath();
+                context.moveTo(p1.x, 30);
+                context.lineTo(p1.x, c.height - 30);
+                context.stroke();
+                context.fillText(val.toFixed(1), p1.x, c.height - 18);
+
+                // Horizontal
+                let p2 = toPixelCircle(0, val, c);
+                context.beginPath();
+                context.moveTo(30, p2.y);
+                context.lineTo(c.width - 30, p2.y);
+                context.stroke();
+                context.fillText(val.toFixed(1), 18, p2.y);
+            });
+
+            context.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            context.lineWidth = 1.5;
+            let center = toPixelCircle(0, 0, c);
+
+            // Re axis
+            context.beginPath();
+            context.moveTo(30, center.y);
+            context.lineTo(c.width - 30, center.y);
+            context.stroke();
+
+            // Im axis
+            context.beginPath();
+            context.moveTo(center.x, 30);
+            context.lineTo(center.x, c.height - 30);
+            context.stroke();
+
+            context.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            context.fillText('Re', c.width - 15, center.y);
+            context.fillText('Im', center.x, 15);
+        }
+
+        function drawCircleCanvas() {
+            drawGrid(canvas, ctx);
+
+            const center = toPixelCircle(0, 0, canvas);
+            const radiusPixel = toPixelCircle(1, 0, canvas).x - center.x;
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(center.x, center.y, radiusPixel, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            const cosVal = Math.cos(theta);
+            const sinVal = Math.sin(theta);
+            const pTip = toPixelCircle(cosVal, sinVal, canvas);
+
+            // Cosine projection (along Real axis)
+            ctx.strokeStyle = 'var(--color-real)';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(center.x, center.y);
+            ctx.lineTo(toPixelCircle(cosVal, 0, canvas).x, center.y);
+            ctx.stroke();
+
+            // Sine projection (parallel to Imaginary axis)
+            ctx.strokeStyle = 'var(--color-imag)';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(toPixelCircle(cosVal, 0, canvas).x, center.y);
+            ctx.lineTo(pTip.x, pTip.y);
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(255, 176, 0, 0.4)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(center.x, center.y, 35, 0, -theta, true);
+            ctx.stroke();
+
+            ctx.strokeStyle = 'var(--color-amber)';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.moveTo(center.x, center.y);
+            ctx.lineTo(pTip.x, pTip.y);
+            ctx.stroke();
+
+            // Arrowhead
+            ctx.fillStyle = 'var(--color-amber)';
+            ctx.beginPath();
+            ctx.moveTo(pTip.x, pTip.y);
+            ctx.lineTo(pTip.x - 10 * Math.cos(theta - Math.PI / 6), pTip.y + 10 * Math.sin(theta - Math.PI / 6));
+            ctx.lineTo(pTip.x - 10 * Math.cos(theta + Math.PI / 6), pTip.y + 10 * Math.sin(theta + Math.PI / 6));
+            ctx.fill();
+
+            // Vector tip dot (draggable handle)
+            ctx.shadowBlur = dragging ? 12 : 4;
+            ctx.shadowColor = 'var(--color-amber)';
+            ctx.fillStyle = 'var(--color-amber)';
+            ctx.beginPath();
+            ctx.arc(pTip.x, pTip.y, 7, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Labels
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 10px JetBrains Mono';
+            ctx.fillText(`e^(iθ)`, pTip.x + 10, pTip.y - 10);
+        }
+
+        function drawTaylorCanvas() {
+            // To do this simply, we override coordinate scale for Taylor canvas:
+            function toPixelTaylor(x, y) {
+                const size = Math.min(tCanvas.width, tCanvas.height);
+                const scale = (size - 60) / 6; // map [-3, 3] to fit
+                const px = tCanvas.width / 2 + x * scale;
+                const py = tCanvas.height / 2 - y * scale;
+                return { x: px, y: py };
+            }
+
+            tCtx.clearRect(0, 0, tCanvas.width, tCanvas.height);
+
+            tCtx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            tCtx.lineWidth = 1;
+            tCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            tCtx.font = '9px JetBrains Mono';
+            tCtx.textAlign = 'center';
+            tCtx.textBaseline = 'middle';
+
+            const ticks = [-2, -1, 1, 2];
+            ticks.forEach(val => {
+                let p1 = toPixelTaylor(val, 0);
+                tCtx.beginPath();
+                tCtx.moveTo(p1.x, 30);
+                tCtx.lineTo(p1.x, tCanvas.height - 30);
+                tCtx.stroke();
+                tCtx.fillText(val, p1.x, tCanvas.height - 18);
+
+                let p2 = toPixelTaylor(0, val);
+                tCtx.beginPath();
+                tCtx.moveTo(30, p2.y);
+                tCtx.lineTo(tCanvas.width - 30, p2.y);
+                tCtx.stroke();
+                tCtx.fillText(val, 18, p2.y);
+            });
+
+            // Primary Axes
+            tCtx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            tCtx.lineWidth = 1.5;
+            let center = toPixelTaylor(0, 0);
+
+            tCtx.beginPath();
+            tCtx.moveTo(30, center.y);
+            tCtx.lineTo(tCanvas.width - 30, center.y);
+            tCtx.stroke();
+
+            tCtx.beginPath();
+            tCtx.moveTo(center.x, 30);
+            tCtx.lineTo(center.x, tCanvas.height - 30);
+            tCtx.stroke();
+
+            tCtx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            tCtx.fillText('Re', tCanvas.width - 15, center.y);
+            tCtx.fillText('Im', center.x, 15);
+
+            const radiusPixel = toPixelTaylor(1, 0).x - center.x;
+            tCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            tCtx.lineWidth = 1.5;
+            tCtx.beginPath();
+            tCtx.arc(center.x, center.y, radiusPixel, 0, 2 * Math.PI);
+            tCtx.stroke();
+
+            const partialSums = getTaylorPartialSums(theta, numTerms);
+
+            tCtx.strokeStyle = 'var(--color-spiral)';
+            tCtx.lineWidth = 2.5;
+            tCtx.beginPath();
+            let pStart = toPixelTaylor(partialSums[0].re, partialSums[0].im);
+            tCtx.moveTo(pStart.x, pStart.y);
+
+            for (let i = 1; i < partialSums.length; i++) {
+                let p = toPixelTaylor(partialSums[i].re, partialSums[i].im);
+                tCtx.lineTo(p.x, p.y);
+            }
+            tCtx.stroke();
+
+            partialSums.forEach((sum, idx) => {
+                let p = toPixelTaylor(sum.re, sum.im);
+                tCtx.fillStyle = idx === partialSums.length - 1 ? 'var(--color-spiral)' : 'rgba(168, 85, 247, 0.6)';
+                tCtx.beginPath();
+                tCtx.arc(p.x, p.y, idx === partialSums.length - 1 ? 5 : 3.5, 0, 2 * Math.PI);
+                tCtx.fill();
+
+                if (idx > 0) {
+                    tCtx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    tCtx.font = '8.5px JetBrains Mono';
+                    tCtx.fillText(`k=${idx-1}`, p.x + 8, p.y - 6);
+                }
+            });
+
+            // Plot actual circular point vector tip in solid amber for comparison
+            const pActual = toPixelTaylor(Math.cos(theta), Math.sin(theta));
+            tCtx.fillStyle = 'rgba(255, 176, 0, 0.25)';
+            tCtx.beginPath();
+            tCtx.arc(pActual.x, pActual.y, 6, 0, 2 * Math.PI);
+            tCtx.fill();
+            tCtx.strokeStyle = 'var(--color-amber)';
+            tCtx.lineWidth = 1;
+            tCtx.stroke();
+        }
+
+        function drawAll() {
+            drawCircleCanvas();
+            drawTaylorCanvas();
+        }
+
+        // Evaluate math and update solver
+        function updateSolver() {
+            lblAngle.textContent = `${theta.toFixed(2)} rad (${(theta * 180 / Math.PI).toFixed(0)}°)`;
+            lblTerms.textContent = numTerms;
+
+            const cosVal = Math.cos(theta);
+            const sinVal = Math.sin(theta);
+
+            const signSin = sinVal >= 0 ? '+' : '-';
+            const absSin = Math.abs(sinVal).toFixed(2);
+
+            eqDisplay.innerHTML = `e<sup>i&theta;</sup> = cos(${theta.toFixed(2)}) + i sin(${theta.toFixed(2)}) = ${cosVal.toFixed(2)} ${signSin} ${absSin}i`;
+
+            // Identify whether angle matches PI to show identity highlight
+            if (Math.abs(theta - 3.1416) < 0.05) {
+                identityCard.style.display = 'block';
+            } else {
+                identityCard.style.display = 'none';
+            }
+
+            // Sum details
+            const partials = getTaylorPartialSums(theta, numTerms);
+            const approxTip = partials[partials.length - 1];
+            const signApprox = approxTip.im >= 0 ? '+' : '-';
+
+            realSummaryText.textContent = `cos(${theta.toFixed(2)}) = ${cosVal.toFixed(4)}`;
+            imagSummaryText.textContent = `sin(${theta.toFixed(2)}) = ${sinVal.toFixed(4)}`;
+            taylorSummaryText.textContent = `z_approx = ${approxTip.re.toFixed(4)} ${signApprox} ${Math.abs(approxTip.im).toFixed(4)}i`;
+
+            // Step solver html
+            let htmlSteps = '';
+            htmlSteps += `
+                <div><strong>1. Substitute angle values (&theta; = ${theta.toFixed(2)}):</strong></div>
+                <div style="margin-left: 10px; margin-bottom: 12px;">
+                    e<sup>i(${theta.toFixed(2)})</sup> = cos(${theta.toFixed(2)}) + i sin(${theta.toFixed(2)})
+                </div>
+                <div><strong>2. Compute Trigonometric values:</strong></div>
+                <div style="margin-left: 10px; margin-bottom: 12px;">
+                    cos(${theta.toFixed(2)}) = <span style="color:var(--color-real); font-weight:bold;">${cosVal.toFixed(4)}</span><br>
+                    sin(${theta.toFixed(2)}) = <span style="color:var(--color-imag); font-weight:bold;">${sinVal.toFixed(4)}</span>
+                </div>
+                <div><strong>3. Evaluate Complex polar coordinate vector:</strong></div>
+                <div style="margin-left: 10px; font-weight:700; color:var(--color-amber);">
+                    z = ${cosVal.toFixed(4)} ${signSin} ${absSin}i
+                </div>
+            `;
+            solveSteps.innerHTML = htmlSteps;
+        }
+
+        function updateAll() {
+            updateSolver();
+            drawAll();
+        }
+
+        slideAngle.addEventListener('input', (e) => {
+            theta = parseFloat(e.target.value);
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+            updateAll();
+        });
+
+        slideTerms.addEventListener('input', (e) => {
+            numTerms = parseInt(e.target.value);
+            updateAll();
+        });
+
+        // Mouse direct dragging handler on unit circle
+        function handleMouseDrag(e) {
+            const rect = canvas.getBoundingClientRect();
+            const px = e.clientX - rect.left;
+            const py = e.clientY - rect.top;
+            
+            const g = toGraphCircle(px, py, canvas);
+            let angle = Math.atan2(g.y, g.x);
+            if (angle < 0) {
+                angle = 2 * Math.PI + angle;
+            }
+            theta = parseFloat(angle.toFixed(2));
+            slideAngle.value = theta;
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+            updateAll();
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            dragging = true;
+            handleMouseDrag(e);
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!dragging) return;
+            handleMouseDrag(e);
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (dragging) {
+                dragging = false;
+                drawCircleCanvas();
+            }
+        });
+
+        // Touch support
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                dragging = true;
+                handleMouseDrag(e.touches[0]);
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!dragging) return;
+            if (e.touches.length === 1) {
+                handleMouseDrag(e.touches[0]);
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('touchend', () => {
+            if (dragging) {
+                dragging = false;
+                drawCircleCanvas();
+            }
+        });
+
+        // Loop animation loop for vector pulse
+        function animLoop() {
+            drawCircleCanvas();
+            drawTaylorCanvas();
+            requestAnimationFrame(animLoop);
+        }
+
+        // Quiz State & Data
+        const quizQuestions = [
+            {
+                question: "Which of the following is the correct statement of Euler's Formula?",
+                options: [
+                    "e^(ix) = cos(x) + sin(x)",
+                    "e^(ix) = cos(x) + i sin(x)",
+                    "e^(ix) = i cos(x) + sin(x)",
+                    "e^(ix) = cos(x) - i sin(x)"
+                ],
+                correct: 1,
+                explanation: "Euler's Formula states that for any real number x, e^(ix) = cos(x) + i sin(x), mapping values onto a circular coordinate path in the complex plane."
+            },
+            {
+                question: "If we evaluate Euler's Formula at angle &theta; = &pi; (180 degrees), what complex value do we get?",
+                options: [
+                    "e^(i&pi;) = i",
+                    "e^(i&pi;) = -i",
+                    "e^(i&pi;) = 1",
+                    "e^(i&pi;) = -1"
+                ],
+                correct: 3,
+                explanation: "Substitute &pi;: e^(i&pi;) = cos(&pi;) + i sin(&pi;). Since cos(&pi;) = -1 and sin(&pi;) = 0, we get e^(i&pi;) = -1 + 0i = -1."
+            },
+            {
+                question: "What is the polar form representation of the imaginary number i using Euler's formula?",
+                options: [
+                    "e^(i&pi;)",
+                    "e^(i&pi;/2)",
+                    "e^(i&pi;/4)",
+                    "e^(i3&pi;/2)"
+                ],
+                correct: 1,
+                explanation: "The number i has real part 0 and imaginary part 1. On the complex plane, it is on the vertical axes at angle &pi;/2. Thus, e^(i&pi;/2) = cos(&pi;/2) + i sin(&pi;/2) = 0 + 1i = i."
+            },
+            {
+                question: "Why does the Taylor series of e^(ix) spiral towards the unit circle as the number of terms N increases?",
+                options: [
+                    "Because adding complex term segments creates geometric vectors that curve and wrap into the circle",
+                    "Because the terms oscillate randomly",
+                    "Because imaginary factors rotate each consecutive term by 90 degrees, forming a spiral path",
+                    "A and C are both correct"
+                ],
+                correct: 3,
+                explanation: "Both statements are true. Dividing by factorials controls the length of each segment, and the powers of i (1, i, -1, -i) rotate each segment by 90 degrees, forming a spiral that converges to the circle."
+            },
+            {
+                question: "Evaluate the complex value of the expression e^(i3&pi;/2).",
+                options: [
+                    "1",
+                    "-1",
+                    "i",
+                    "-i"
+                ],
+                correct: 3,
+                explanation: "cos(3&pi;/2) + i sin(3&pi;/2) = 0 + i(-1) = -i. This sits on the negative imaginary axis."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-amber); box-shadow:0 4px 15px var(--color-amber-glow); color:var(--bg-color);">
+                        Restart Quiz Evaluation
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function() {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvases, 300);
+            });
+            updateAll();
+            loadQuestion();
+            animLoop();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->
