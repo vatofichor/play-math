@@ -1,0 +1,1702 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithmic Sequences & Recursion - Computational Math</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "07_computational_math",
+            logo: {"main":"Code","accent":"Lab","sub":"Algorithmic Sequences & Recursion"},
+            navigation: [
+    {
+        "label": "Call Stack & Recursion Sandbox",
+        "desc": "Call Stack & Recursion Sandbox interactive section",
+        "href": "#visualizer"
+    },
+    {
+        "label": "Recurrence Mathematical Properties",
+        "desc": "Recurrence Mathematical Properties interactive section",
+        "href": "#solver"
+    },
+    {
+        "label": "Recursion Conceptual Quiz",
+        "desc": "Recursion Conceptual Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Computational Math Teal & Fuchsia Theme overrides */
+            --color-teal: #14b8a6;
+            --color-teal-glow: rgba(20, 184, 166, 0.35);
+            --color-fuchsia: #d946ef;
+            --color-fuchsia-glow: rgba(217, 70, 239, 0.35);
+            --color-accent: #14b8a6;
+            --color-accent-glow: rgba(20, 184, 166, 0.35);
+
+            --color-node-pending: rgba(255, 255, 255, 0.05);
+            --color-node-active: #d946ef;
+            --color-node-resolved: #14b8a6;
+            --color-node-cached: #f59e0b; /* Amber for cached lookup */
+        }
+
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-accent) !important;
+            box-shadow: 0 4px 20px var(--color-accent-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-title {
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-desc {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-teal);
+            background: rgba(20, 184, 166, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(20, 184, 166, 0.2);
+            text-shadow: 0 0 5px var(--color-teal-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .equation-box {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            background: var(--color-teal);
+            box-shadow: 0 0 8px var(--color-teal-glow);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-mode {
+            flex: 1;
+            padding: 0.6rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .btn-mode.active {
+            background: rgba(20, 184, 166, 0.15);
+            color: var(--color-teal);
+            border-color: rgba(20, 184, 166, 0.3);
+        }
+
+        /* Toggle Button (Memoization) */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .toggle-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255,255,255,0.1);
+            transition: .3s;
+            border-radius: 24px;
+            border: 1px solid var(--card-border);
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--text-muted);
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: rgba(20, 184, 166, 0.2);
+            border-color: rgba(20, 184, 166, 0.4);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(22px);
+            background-color: var(--color-teal);
+            box-shadow: 0 0 8px var(--color-teal-glow);
+        }
+
+        /* Stack Log Frame List */
+        .stack-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 6px;
+            max-height: 180px;
+            overflow-y: auto;
+            border: 1px solid var(--card-border);
+            padding: 8px;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.15);
+        }
+
+        .stack-frame {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            padding: 6px 10px;
+            background: rgba(217, 70, 239, 0.08);
+            border: 1px solid rgba(217, 70, 239, 0.2);
+            color: var(--color-fuchsia);
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            animation: pushFrame 0.2s ease-out;
+        }
+
+        .stack-frame.pop {
+            animation: popFrame 0.2s ease-out forwards;
+        }
+
+        @keyframes pushFrame {
+            from { transform: translateY(-8px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes popFrame {
+            to { transform: translateY(8px); opacity: 0; }
+        }
+
+        /* Quiz elements */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(20, 184, 166, 0.08);
+            border-color: rgba(20, 184, 166, 0.3);
+            color: var(--color-teal);
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        /* Stepper Actions */
+        .stepper-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .btn-action {
+            flex: 1;
+            background: rgba(255,255,255,0.03);
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 8px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .btn-action:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        .btn-action.active-run {
+            background: rgba(20, 184, 166, 0.1);
+            color: var(--color-teal);
+            border-color: rgba(20, 184, 166, 0.3);
+        }
+
+        /* Towers of Hanoi Victory panel */
+        .victory-banner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(10, 12, 22, 0.95);
+            border: 2px solid var(--color-teal);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            display: none;
+            z-index: 10;
+        }
+
+        .victory-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-teal);
+            margin-bottom: 0.5rem;
+        }
+
+        .complexity-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            margin-top: 1rem;
+        }
+
+        .complexity-table th, .complexity-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .complexity-table th {
+            color: var(--color-teal);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Drawer Syllabus Menu is auto-injected by shared.js -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-teal) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Algorithmic Sequences & Recursion
+            </h1>
+            <p>Deconstruct recursion, monitor executing call stacks in real time, and investigate memoization caching strategies.</p>
+        </header>
+
+        <!-- SECTION 1: VISUALIZER CORE -->
+        <section id="visualizer">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Call Stack & Recursion Sandbox</h2>
+            </div>
+            <p class="section-intro">
+                Toggle between the **Fibonacci Call Tree** to inspect tree-size reduction via memoization, or **Towers of Hanoi** to study structural recurrence properties.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Interactive Visualizer Canvas -->
+                <div class="panel">
+                    <div style="display: flex; gap: 8px; margin-bottom: 1.25rem;">
+                        <button class="btn-mode active" id="btnTabFib" onclick="setVisualizerTab('fibonacci')">Fibonacci Recursion Tree</button>
+                        <button class="btn-mode" id="btnTabHanoi" onclick="setVisualizerTab('hanoi')">Towers of Hanoi</button>
+                    </div>
+
+                    <div class="canvas-container" style="height: 420px; background: #06070a;">
+                        <canvas id="sandboxCanvas"></canvas>
+                        
+                        <!-- Hanoi Victory overlay -->
+                        <div class="victory-banner" id="hanoiVictory">
+                            <div class="victory-title">Puzzle Completed! 🎉</div>
+                            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 1rem;">
+                                You successfully moved all disks in <span class="number" id="victoryMoves">0</span> moves.
+                            </p>
+                            <button class="btn" style="padding: 6px 12px; font-size:0.85rem;" onclick="resetHanoiGame()">Reset Puzzle</button>
+                        </div>
+                    </div>
+
+                    <!-- Visualizer Stepper Action Controls -->
+                    <div class="stepper-actions" style="margin-bottom: 1rem;">
+                        <button class="btn-action" onclick="playbackControl('prev')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>
+                            Step Back
+                        </button>
+                        <button class="btn-action" id="btnPlay" onclick="playbackControl('play')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" id="playIcon"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            <span id="playText">Play</span>
+                        </button>
+                        <button class="btn-action" onclick="playbackControl('next')">
+                            Next Step
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+                        </button>
+                        <button class="btn-action" onclick="playbackControl('reset')">
+                            Reset
+                        </button>
+                    </div>
+
+                    <!-- Playback Speed Slider -->
+                    <div class="slider-row" style="margin-bottom: 0.5rem;">
+                        <div class="slider-label" style="font-size:0.75rem;">
+                            <span>Animation Speed</span>
+                            <span class="number" id="lblSpeed">1x</span>
+                        </div>
+                        <input type="range" id="slideSpeed" min="0.25" max="3" value="1" step="0.25">
+                    </div>
+                </div>
+
+                <!-- Right Panel: Configurations & Parameter panels -->
+                <div class="panel">
+                    <!-- Fibonacci Config Panel -->
+                    <div id="panelFib">
+                        <div class="math-card">
+                            <h3>Fibonacci Parameters</h3>
+                            <div class="slider-group">
+                                <div class="slider-row">
+                                    <div class="slider-label">
+                                        <span>Target Term (N)</span>
+                                        <span class="number" id="lblFibN">5</span>
+                                    </div>
+                                    <input type="range" id="slideFibN" min="1" max="6" value="5" step="1">
+                                </div>
+                            </div>
+
+                            <div class="toggle-container">
+                                <span class="toggle-label" style="color:var(--text-color);">Enable Memoization</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="chkMemo">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="math-card">
+                            <h3>Dynamic Metric Log</h3>
+                            <div style="font-size:0.85rem; line-height:1.6; color:var(--text-muted);">
+                                <div>Active Call Term: <span class="number" id="fibResultText" style="color:var(--color-teal); font-weight:bold;">F(5) = ?</span></div>
+                                <div>Total Call Count: <span class="number" id="fibCallCountText" style="color:var(--color-fuchsia);">0</span></div>
+                                <div id="fibCachedCountRow" style="display:none;">Cached Hits Saved: <span class="number" id="fibCachedCountText" style="color:#f59e0b;">0</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hanoi Config Panel -->
+                    <div id="panelHanoi" style="display: none;">
+                        <div class="math-card">
+                            <h3>Towers of Hanoi Parameters</h3>
+                            <div class="slider-group">
+                                <div class="slider-row">
+                                    <div class="slider-label">
+                                        <span>Disk Count (N)</span>
+                                        <span class="number" id="lblHanoiDisks">3</span>
+                                    </div>
+                                    <input type="range" id="slideHanoiDisks" min="1" max="5" value="3" step="1">
+                                </div>
+                            </div>
+                            <div class="panel-hint" style="margin-top:0;">
+                                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                                <span>Manual playing active: Drag the top disk of a peg to any other peg.</span>
+                            </div>
+                        </div>
+
+                        <div class="math-card">
+                            <h3>Hanoi Metric Log</h3>
+                            <div style="font-size:0.85rem; line-height:1.6; color:var(--text-muted);">
+                                <div>Moves Count: <span class="number" id="hanoiMovesText" style="color:var(--color-teal); font-weight:bold;">0</span> / <span class="number" id="hanoiOptimalText">7</span> (Optimal)</div>
+                                <div>Status: <span id="hanoiStatusText" style="font-weight:600;">Manual Play</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shared: Call Stack Log Panel -->
+                    <div class="math-card" style="margin-bottom: 0;">
+                        <h3>Active Call Stack</h3>
+                        <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">Shows function frames pushed/popped from stack:</div>
+                        <ul class="stack-list" id="stackFrameContainer">
+                            <li style="font-family:'JetBrains Mono'; font-size:0.8rem; color:var(--text-muted); text-align:center; padding:10px;">Stack empty</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: THEORETICAL ANALYSIS & SOLVER -->
+        <section id="solver">
+            <div class="section-header">
+                <span class="section-tag">Trace Step Solver</span>
+                <h2>Recurrence Mathematical Properties</h2>
+            </div>
+            <p class="section-intro">
+                Inspect recursive relationships, complexity scaling factors, and code mappings.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Recurrence Explanations -->
+                <div class="panel">
+                    <h3>Recurrence Formulations</h3>
+                    <br>
+                    <div class="formula-steps" style="line-height:1.7; font-size:0.85rem;">
+                        <div><strong style="color:var(--color-teal);">Fibonacci Sequence Recurrence:</strong></div>
+                        <div class="equation-box" style="font-size: 1.05rem; padding: 0.75rem; margin-top:8px;">
+                            F(n) = F(n-1) + F(n-2) ; &nbsp; F(0)=0, &nbsp; F(1)=1
+                        </div>
+                        <div style="color:var(--text-muted); margin-bottom:16px;">
+                            Evaluating $F(n)$ requires solving two smaller subproblems. In naive recursion, this creates a recursive call tree that duplicates computational paths exponentially.
+                        </div>
+
+                        <div><strong style="color:var(--color-teal);">Towers of Hanoi Recurrence:</strong></div>
+                        <div class="equation-box" style="font-size: 1.05rem; padding: 0.75rem; margin-top:8px;">
+                            T(n) = 2T(n-1) + 1 ; &nbsp; T(1)=1
+                        </div>
+                        <div style="color:var(--text-muted);">
+                            Moving $n$ disks requires moving $n-1$ disks to the aux peg ($T(n-1)$), moving the largest disk to the destination ($1$), and moving the $n-1$ disks to the destination ($T(n-1)$). This yields a closed-form solution of $T(n) = 2^n - 1$.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Time Complexities Table -->
+                <div class="panel">
+                    <h3>Computational Complexities</h3>
+                    <br>
+                    <div class="formula-steps" style="line-height:1.7; font-size:0.85rem; padding-bottom: 0.75rem;">
+                        <div><strong style="color:var(--color-fuchsia);">Complexity Growth Matrix:</strong></div>
+                        
+                        <table class="complexity-table">
+                            <thead>
+                                <tr>
+                                    <th>Algorithm</th>
+                                    <th>Time</th>
+                                    <th>Space (Stack)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Naive Fibonacci</td>
+                                    <td>O(2<sup>n</sup>)</td>
+                                    <td>O(n)</td>
+                                </tr>
+                                <tr>
+                                    <td>Memoized Fibonacci</td>
+                                    <td>O(n)</td>
+                                    <td>O(n)</td>
+                                </tr>
+                                <tr>
+                                    <td>Iterative Fibonacci</td>
+                                    <td>O(n)</td>
+                                    <td>O(1)</td>
+                                </tr>
+                                <tr>
+                                    <td>Towers of Hanoi</td>
+                                    <td>O(2<sup>n</sup>)</td>
+                                    <td>O(n)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                        <span>Memoization improves time complexity by caching, at the expense of $O(n)$ space complexity for storage.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL EVALUATION QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Self Evaluation</span>
+                <h2>Recursion Conceptual Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Assess your understanding of base cases, stack sizes, and algorithmic recurrences.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Quiz Questions -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">What is the primary purpose of a recursion "base case"?</h3>
+
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically by JS -->
+                        </div>
+                    </div>
+
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="feedbackBanner">Correct Answer!</strong>
+                        <p id="quizExplanationText" style="margin-top: 6px; font-size:0.85rem; color:var(--text-muted);"></p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Key Takeaway Cards -->
+                <div class="panel">
+                    <h3>Focus Vocabulary</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom:0; list-style:none; display:flex; flex-direction:column; gap:16px;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-teal); box-shadow:0 0 6px var(--color-teal-glow);"></span>
+                                <strong>Base Case:</strong> The termination hook which bypasses recursion to return a static value directly.
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-fuchsia); box-shadow:0 0 6px var(--color-fuchsia-glow);"></span>
+                                <strong>Call Stack:</strong> The system memory stack frames containing local variables and return paths.
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:#f59e0b; box-shadow:0 0 6px rgba(245,158,11,0.35);"></span>
+                                <strong>Memoization:</strong> Top-down caching algorithm storing solved subproblems to prevent recalculations.
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('sandboxCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Parameter selectors
+        const slideFibN = document.getElementById('slideFibN');
+        const lblFibN = document.getElementById('lblFibN');
+        const chkMemo = document.getElementById('chkMemo');
+        const slideHanoiDisks = document.getElementById('slideHanoiDisks');
+        const lblHanoiDisks = document.getElementById('lblHanoiDisks');
+        const slideSpeed = document.getElementById('slideSpeed');
+        const lblSpeed = document.getElementById('lblSpeed');
+
+        const btnPlay = document.getElementById('btnPlay');
+        const playIcon = document.getElementById('playIcon');
+        const playText = document.getElementById('playText');
+
+        // Tabs
+        const btnTabFib = document.getElementById('btnTabFib');
+        const btnTabHanoi = document.getElementById('btnTabHanoi');
+        const panelFib = document.getElementById('panelFib');
+        const panelHanoi = document.getElementById('panelHanoi');
+
+        // Logs
+        const fibResultText = document.getElementById('fibResultText');
+        const fibCallCountText = document.getElementById('fibCallCountText');
+        const fibCachedCountRow = document.getElementById('fibCachedCountRow');
+        const fibCachedCountText = document.getElementById('fibCachedCountText');
+
+        const hanoiMovesText = document.getElementById('hanoiMovesText');
+        const hanoiOptimalText = document.getElementById('hanoiOptimalText');
+        const hanoiStatusText = document.getElementById('hanoiStatusText');
+        const hanoiVictory = document.getElementById('hanoiVictory');
+        const victoryMoves = document.getElementById('victoryMoves');
+
+        const stackFrameContainer = document.getElementById('stackFrameContainer');
+
+        // Active State parameters
+        let activeTab = 'fibonacci'; // 'fibonacci' or 'hanoi'
+        let playIntervalId = null;
+        let isPlaying = false;
+        let animationSpeed = 1.0;
+
+        // Fibonacci state variables
+        let fibN = 5;
+        let memoEnabled = false;
+        let fibSteps = [];
+        let fibActiveStepIdx = 0;
+        let fibTreeNodes = {}; // map nodeId -> node coordinates and properties
+        let fibNextNodeId = 0;
+
+        // Towers of Hanoi state variables
+        let hanoiDisksCount = 3;
+        let hanoiPegs = { A: [], B: [], C: [] };
+        let hanoiSteps = [];
+        let hanoiActiveStepIdx = 0;
+        let draggingDisk = null; // { size, peg, initX, initY }
+        let dragX = 0;
+        let dragY = 0;
+        let hanoiMovesHistory = []; // list of manual moves {from, to}
+        let hanoiIsSolving = false; // true if running solver
+
+        // TAB SELECTION & INITIALIZATION
+        function setVisualizerTab(tab) {
+            playbackControl('pause');
+            activeTab = tab;
+            btnTabFib.classList.remove('active');
+            btnTabHanoi.classList.remove('active');
+            panelFib.style.display = 'none';
+            panelHanoi.style.display = 'none';
+            hanoiVictory.style.display = 'none';
+
+            if (tab === 'fibonacci') {
+                btnTabFib.classList.add('active');
+                panelFib.style.display = 'block';
+                initFibonacciSimulation();
+            } else {
+                btnTabHanoi.classList.add('active');
+                panelHanoi.style.display = 'block';
+                initHanoiSimulation();
+            }
+            resizeCanvasElement();
+        }
+
+        function resizeCanvasElement() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            drawSandbox();
+        }
+
+        // FIBONACCI RECURSION SIMULATOR LOGIC
+        function initFibonacciSimulation() {
+            fibN = parseInt(slideFibN.value);
+            memoEnabled = chkMemo.checked;
+            lblFibN.innerText = fibN;
+
+            fibSteps = [];
+            fibNextNodeId = 0;
+            fibTreeNodes = {};
+            const memoObj = {};
+            const callStack = [];
+
+            // Pre-calculate tree nodes for visual positioning layout
+            // A node's width bounds is determined recursively
+            function buildLayout(n, depth, leftBound, rightBound, parentId = null, side = '') {
+                const id = fibNextNodeId++;
+                const x = (leftBound + rightBound) / 2;
+                const y = 45 + depth * 55;
+                
+                fibTreeNodes[id] = {
+                    id, n, x, y,
+                    parentId, side,
+                    val: '?',
+                    status: 'pending' // pending, active, resolved, cached
+                };
+
+                if (n <= 1) return id;
+
+                // Split horizontal boundaries for children branches
+                const mid = (leftBound + rightBound) / 2;
+                // If memoization is on, we'll mark but still layout the cached branches,
+                // however in execution steps they will be bypassed/colored as cached.
+                const childIdL = buildLayout(n - 1, depth + 1, leftBound, mid, id, 'L');
+                const childIdR = buildLayout(n - 2, depth + 1, mid, rightBound, id, 'R');
+                
+                fibTreeNodes[id].childL = childIdL;
+                fibTreeNodes[id].childR = childIdR;
+                return id;
+            }
+
+            buildLayout(fibN, 0, 30, canvas.width || 500 - 30);
+
+            // Record execution steps
+            function recordRecursion(nodeId) {
+                const node = fibTreeNodes[nodeId];
+                const n = node.n;
+
+                callStack.push(`fib(${n})`);
+                fibSteps.push({
+                    type: 'push',
+                    nodeId: nodeId,
+                    nodeState: { status: 'active', val: '?' },
+                    stack: [...callStack]
+                });
+
+                if (n <= 1) {
+                    node.val = n;
+                    fibSteps.push({
+                        type: 'pop',
+                        nodeId: nodeId,
+                        nodeState: { status: 'resolved', val: n },
+                        stack: [...callStack]
+                    });
+                    callStack.pop();
+                    return n;
+                }
+
+                if (memoEnabled && memoObj[n] !== undefined) {
+                    const cachedVal = memoObj[n];
+                    fibSteps.push({
+                        type: 'cache_hit',
+                        nodeId: nodeId,
+                        nodeState: { status: 'cached', val: cachedVal },
+                        stack: [...callStack]
+                    });
+                    callStack.pop();
+                    return cachedVal;
+                }
+
+                // Recursion branches
+                const valL = recordRecursion(node.childL);
+                const valR = recordRecursion(node.childR);
+                const result = valL + valR;
+
+                if (memoEnabled) {
+                    memoObj[n] = result;
+                }
+
+                fibSteps.push({
+                    type: 'pop',
+                    nodeId: nodeId,
+                    nodeState: { status: 'resolved', val: result },
+                    stack: [...callStack]
+                });
+                callStack.pop();
+                return result;
+            }
+
+            recordRecursion(0); // Start from root (id = 0)
+            fibActiveStepIdx = 0;
+            updateFibonacciUI();
+        }
+
+        function updateFibonacciUI() {
+            // First, reset all nodes to pending
+            Object.keys(fibTreeNodes).forEach(id => {
+                fibTreeNodes[id].status = 'pending';
+                fibTreeNodes[id].val = '?';
+            });
+
+            let callCount = 0;
+            let cacheHits = 0;
+            let activeStack = [];
+
+            for (let i = 0; i <= fibActiveStepIdx; i++) {
+                const step = fibSteps[i];
+                const node = fibTreeNodes[step.nodeId];
+                node.status = step.nodeState.status;
+                node.val = step.nodeState.val;
+                activeStack = step.stack;
+
+                if (step.type === 'push') {
+                    callCount++;
+                } else if (step.type === 'cache_hit') {
+                    callCount++;
+                    cacheHits++;
+                }
+            }
+
+            // Sync Call stack frames in panel
+            renderStackList(activeStack);
+
+            // Sync stats
+            const finalVal = fibTreeNodes[0].val;
+            fibResultText.innerText = `F(${fibN}) = ${finalVal}`;
+            fibCallCountText.innerText = callCount;
+            
+            if (memoEnabled) {
+                fibCachedCountRow.style.display = 'block';
+                fibCachedCountText.innerText = cacheHits;
+            } else {
+                fibCachedCountRow.style.display = 'none';
+            }
+
+            drawSandbox();
+        }
+
+        function drawFibonacciTree() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Draw connecting branches (Edges)
+            ctx.lineWidth = 2;
+            Object.keys(fibTreeNodes).forEach(key => {
+                const node = fibTreeNodes[key];
+                if (node.parentId !== null) {
+                    const parent = fibTreeNodes[node.parentId];
+                    
+                    let strokeColor = 'rgba(255,255,255,0.06)';
+                    if (parent.status !== 'pending' && node.status !== 'pending') {
+                        if (parent.status === 'active' && node.status === 'active') {
+                            strokeColor = 'var(--color-fuchsia)';
+                        } else {
+                            strokeColor = 'rgba(20, 184, 166, 0.4)';
+                        }
+                    }
+
+                    ctx.strokeStyle = strokeColor;
+                    ctx.beginPath();
+                    ctx.moveTo(parent.x, parent.y);
+                    ctx.lineTo(node.x, node.y);
+                    ctx.stroke();
+                }
+            });
+
+            // 2. Draw Nodes
+            Object.keys(fibTreeNodes).forEach(key => {
+                const node = fibTreeNodes[key];
+                
+                let fillStyle = 'rgba(255,255,255,0.02)';
+                let strokeStyle = 'rgba(255,255,255,0.1)';
+                let glow = false;
+
+                if (node.status === 'active') {
+                    fillStyle = 'rgba(217, 70, 239, 0.15)';
+                    strokeStyle = 'var(--color-node-active)';
+                    glow = true;
+                } else if (node.status === 'resolved') {
+                    fillStyle = 'rgba(20, 184, 166, 0.12)';
+                    strokeStyle = 'var(--color-node-resolved)';
+                } else if (node.status === 'cached') {
+                    fillStyle = 'rgba(245, 158, 11, 0.12)';
+                    strokeStyle = 'var(--color-node-cached)';
+                }
+
+                if (glow) {
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = 'var(--color-fuchsia-glow)';
+                }
+
+                ctx.fillStyle = '#06070a';
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 16, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = fillStyle;
+                ctx.strokeStyle = strokeStyle;
+                ctx.lineWidth = node.status === 'active' ? 3 : 1.5;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 16, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+                ctx.shadowBlur = 0; // reset
+
+                // Write text parameters inside nodes
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '500 9px Outfit, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`F(${node.n})`, node.x, node.y - 2);
+
+                ctx.fillStyle = node.status === 'pending' ? 'rgba(255,255,255,0.3)' : 'var(--text-color)';
+                ctx.font = 'bold 9px JetBrains Mono, monospace';
+                ctx.fillText(node.val, node.x, node.y + 8);
+            });
+        }
+
+        // TOWERS OF HANOI SIMULATOR LOGIC
+        function initHanoiSimulation() {
+            hanoiDisksCount = parseInt(slideHanoiDisks.value);
+            lblHanoiDisks.innerText = hanoiDisksCount;
+
+            // Compute optimal count
+            const optimalCount = Math.pow(2, hanoiDisksCount) - 1;
+            hanoiOptimalText.innerText = optimalCount;
+
+            hanoiPegs = {
+                A: Array.from({ length: hanoiDisksCount }, (_, i) => hanoiDisksCount - i),
+                B: [],
+                C: []
+            };
+
+            hanoiMovesHistory = [];
+            hanoiIsSolving = false;
+            hanoiStatusText.innerText = 'Manual Play';
+            hanoiStatusText.style.color = 'var(--text-muted)';
+            hanoiMovesText.innerText = 0;
+            hanoiVictory.style.display = 'none';
+
+            hanoiSteps = [];
+            const tempStack = [];
+            
+            function recordHanoiMoves(n, from, to, aux) {
+                tempStack.push(`hanoi(${n}, ${from}, ${to}, ${aux})`);
+                hanoiSteps.push({
+                    type: 'call',
+                    n, from, to, aux,
+                    stack: [...tempStack],
+                    move: null
+                });
+
+                if (n === 1) {
+                    hanoiSteps.push({
+                        type: 'move',
+                        n, from, to, aux,
+                        stack: [...tempStack],
+                        move: { disk: 1, from, to }
+                    });
+                    tempStack.pop();
+                    return;
+                }
+
+                recordHanoiMoves(n - 1, from, aux, to);
+                
+                hanoiSteps.push({
+                    type: 'move',
+                    n, from, to, aux,
+                    stack: [...tempStack],
+                    move: { disk: n, from, to }
+                });
+
+                recordHanoiMoves(n - 1, aux, to, from);
+                tempStack.pop();
+            }
+
+            recordHanoiMoves(hanoiDisksCount, 'A', 'C', 'B');
+            hanoiActiveStepIdx = 0;
+
+            renderStackList([]);
+            drawSandbox();
+        }
+
+        function updateHanoiUI() {
+            hanoiVictory.style.display = 'none';
+            
+            // Reconstruct pegs states up to step
+            hanoiPegs = {
+                A: Array.from({ length: hanoiDisksCount }, (_, i) => hanoiDisksCount - i),
+                B: [],
+                C: []
+            };
+
+            let movesCounter = 0;
+            let lastStack = [];
+
+            for (let i = 0; i <= hanoiActiveStepIdx; i++) {
+                const step = hanoiSteps[i];
+                lastStack = step.stack;
+
+                if (step.type === 'move' && step.move) {
+                    const fromPeg = hanoiPegs[step.move.from];
+                    const toPeg = hanoiPegs[step.move.to];
+                    
+                    if (fromPeg.length > 0) {
+                        const disk = fromPeg.pop();
+                        toPeg.push(disk);
+                    }
+                    movesCounter++;
+                }
+            }
+
+            renderStackList(lastStack);
+            hanoiMovesText.innerText = movesCounter;
+            hanoiStatusText.innerText = 'Auto-Solving';
+            hanoiStatusText.style.color = 'var(--color-teal)';
+
+            drawSandbox();
+        }
+
+        function drawHanoi() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const pegPositions = {
+                A: canvas.width * 0.22,
+                B: canvas.width * 0.5,
+                C: canvas.width * 0.78
+            };
+
+            const baseY = canvas.height - 60;
+            const spindleH = 200;
+
+            // 1. Draw Peg Spindles and Bases
+            ctx.lineWidth = 8;
+            ctx.lineCap = 'round';
+            
+            Object.keys(pegPositions).forEach(key => {
+                const x = pegPositions[key];
+                
+                // Spindle
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+                ctx.beginPath();
+                ctx.moveTo(x, baseY);
+                ctx.lineTo(x, baseY - spindleH);
+                ctx.stroke();
+
+                // Base
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                ctx.beginPath();
+                ctx.moveTo(x - 50, baseY + 2);
+                ctx.lineTo(x + 50, baseY + 2);
+                ctx.stroke();
+
+                // Label letters
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.font = 'bold 12px JetBrains Mono';
+                ctx.textAlign = 'center';
+                ctx.fillText(key, x, baseY + 20);
+            });
+
+            // 2. Draw Disks on Pegs
+            const diskH = 24;
+            
+            Object.keys(hanoiPegs).forEach(pegKey => {
+                const x = pegPositions[pegKey];
+                const diskArray = hanoiPegs[pegKey];
+
+                diskArray.forEach((size, idx) => {
+                    // Skip drawing the currently dragged disk
+                    if (draggingDisk && draggingDisk.peg === pegKey && idx === diskArray.length - 1) {
+                        return;
+                    }
+
+                    const width = size * 30 + 35;
+                    const y = baseY - (idx * (diskH + 4)) - (diskH / 2);
+
+                    drawDiskBlock(x, y, width, diskH, size);
+                });
+            });
+
+            // 3. Draw Dragging disk
+            if (draggingDisk) {
+                const width = draggingDisk.size * 30 + 35;
+                drawDiskBlock(dragX, dragY, width, diskH, draggingDisk.size, true);
+            }
+        }
+
+        function drawDiskBlock(cx, cy, w, h, size, isDragging = false) {
+            ctx.save();
+            
+            const grad = ctx.createLinearGradient(cx - w/2, cy, cx + w/2, cy);
+            
+            // Map shades between Teal and Fuchsia
+            const factor = size / hanoiDisksCount;
+            const stopColor1 = `hsl(${170 + factor * 130}, 85%, 45%)`;
+            const stopColor2 = `hsl(${170 + factor * 130}, 85%, 60%)`;
+
+            grad.addColorStop(0, stopColor1);
+            grad.addColorStop(1, stopColor2);
+
+            ctx.fillStyle = grad;
+            ctx.strokeStyle = isDragging ? '#ffffff' : 'rgba(255,255,255,0.2)';
+            ctx.lineWidth = isDragging ? 2 : 1;
+
+            if (isDragging) {
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = 'var(--color-teal-glow)';
+            }
+
+            // Rounded rectangle
+            const r = 6;
+            ctx.beginPath();
+            ctx.moveTo(cx - w/2 + r, cy - h/2);
+            ctx.lineTo(cx + w/2 - r, cy - h/2);
+            ctx.quadraticCurveTo(cx + w/2, cy - h/2, cx + w/2, cy - h/2 + r);
+            ctx.lineTo(cx + w/2, cy + h/2 - r);
+            ctx.quadraticCurveTo(cx + w/2, cy + h/2, cx + w/2 - r, cy + h/2);
+            ctx.lineTo(cx - w/2 + r, cy + h/2);
+            ctx.quadraticCurveTo(cx - w/2, cy + h/2, cx - w/2, cy + h/2 - r);
+            ctx.lineTo(cx - w/2, cy - h/2 + r);
+            ctx.quadraticCurveTo(cx - w/2, cy - h/2, cx - w/2 + r, cy - h/2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Label disk number
+            ctx.fillStyle = '#08090d';
+            ctx.font = 'bold 9px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.fillText(size, cx, cy + 3);
+
+            ctx.restore();
+        }
+
+        // CALL STACK HTML RENDERER
+        function renderStackList(stackArray) {
+            stackFrameContainer.innerHTML = '';
+            
+            if (stackArray.length === 0) {
+                stackFrameContainer.innerHTML = `
+                    <li style="font-family:'JetBrains Mono'; font-size:0.8rem; color:var(--text-muted); text-align:center; padding:10px;">
+                        Stack empty
+                    </li>`;
+                return;
+            }
+
+            stackArray.forEach((frame, idx) => {
+                const li = document.createElement('li');
+                li.className = 'stack-frame';
+                li.innerHTML = `
+                    <span>${frame}</span>
+                    <span style="font-size:0.7rem; color:rgba(255,255,255,0.4);">Frame ${idx}</span>
+                `;
+                stackFrameContainer.appendChild(li);
+            });
+        }
+
+        // HANOI MOUSE DRAG AND DROP EVENTS
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: (e.clientX - rect.left) * (canvas.width / rect.width),
+                y: (e.clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+
+        function handleMouseDown(e) {
+            if (activeTab !== 'hanoi' || hanoiIsSolving) return;
+
+            const pos = getMousePos(e);
+            const pegPositions = {
+                A: canvas.width * 0.22,
+                B: canvas.width * 0.5,
+                C: canvas.width * 0.78
+            };
+            const baseY = canvas.height - 60;
+            const diskH = 24;
+
+            let selectedPeg = null;
+            let selectedDiskSize = null;
+
+            Object.keys(hanoiPegs).forEach(pegKey => {
+                const x = pegPositions[pegKey];
+                const diskArray = hanoiPegs[pegKey];
+                
+                if (diskArray.length > 0) {
+                    const topDiskIdx = diskArray.length - 1;
+                    const size = diskArray[topDiskIdx];
+                    const w = size * 30 + 35;
+                    const y = baseY - (topDiskIdx * (diskH + 4)) - (diskH / 2);
+
+                    if (Math.abs(pos.x - x) < w/2 && Math.abs(pos.y - y) < diskH/2) {
+                        selectedPeg = pegKey;
+                        selectedDiskSize = size;
+                    }
+                }
+            });
+
+            if (selectedPeg) {
+                draggingDisk = {
+                    size: selectedDiskSize,
+                    peg: selectedPeg
+                };
+                dragX = pos.x;
+                dragY = pos.y;
+            }
+        }
+
+        function handleMouseMove(e) {
+            if (!draggingDisk) return;
+            const pos = getMousePos(e);
+            dragX = pos.x;
+            dragY = pos.y;
+            drawSandbox();
+        }
+
+        function handleMouseUp(e) {
+            if (!draggingDisk) return;
+
+            const pos = getMousePos(e);
+            const pegPositions = {
+                A: canvas.width * 0.22,
+                B: canvas.width * 0.5,
+                C: canvas.width * 0.78
+            };
+
+            // Find closest peg
+            let closestPeg = 'A';
+            let minDist = Infinity;
+
+            Object.keys(pegPositions).forEach(pegKey => {
+                const dist = Math.abs(pos.x - pegPositions[pegKey]);
+                if (dist < minDist) {
+                    minDist = dist;
+                    closestPeg = pegKey;
+                }
+            });
+
+            // Validate Move Rules
+            const fromPegArray = hanoiPegs[draggingDisk.peg];
+            const targetPegArray = hanoiPegs[closestPeg];
+
+            let valid = false;
+            
+            // Allow if placing on the same peg (no-op)
+            if (closestPeg === draggingDisk.peg) {
+                valid = true;
+            } else if (targetPegArray.length === 0 || targetPegArray[targetPegArray.length - 1] > draggingDisk.size) {
+                // Moving to empty peg or onto larger disk
+                valid = true;
+                
+                // Execute move
+                fromPegArray.pop();
+                targetPegArray.push(draggingDisk.size);
+                
+                hanoiMovesHistory.push({ from: draggingDisk.peg, to: closestPeg });
+                hanoiMovesText.innerText = hanoiMovesHistory.length;
+            }
+
+            draggingDisk = null;
+            drawSandbox();
+
+            // Verify if completed
+            if (hanoiPegs.C.length === hanoiDisksCount) {
+                playbackControl('pause');
+                hanoiVictory.style.display = 'block';
+                victoryMoves.innerText = hanoiMovesHistory.length;
+                hanoiStatusText.innerText = 'Completed!';
+                hanoiStatusText.style.color = 'var(--color-node-resolved)';
+            }
+        }
+
+        function resetHanoiGame() {
+            initHanoiSimulation();
+        }
+
+        // ANIMATION PLAYBACK SYSTEM CONTROLS
+        function playbackControl(action) {
+            if (action === 'play') {
+                if (isPlaying) {
+                    playbackControl('pause');
+                } else {
+                    isPlaying = true;
+                    playText.innerText = 'Pause';
+                    playIcon.innerHTML = `<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>`;
+                    btnPlay.classList.add('active-run');
+                    
+                    if (activeTab === 'hanoi') {
+                        hanoiIsSolving = true;
+                    }
+                    
+                    runPlaybackTicker();
+                }
+            } else if (action === 'pause') {
+                isPlaying = false;
+                playText.innerText = 'Play';
+                playIcon.innerHTML = `<polygon points="5 3 19 12 5 21 5 3"/>`;
+                btnPlay.classList.remove('active-run');
+                if (playIntervalId) {
+                    clearInterval(playIntervalId);
+                    playIntervalId = null;
+                }
+            } else if (action === 'next') {
+                playbackControl('pause');
+                stepForward();
+            } else if (action === 'prev') {
+                playbackControl('pause');
+                stepBackward();
+            } else if (action === 'reset') {
+                playbackControl('pause');
+                if (activeTab === 'fibonacci') {
+                    fibActiveStepIdx = 0;
+                    updateFibonacciUI();
+                } else {
+                    initHanoiSimulation();
+                }
+            }
+        }
+
+        function runPlaybackTicker() {
+            if (playIntervalId) clearInterval(playIntervalId);
+            
+            const baseInterval = 1000;
+            const currentInterval = baseInterval / animationSpeed;
+
+            playIntervalId = setInterval(() => {
+                if (!isPlaying) {
+                    clearInterval(playIntervalId);
+                    return;
+                }
+                const reachedEnd = stepForward();
+                if (reachedEnd) {
+                    playbackControl('pause');
+                }
+            }, currentInterval);
+        }
+
+        function stepForward() {
+            if (activeTab === 'fibonacci') {
+                if (fibActiveStepIdx < fibSteps.length - 1) {
+                    fibActiveStepIdx++;
+                    updateFibonacciUI();
+                    return false;
+                }
+                return true;
+            } else {
+                if (hanoiActiveStepIdx < hanoiSteps.length - 1) {
+                    hanoiActiveStepIdx++;
+                    updateHanoiUI();
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        function stepBackward() {
+            if (activeTab === 'fibonacci') {
+                if (fibActiveStepIdx > 0) {
+                    fibActiveStepIdx--;
+                    updateFibonacciUI();
+                }
+            } else {
+                if (hanoiActiveStepIdx > 0) {
+                    hanoiActiveStepIdx--;
+                    updateHanoiUI();
+                }
+            }
+        }
+
+        function drawSandbox() {
+            if (activeTab === 'fibonacci') {
+                drawFibonacciTree();
+            } else {
+                drawHanoi();
+            }
+        }
+
+        // BIND EVENT LISTENERS & WIDGET REACTIVES
+        slideFibN.addEventListener('input', () => {
+            playbackControl('pause');
+            initFibonacciSimulation();
+        });
+
+        chkMemo.addEventListener('change', () => {
+            playbackControl('pause');
+            initFibonacciSimulation();
+        });
+
+        slideHanoiDisks.addEventListener('input', () => {
+            playbackControl('pause');
+            initHanoiSimulation();
+        });
+
+        slideSpeed.addEventListener('input', (e) => {
+            animationSpeed = parseFloat(e.target.value);
+            lblSpeed.innerText = `${animationSpeed}x`;
+            if (isPlaying) {
+                runPlaybackTicker(); // refresh interval speed
+            }
+        });
+
+        // Mouse Drag / Touch bindings for Hanoi Canvas
+        canvas.addEventListener('mousedown', handleMouseDown);
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('mouseup', handleMouseUp);
+        canvas.addEventListener('mouseleave', handleMouseUp);
+
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 0) handleMouseDown(e.touches[0]);
+        });
+        canvas.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) handleMouseMove(e.touches[0]);
+        });
+        canvas.addEventListener('touchend', () => {
+            handleMouseUp();
+        });
+
+        // CONCEPTUAL QUIZ ENGINE
+        const quizQuestions = [
+            {
+                question: "What is the primary purpose of a recursion \"base case\"?",
+                options: [
+                    "To cache previous values and optimize execution speed.",
+                    "To specify the terminating condition that stops recursive calls and prevents stack overflow.",
+                    "To divide the problem into multiple parallel subproblems.",
+                    "To increase the size limit of the local browser stack frames."
+                ],
+                answerIndex: 1,
+                explanation: "The base case defines the inputs for which the function returns a value directly without making further recursive calls. Without a base case, recursion would repeat infinitely, consuming memory until it triggers a stack overflow."
+            },
+            {
+                question: "What is the time complexity of the naive recursive Fibonacci algorithm without memoization, and why?",
+                options: [
+                    "O(N) because it visits each integer from N down to 0 exactly once.",
+                    "O(log N) because it divides the required calculation in half at each step.",
+                    "O(2<sup>n</sup>) because each non-base call branches into two additional calls, forming an exponential tree.",
+                    "O(N<sup>2</sup>) because of nested iteration loops within the function frames."
+                ],
+                answerIndex: 2,
+                explanation: "Each non-trivial call to naive fib(n) triggers two child calls: fib(n-1) and fib(n-2). This binary tree structure grows exponentially, resulting in a time complexity of O(2<sup>n</sup>) and many redundant calculations."
+            },
+            {
+                question: "How does memoization optimize recursive algorithms?",
+                options: [
+                    "It replaces the call stack with a heap allocation to increase memory bandwidth.",
+                    "It stores the results of function calls in a cache table and returns the cached result when duplicate inputs occur.",
+                    "It converts the recursive script into multi-threaded loop structures.",
+                    "It bypasses the base case to execute equations."
+                ],
+                answerIndex: 1,
+                explanation: "Memoization caches the output of function calls. When a redundant subproblem is encountered (e.g. computing F(3) multiple times), the cached value is returned in O(1) time, collapsing the Fibonacci time complexity to O(N)."
+            },
+            {
+                question: "For a Towers of Hanoi puzzle with N disks, what is the optimal move count and the recurrence relation modeling it?",
+                options: [
+                    "T(N) = T(N-1) + 1  =>  N moves",
+                    "T(N) = 2T(N-1) + 1  =>  2<sup>n</sup> - 1 moves",
+                    "T(N) = T(N/2) + 1  =>  log N moves",
+                    "T(N) = T(N-1) + N  =>  N<sup>2</sup> moves"
+                ],
+                answerIndex: 1,
+                explanation: "Moving N disks requires moving the top N-1 disks to an auxiliary peg (T(N-1)), moving the largest disk to the destination (1), and moving the N-1 disks to the destination (T(N-1)). This yields T(N) = 2T(N-1) + 1 = 2<sup>n</sup> - 1."
+            },
+            {
+                question: "What system event occurs when a recursive function lacks a base case or fails to reach it?",
+                options: [
+                    "Out of Memory (Heap allocation) error.",
+                    "Division by Zero error.",
+                    "Call Stack Overflow (Maximum call stack size exceeded).",
+                    "Automatic compilation to an iterative while loop."
+                ],
+                answerIndex: 2,
+                explanation: "Every active function call pushes a frame onto the call stack. Without termination, the call stack grows continuously until it exceeds the engine's limit, prompting the browser to halt execution and throw a Maximum Call Stack Size Exceeded error."
+            }
+        ];
+
+        let quizCurrentIdx = 0;
+        let quizScore = 0;
+
+        function loadQuizQuestion() {
+            const q = quizQuestions[quizCurrentIdx];
+            document.getElementById('quizProgressText').innerText = `Question ${quizCurrentIdx + 1} of ${quizQuestions.length}`;
+            document.getElementById('quizScoreText').innerText = `Score: ${quizScore}/${quizCurrentIdx}`;
+            document.getElementById('quizQuestionTitle').innerHTML = q.question;
+
+            const container = document.getElementById('quizOptionsContainer');
+            container.innerHTML = '';
+
+            document.getElementById('quizFeedbackArea').style.display = 'none';
+
+            q.options.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = 'quiz-option';
+                div.innerHTML = `<span>${opt}</span>`;
+                div.addEventListener('click', () => selectQuizOption(idx));
+                container.appendChild(div);
+            });
+        }
+
+        function selectQuizOption(selectedIndex) {
+            const q = quizQuestions[quizCurrentIdx];
+            const options = document.querySelectorAll('.quiz-option');
+            const feedbackArea = document.getElementById('quizFeedbackArea');
+            const banner = document.getElementById('feedbackBanner');
+            const expl = document.getElementById('quizExplanationText');
+
+            // Disable further clicks
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+
+            if (selectedIndex === q.answerIndex) {
+                options[selectedIndex].classList.add('correct');
+                banner.innerText = "Correct Answer! 🎉";
+                banner.style.color = 'var(--color-teal)';
+                quizScore++;
+            } else {
+                options[selectedIndex].classList.add('incorrect');
+                options[q.answerIndex].classList.add('correct');
+                banner.innerText = "Incorrect Answer ❌";
+                banner.style.color = '#f43f5e';
+            }
+
+            expl.innerHTML = q.explanation;
+            feedbackArea.style.display = 'block';
+            document.getElementById('quizScoreText').innerText = `Score: ${quizScore}/${quizCurrentIdx + 1}`;
+        }
+
+        document.getElementById('quizNextBtn').addEventListener('click', () => {
+            quizCurrentIdx++;
+            if (quizCurrentIdx < quizQuestions.length) {
+                loadQuizQuestion();
+            } else {
+                // Final Results
+                const container = document.getElementById('quizContainer');
+                container.innerHTML = `
+                    <div style="text-align:center; padding: 2rem;">
+                        <h3 style="font-size:1.5rem; margin-bottom: 1rem; color:var(--color-teal);">Quiz Completed!</h3>
+                        <p style="font-size:1.1rem; margin-bottom: 2rem; color:var(--text-muted);">
+                            You scored <span class="number" style="font-weight:bold; color:#ffffff;">${quizScore}</span> out of <span class="number" style="font-weight:bold; color:#ffffff;">${quizQuestions.length}</span>.
+                        </p>
+                        <button class="btn" onclick="resetQuiz()">Retake Quiz</button>
+                    </div>
+                `;
+            }
+        });
+
+        function resetQuiz() {
+            // Restore container layout
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = `
+                <div id="quizQuestionArea">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                        <span id="quizProgressText">Question 1 of 5</span>
+                        <span id="quizScoreText">Score: 0/0</span>
+                    </div>
+                    <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;"></h3>
+                    <div id="quizOptionsContainer"></div>
+                </div>
+                <div class="quiz-feedback" id="quizFeedbackArea">
+                    <strong id="feedbackBanner">Correct Answer!</strong>
+                    <p id="quizExplanationText" style="margin-top: 6px; font-size:0.85rem; color:var(--text-muted);"></p>
+                    <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                        Next Question
+                    </button>
+                </div>
+            `;
+            // Re-bind the next button event
+            document.getElementById('quizNextBtn').addEventListener('click', () => {
+                quizCurrentIdx++;
+                if (quizCurrentIdx < quizQuestions.length) {
+                    loadQuizQuestion();
+                } else {
+                    const cont = document.getElementById('quizContainer');
+                    cont.innerHTML = `
+                        <div style="text-align:center; padding: 2rem;">
+                            <h3 style="font-size:1.5rem; margin-bottom: 1rem; color:var(--color-teal);">Quiz Completed!</h3>
+                            <p style="font-size:1.1rem; margin-bottom: 2rem; color:var(--text-muted);">
+                                You scored <span class="number" style="font-weight:bold; color:#ffffff;">${quizScore}</span> out of <span class="number" style="font-weight:bold; color:#ffffff;">${quizQuestions.length}</span>.
+                            </p>
+                            <button class="btn" onclick="resetQuiz()">Retake Quiz</button>
+                        </div>
+                    `;
+                }
+            });
+            quizCurrentIdx = 0;
+            quizScore = 0;
+            loadQuizQuestion();
+        }
+
+        // PAGE STARTUP
+        window.addEventListener('resize', () => {
+            resizeCanvasElement();
+        });
+
+        setTimeout(() => {
+            setVisualizerTab('fibonacci');
+            resetQuiz();
+        }, 100);
+
+    </script>
+</body>
+
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

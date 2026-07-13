@@ -1,0 +1,363 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to Python Data Science - Computational Math</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "07_computational_math",
+            logo: {"main":"Code","accent":"Lab","sub":"Introduction to Python Data Science"},
+            navigation: [
+    {
+        "label": "Homogeneous Arrays vs. Lists",
+        "desc": "Homogeneous Arrays vs. Lists interactive section",
+        "href": "#section1"
+    },
+    {
+        "label": "The Python Scientific Stack",
+        "desc": "The Python Scientific Stack interactive section",
+        "href": "#section2"
+    },
+    {
+        "label": "Practical Computational Math Recipes",
+        "desc": "Practical Computational Math Recipes interactive section",
+        "href": "#section3"
+    },
+    {
+        "label": "Reference Cheat Sheet",
+        "desc": "Reference Cheat Sheet interactive section",
+        "href": "#section4"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            --color-primary: #6366f1;
+            --color-primary-glow: rgba(99, 102, 241, 0.3);
+            --color-code-bg: #0b0d16;
+        }
+
+        .logo-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 2.5rem;
+            color: var(--text-color);
+        }
+
+        .logo-title span {
+            color: var(--color-primary);
+        }
+
+        .menu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .menu-item a {
+            display: block;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+            border: 1px solid transparent;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .menu-item a:hover {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        section h2::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 24px;
+            background: var(--color-primary);
+            border-radius: 4px;
+            box-shadow: 0 0 10px var(--color-primary-glow);
+        }
+
+        /* Code Blocks */
+        pre {
+            background: var(--color-code-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .code-comment {
+            color: #5c6370;
+        }
+
+        .code-keyword {
+            color: #c678dd;
+        }
+
+        .code-func {
+            color: #61afef;
+        }
+
+        .code-string {
+            color: #98c379;
+        }
+
+        .code-num {
+            color: #d19a66;
+        }
+
+        /* Custom Alert block */
+        .info-card {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .info-card svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--color-primary);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .info-card-text {
+            font-size: 0.95rem;
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+
+        /* Abstract radial glow in main */
+        .page-glow {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar Syllabus Navigation -->
+    <aside></aside>
+
+    <!-- Main Content Panel -->
+    <main>
+        <div class="page-glow"></div>
+
+        <header>
+            <h1>Introduction to Python Data Science</h1>
+            <p>Master how mathematical abstractions (vectors, matrices, distributions) map to computing structures,
+                methods, and visualization engines in Python.</p>
+        </header>
+
+        <!-- SECTION 1: HOMOGENEOUS ARRAYS -->
+        <section id="section1">
+            <h2>Homogeneous Arrays vs. Lists</h2>
+            <p>
+                In standard Python, lists are highly flexible container structures, but they are too slow for advanced
+                math operations. Data science libraries bypass Python lists and use homogeneous arrays (like NumPy's
+                <code>ndarray</code>). These arrays store data in contiguous blocks of memory, allowing operations to
+                execute simultaneously across the entire array in a compiled C backend—a concept known as
+                <strong>Vectorization</strong>.
+            </p>
+
+            <pre><code><span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+
+<span class="code-comment"># Python List Addition (Requires slow loop iteration)</span>
+list_a = [<span class="code-num">1</span>, <span class="code-num">2</span>, <span class="code-num">3</span>]
+list_b = [<span class="code-num">4</span>, <span class="code-num">5</span>, <span class="code-num">6</span>]
+list_sum = [x + y <span class="code-keyword">for</span> x, y <span class="code-keyword">in</span> <span class="code-func">zip</span>(list_a, list_b)]
+
+<span class="code-comment"># NumPy Array Vectorized Addition (C-Speed contiguous execution)</span>
+arr_a = np.<span class="code-func">array</span>([<span class="code-num">1</span>, <span class="code-num">2</span>, <span class="code-num">3</span>])
+arr_b = np.<span class="code-func">array</span>([<span class="code-num">4</span>, <span class="code-num">5</span>, <span class="code-num">6</span>])
+arr_sum = arr_a + arr_b  <span class="code-comment"># array([5, 7, 9])</span></code></pre>
+        </section>
+
+        <!-- SECTION 2: CORE PYTHON STACK -->
+        <section id="section2">
+            <h2>The Python Scientific Stack</h2>
+            <p>
+                For computation, Python features a set of core libraries designed specifically to handle numerical
+                analysis, statistics, and visualizations:
+            </p>
+            <ul>
+                <li style="margin-left: 1.5rem; margin-bottom: 0.5rem; color: var(--text-muted)">
+                    <strong style="color: var(--text-color)">NumPy:</strong> Handlers for multidimensional arrays,
+                    vector algorithms, and basic linear algebra.
+                </li>
+                <li style="margin-left: 1.5rem; margin-bottom: 0.5rem; color: var(--text-muted)">
+                    <strong style="color: var(--text-color)">Pandas:</strong> Handles tabular structures like
+                    <code>DataFrames</code> (essentially programmatical spreadsheets) for grouping, filtering, and
+                    cleaning data.
+                </li>
+                <li style="margin-left: 1.5rem; margin-bottom: 0.5rem; color: var(--text-muted)">
+                    <strong style="color: var(--text-color)">SciPy:</strong> Scientific computations including numerical
+                    integrals, differential systems, and advanced statistics.
+                </li>
+                <li style="margin-left: 1.5rem; margin-bottom: 0.5rem; color: var(--text-muted)">
+                    <strong style="color: var(--text-color)">SymPy:</strong> Symbolic mathematics. Unlike NumPy which
+                    calculates values to decimals (e.g. 1.414), SymPy represents algebraic entities analytically (like
+                    keeping variables as <i>x</i> or constants as &radic;2).
+                </li>
+                <li style="margin-left: 1.5rem; margin-bottom: 0.5rem; color: var(--text-muted)">
+                    <strong style="color: var(--text-color)">Matplotlib:</strong> The foundation plotting library used
+                    to draw curves, distributions, and scatter grids.
+                </li>
+            </ul>
+        </section>
+
+        <!-- SECTION 3: COMPUTATIONAL RECIPES -->
+        <section id="section3">
+            <h2>Practical Computational Math Recipes</h2>
+            <p>
+                Below are code recipes demonstrating how students solve common computational tasks:
+            </p>
+
+            <h3 style="font-size: 1.15rem; margin-top: 2rem; margin-bottom: 0.5rem;">Recipe 1: Vectorized Sine Wave
+                Generator</h3>
+            <p>Instead of running a loop to calculate angles one by one, we process an array of 1,000 points
+                simultaneously:</p>
+            <pre><code><span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+<span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt
+
+<span class="code-comment"># Generate 1000 steps from 0 to 2*pi</span>
+x = np.<span class="code-func">linspace</span>(<span class="code-num">0</span>, <span class="code-num">2</span> * np.pi, <span class="code-num">1000</span>)
+y = np.<span class="code-func">sin</span>(x)  <span class="code-comment"># Calculates sin values for all 1000 elements</span>
+
+plt.<span class="code-func">plot</span>(x, y, color=<span class="code-string">'#6366f1'</span>, linewidth=<span class="code-num">2</span>)
+plt.<span class="code-func">grid</span>(<span class="code-func">True</span>)
+plt.<span class="code-func">show</span>()</code></pre>
+
+            <h3 style="font-size: 1.15rem; margin-top: 2rem; margin-bottom: 0.5rem;">Recipe 2: Solving Linear Algebra
+                Systems ($Ax = b$)</h3>
+            <p>Solves for <i>x</i> and <i>y</i> in a system of equations: $2x + 3y = 8$, and $5x - y = 3$.</p>
+            <pre><code><span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+
+<span class="code-comment"># Coefficient Matrix A</span>
+A = np.<span class="code-func">array</span>([
+    [<span class="code-num">2</span>,  <span class="code-num">3</span>],
+    [<span class="code-num">5</span>, -<span class="code-num">1</span>]
+])
+
+<span class="code-comment"># Constants Vector b</span>
+b = np.<span class="code-func">array</span>([<span class="code-num">8</span>, <span class="code-num">3</span>])
+
+solution = np.linalg.<span class="code-func">solve</span>(A, b)
+<span class="code-func">print</span>(<span class="code-string">f"x = {solution[0]}, y = {solution[1]}"</span>)  <span class="code-comment"># Outputs: x = 1.0, y = 2.0</span></code></pre>
+
+            <h3 style="font-size: 1.15rem; margin-top: 2rem; margin-bottom: 0.5rem;">Recipe 3: Monte Carlo Simulation
+                (Approximating &pi;)</h3>
+            <p>Simulates throwing 100,000 random darts inside a $2 \times 2$ grid to approximate the mathematical
+                constant &pi;:</p>
+            <pre><code><span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+
+n = <span class="code-num">100000</span>
+x = np.random.<span class="code-func">uniform</span>(-<span class="code-num">1</span>, <span class="code-num">1</span>, n)
+y = np.random.<span class="code-func">uniform</span>(-<span class="code-num">1</span>, <span class="code-num">1</span>, n)
+
+<span class="code-comment"># Pythagoras: distance from origin</span>
+inside = (x**<span class="code-num">2</span> + y**<span class="code-num">2</span>) &lt;= <span class="code-num">1</span>
+pi_approx = <span class="code-num">4</span> * np.<span class="code-func">sum</span>(inside) / n
+
+<span class="code-func">print</span>(<span class="code-string">f"Approximated Pi: {pi_approx}"</span>)</code></pre>
+        </section>
+
+        <!-- SECTION 4: REFERENCE CHEATSHEET -->
+        <section id="section4">
+            <h2>Reference Cheat Sheet</h2>
+            <p>A reference mapping mathematical notation to code equivalents in Python libraries:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept / Notation</th>
+                        <th>Library Code Syntax</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Array / Vector</td>
+                        <td><code>np.array([1, 2, 3])</code></td>
+                        <td>Homogeneous array structures.</td>
+                    </tr>
+                    <tr>
+                        <td>Interval $[a, b]$</td>
+                        <td><code>np.linspace(a, b, n)</code></td>
+                        <td>Generates $n$ evenly spaced points.</td>
+                    </tr>
+                    <tr>
+                        <td>Scatter Matrix</td>
+                        <td><code>plt.scatter(x, y)</code></td>
+                        <td>Draws coordinate pairs $(x,y)$ on a grid.</td>
+                    </tr>
+                    <tr>
+                        <td>Symbolic Variable $x$</td>
+                        <td><code>sympy.Symbol('x')</code></td>
+                        <td>Initializes symbolic variable for algebraic equations.</td>
+                    </tr>
+                    <tr>
+                        <td>Integral $\int_a^b f(x)dx$</td>
+                        <td><code>scipy.integrate.quad(f, a, b)</code></td>
+                        <td>Computes numerical definite integration.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-card">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z" />
+                </svg>
+                <div class="info-card-text">
+                    <strong>Note:</strong> When implementing code math, always check if your output arrays are
+                    contiguous to prevent memory leaks during massive iterative loops!
+                </div>
+            </div>
+        </section>
+    </main>
+
+</body>
+
+</html>

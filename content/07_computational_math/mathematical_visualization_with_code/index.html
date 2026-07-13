@@ -1,0 +1,628 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fourier Wave Composer - Computational Mathematics</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "07_computational_math",
+            logo: {"main":"Code","accent":"Lab","sub":"Fourier Wave Composer"},
+            navigation: [
+    {
+        "label": "Phasor Circle & Oscillation plot",
+        "desc": "Phasor Circle & Oscillation plot interactive section",
+        "href": "#composer"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Fourier Theme Colors */
+            --color-fundamental: #38bdf8; /* Cyan */
+            --color-fundamental-glow: rgba(56, 189, 248, 0.35);
+            --color-harmonics: #a855f7;    /* Purple */
+            --color-harmonics-glow: rgba(168, 85, 247, 0.35);
+            --color-composite: #ff2a85;    /* Rose (composite wave) */
+            --color-composite-glow: rgba(255, 42, 133, 0.35);
+            --color-accent: #ffb000;       /* Amber */
+            --color-accent-glow: rgba(255, 176, 0, 0.35);
+        }
+
+        .btn-sound {
+            background: var(--color-accent);
+            color: var(--bg-color);
+            font-weight: 600;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px var(--color-accent-glow);
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-sound:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(255, 176, 0, 0.4);
+        }
+
+        .btn-sound.playing {
+            background: #ef4444;
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+        }
+
+        /* Sliders layout */
+        .harmonic-sliders {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .control-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            width: 140px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-val-display {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            font-size: 0.75rem;
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
+
+        .harm-slider-even::-webkit-slider-thumb { background: var(--color-harmonics) !important; }
+
+        /* Formula viewer styling */
+        .formula-box {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .coeff-val { color: var(--color-accent); font-weight: 600; }
+        .sin-term { color: var(--color-fundamental); }
+
+        /* Code reference styling */
+        .code-container {
+            position: relative;
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .code-tab {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 4px 10px;
+            border-radius: 6px 6px 0 0;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .code-tab.active {
+            color: var(--text-color);
+            background: rgba(10, 12, 20, 0.9);
+            border-bottom-color: transparent;
+        }
+
+        .code-panel {
+            background: rgba(10, 12, 20, 0.9);
+            border: 1px solid var(--card-border);
+            border-radius: 0 10px 10px 10px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #d1d5db;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+
+        /* Keyword colors for code display */
+        .kw { color: #f43f5e; } /* keywords */
+        .func { color: #38bdf8; } /* functions */
+        .num { color: #a855f7; } /* numbers */
+        .comment { color: #6b7c93; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Syllabus Navigation -->
+    <aside></aside>
+
+    <!-- Main Workspace Content -->
+    <main>
+        <header>
+            <h1>Fourier Wave Composer</h1>
+            <p>Compose complex waveforms programmatically from sine wave harmonics. Connect continuous algebraic equations directly to sound synthesis.</p>
+        </header>
+
+        <section id="composer">
+            <div class="section-header">
+                <span class="section-tag">Interactive Widget</span>
+                <h2>Phasor Circle & Oscillation plot</h2>
+            </div>
+            <p class="section-intro">
+                Click a preset to approximate standard waveforms, or customize the amplitudes of individual harmonics. Turn on the **Sound Synthesizer** (Web Audio API) to hear how adding higher frequencies changes the timbre of the tone!
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Circle & Graph Canvases -->
+                <div class="panel">
+                    <div class="preset-container" id="presetContainer">
+                        <button class="btn-preset active" data-preset="sine">Sine Wave</button>
+                        <button class="btn-preset" data-preset="square">Square Wave</button>
+                        <button class="btn-preset" data-preset="sawtooth">Sawtooth Wave</button>
+                        <button class="btn-preset" data-preset="triangle">Triangle Wave</button>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; margin-bottom: 1.5rem; align-items:center;">
+                        <button class="btn-sound" id="btnSound">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" id="audioIcon"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                            <span id="audioStatusText">Start Sound Synthesizer</span>
+                        </button>
+                        <div class="control-row" style="flex-grow:1; display:flex; flex-direction:column; align-items:stretch; gap:4px;">
+                            <div class="control-label-row">
+                                <span class="control-label" style="width:auto;">Synthesizer Pitch</span>
+                                <span class="control-value"><span id="freqVal" class="number">220</span> Hz</span>
+                            </div>
+                            <input type="range" id="freqSlider" min="110" max="440" value="220" step="1">
+                        </div>
+                    </div>
+
+                    <div class="canvas-container" style="height: 380px;">
+                        <canvas id="fourierCanvas"></canvas>
+                    </div>
+
+                    <!-- Individual Harmonics Controls -->
+                    <div class="harmonic-sliders" id="slidersContainer">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+
+                <!-- Right Panel: Equations & Code -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Fourier Series Summation</h3>
+                        <div class="formula-box" id="formulaDisplay">
+                            f(t) = sin(t)
+                        </div>
+                    </div>
+
+                    <div class="math-card">
+                        <h3>Mathematical Recipe Code</h3>
+                        <div class="code-container">
+                            <div class="code-tabs">
+                                <div class="code-tab active" data-lang="python">Python (NumPy)</div>
+                                <div class="code-tab" data-lang="js">JavaScript (Web Audio)</div>
+                            </div>
+                            <!-- Python Panel -->
+                            <div class="code-panel" id="codePanel">
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> <span class="func">fourier_sum</span>(t, amplitudes):
+    y = np.<span class="func">zeros_like</span>(t)
+    <span class="kw">for</span> n, amp <span class="kw">in</span> <span class="func">enumerate</span>(amplitudes, start=<span class="num">1</span>):
+        y += amp * np.<span class="func">sin</span>(n * t)
+    <span class="kw">return</span> y
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>Square wave harmonics drop off at ratios of <span class="number">1/n</span> for odd integers (n = 1, 3, 5...).</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('fourierCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Sliders & Controls References
+        const slidersContainer = document.getElementById('slidersContainer');
+        const btnSound = document.getElementById('btnSound');
+        const freqSlider = document.getElementById('freqSlider');
+        const freqVal = document.getElementById('freqVal');
+        const formulaDisplay = document.getElementById('formulaDisplay');
+        const codePanel = document.getElementById('codePanel');
+        const presetContainer = document.getElementById('presetContainer');
+        const audioIcon = document.getElementById('audioIcon');
+        const audioStatusText = document.getElementById('audioStatusText');
+
+        // Synthesis variables
+        const numHarmonics = 8;
+        let amplitudes = [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+
+        // Running waveform trace array
+        let trace = [];
+        let timeStep = 0;
+
+        // Audio API states
+        let audioCtx = null;
+        let oscNode = null;
+        let gainNode = null;
+        let isPlayingAudio = false;
+
+        function buildSliders() {
+            let html = '';
+            for (let i = 1; i <= numHarmonics; i++) {
+                const isEven = i % 2 === 0;
+                const activeColorClass = isEven ? 'harm-slider-even' : '';
+                html += `
+                    <div class="control-row">
+                        <div class="control-label">
+                            <span>Harmonic ${i} ${i === 1 ? '(Fundamental)' : ''}</span>
+                            <span class="control-val-display" id="valDisp_${i}">${amplitudes[i-1].toFixed(2)}</span>
+                        </div>
+                        <input type="range" class="${activeColorClass}" id="slide_${i}" min="0" max="1.5" step="0.01" value="${amplitudes[i-1]}">
+                    </div>
+                `;
+            }
+            slidersContainer.innerHTML = html;
+
+            // Bind events
+            for (let i = 1; i <= numHarmonics; i++) {
+                document.getElementById(`slide_${i}`).addEventListener('input', (e) => {
+                    amplitudes[i-1] = parseFloat(e.target.value);
+                    document.getElementById(`valDisp_${i}`).innerText = amplitudes[i-1].toFixed(2);
+                    
+                    // deactivate presets on manual tweak
+                    document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+                    
+                    updateFormula();
+                    updateAudioSynthesizer();
+                });
+            }
+        }
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const width = rect.width;
+            const height = rect.height;
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+            ctx.scale(dpr, dpr);
+        }
+
+        function draw() {
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            ctx.clearRect(0, 0, w, h);
+
+            // Left diagram coordinates: Phasors
+            const diagramCX = w * 0.22;
+            const diagramCY = h * 0.5;
+            const traceStartX = w * 0.44;
+
+            // Base rotation rate
+            timeStep += 0.025;
+
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, diagramCY);
+            ctx.lineTo(w, diagramCY);
+            ctx.stroke();
+
+            // Trace through harmonics and accumulate endpoints
+            let currentX = diagramCX;
+            let currentY = diagramCY;
+
+            // Scale factor to map amplitude of 1.0 to pixel size
+            const scaleFactor = 65;
+
+            ctx.lineWidth = 1.5;
+            for (let i = 1; i <= numHarmonics; i++) {
+                const amp = amplitudes[i-1];
+                if (amp === 0) continue;
+
+                const r = amp * scaleFactor;
+                const freq = i;
+                const angle = freq * timeStep;
+
+                ctx.strokeStyle = i === 1 ? "rgba(56, 189, 248, 0.12)" : "rgba(168, 85, 247, 0.08)";
+                ctx.beginPath();
+                ctx.arc(currentX, currentY, r, 0, Math.PI * 2);
+                ctx.stroke();
+
+                const nextX = currentX + r * Math.cos(angle);
+                const nextY = currentY - r * Math.sin(angle); // negative sign due to screen y down
+
+                ctx.strokeStyle = i === 1 ? "var(--color-fundamental)" : "var(--color-harmonics)";
+                ctx.beginPath();
+                ctx.moveTo(currentX, currentY);
+                ctx.lineTo(nextX, nextY);
+                ctx.stroke();
+
+                // Small joint dot
+                ctx.fillStyle = "#fff";
+                ctx.beginPath();
+                ctx.arc(nextX, nextY, 2, 0, Math.PI * 2);
+                ctx.fill();
+
+                currentX = nextX;
+                currentY = nextY;
+            }
+
+            // Save running history of output Y values
+            trace.unshift(currentY);
+            if (trace.length > (w - traceStartX)) {
+                trace.pop();
+            }
+
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            ctx.moveTo(currentX, currentY);
+            ctx.lineTo(traceStartX, currentY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.strokeStyle = "var(--color-composite)";
+            ctx.shadowColor = "var(--color-composite-glow)";
+            ctx.shadowBlur = 10;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            for (let i = 0; i < trace.length; i++) {
+                const x = traceStartX + i;
+                const y = trace[i];
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            ctx.shadowBlur = 0; // reset
+        }
+
+        // Formula formatter
+        function updateFormula() {
+            let terms = [];
+            for (let i = 1; i <= numHarmonics; i++) {
+                const amp = amplitudes[i-1];
+                if (amp === 0) continue;
+                
+                let term = '';
+                if (amp !== 1) {
+                    term += `${amp.toFixed(2)} `;
+                }
+                
+                if (i === 1) {
+                    term += 'sin(t)';
+                } else {
+                    term += `sin(${i}t)`;
+                }
+                terms.push(term);
+            }
+            
+            if (terms.length === 0) {
+                formulaDisplay.innerHTML = "f(t) = 0";
+            } else {
+                formulaDisplay.innerHTML = "f(t) = " + terms.join(" + ");
+            }
+        }
+
+        // Presets loader
+        function loadPreset(presetName) {
+            trace = []; // Clear oscilloscope
+            switch (presetName) {
+                case 'sine':
+                    amplitudes = [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+                    break;
+                case 'square':
+                    // Square: 4/pi * (sin(x) + sin(3x)/3 + sin(5x)/5...)
+                    amplitudes = [1.0, 0.0, 0.33, 0.0, 0.20, 0.0, 0.14, 0.0];
+                    break;
+                case 'sawtooth':
+                    // Sawtooth: 2/pi * (sin(x) - sin(2x)/2 + sin(3x)/3...)
+                    amplitudes = [1.0, 0.50, 0.33, 0.25, 0.20, 0.16, 0.14, 0.12];
+                    break;
+                case 'triangle':
+                    // Triangle: 8/pi^2 * (sin(x) - sin(3x)/9 + sin(5x)/25...)
+                    amplitudes = [1.0, 0.0, 0.11, 0.0, 0.04, 0.0, 0.02, 0.0];
+                    break;
+            }
+
+            // Sync sliders
+            for (let i = 1; i <= numHarmonics; i++) {
+                const slide = document.getElementById(`slide_${i}`);
+                if (slide) {
+                    slide.value = amplitudes[i-1];
+                    document.getElementById(`valDisp_${i}`).innerText = amplitudes[i-1].toFixed(2);
+                }
+            }
+
+            updateFormula();
+            updateAudioSynthesizer();
+        }
+
+        // Preset button binding
+        presetContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('btn-preset')) {
+                document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                const preset = e.target.getAttribute('data-preset');
+                loadPreset(preset);
+            }
+        });
+
+        // Code Tab Switchers
+        const tabs = document.querySelectorAll('.code-tab');
+        const codeRecipes = {
+            python: `<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> <span class="func">fourier_sum</span>(t, amplitudes):
+    y = np.<span class="func">zeros_like</span>(t)
+    <span class="kw">for</span> n, amp <span class="kw">in</span> <span class="func">enumerate</span>(amplitudes, start=<span class="num">1</span>):
+        y += amp * np.<span class="func">sin</span>(n * t)
+    <span class="kw">return</span> y`,
+            js: `<span class="comment">// Synthesizing custom wave using Web Audio API</span>
+<span class="kw">const</span> real = <span class="kw">new</span> <span class="func">Float32Array</span>(amplitudes.length + <span class="num">1</span>);
+<span class="kw">const</span> imag = <span class="kw">new</span> <span class="func">Float32Array</span>(amplitudes.length + <span class="num">1</span>);
+
+<span class="comment">// Populate imaginary sine terms</span>
+amplitudes.<span class="func">forEach</span>((amp, idx) => {
+    imag[idx + <span class="num">1</span>] = amp;
+});
+
+<span class="kw">const</span> wave = audioCtx.<span class="func">createPeriodicWave</span>(real, imag);
+oscillator.<span class="func">setPeriodicWave</span>(wave);`
+        };
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const lang = tab.getAttribute('data-lang');
+                codePanel.innerHTML = codeRecipes[lang];
+            });
+        });
+
+        // Web Audio Synthesizer Engine
+        function startSynthesizer() {
+            if (isPlayingAudio) return;
+
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            oscNode = audioCtx.createOscillator();
+            gainNode = audioCtx.createGain();
+
+            const freq = parseFloat(freqSlider.value);
+            oscNode.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+            updateAudioWave();
+
+            // Volume gain configuration (soft volume to prevent ear discomfort)
+            gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+
+            oscNode.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            oscNode.start();
+            isPlayingAudio = true;
+
+            btnSound.classList.add('playing');
+            audioStatusText.innerText = "Stop Sound Synthesizer";
+            audioIcon.innerHTML = `<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>`;
+        }
+
+        function stopSynthesizer() {
+            if (!isPlayingAudio) return;
+            oscNode.stop();
+            oscNode.disconnect();
+            gainNode.disconnect();
+            isPlayingAudio = false;
+
+            btnSound.classList.remove('playing');
+            audioStatusText.innerText = "Start Sound Synthesizer";
+            audioIcon.innerHTML = `<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>`;
+        }
+
+        function updateAudioWave() {
+            if (!oscNode || !audioCtx) return;
+
+            // PeriodicWave API takes Float32Arrays
+            const real = new Float32Array(numHarmonics + 1);
+            const imag = new Float32Array(numHarmonics + 1); // imaginary elements represent sine values
+
+            // imaginary index 0 is always 0
+            for (let i = 1; i <= numHarmonics; i++) {
+                imag[i] = amplitudes[i-1];
+            }
+
+            // Disable normalization to preserve raw slider relative volume levels
+            const wave = audioCtx.createPeriodicWave(real, imag, {disableNormalization: false});
+            oscNode.setPeriodicWave(wave);
+        }
+
+        function updateAudioSynthesizer() {
+            if (isPlayingAudio) {
+                updateAudioWave();
+            }
+        }
+
+        // Sound Synthesizer Bindings
+        btnSound.addEventListener('click', () => {
+            if (isPlayingAudio) {
+                stopSynthesizer();
+            } else {
+                startSynthesizer();
+            }
+        });
+
+        freqSlider.addEventListener('input', (e) => {
+            const freq = parseFloat(e.target.value);
+            freqVal.innerText = freq;
+            if (oscNode && audioCtx && isPlayingAudio) {
+                oscNode.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            }
+        });
+
+        // Animation Loop
+        function tick() {
+            draw();
+            requestAnimationFrame(tick);
+        }
+
+        // On resize
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+        });
+
+        // Start
+        buildSliders();
+        resizeCanvas();
+        updateFormula();
+        tick();
+    </script>
+</body>
+</html>

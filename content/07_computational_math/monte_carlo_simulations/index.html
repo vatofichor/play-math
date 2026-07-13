@@ -1,0 +1,1115 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monte Carlo Simulations - Computational Math</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "07_computational_math",
+            logo: {"main":"Code","accent":"Lab","sub":"Monte Carlo Simulations"},
+            navigation: [
+    {
+        "label": "Probabilistic Estimation Workspace",
+        "desc": "Probabilistic Estimation Workspace interactive section",
+        "href": "#sandbox"
+    },
+    {
+        "label": "Monte Carlo Mathematical Formulations",
+        "desc": "Monte Carlo Mathematical Formulations interactive section",
+        "href": "#solver"
+    },
+    {
+        "label": "Monte Carlo Quiz",
+        "desc": "Monte Carlo Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Theme Color: Indigo & Teal Override */
+            --color-indigo: #6366f1;
+            --color-indigo-glow: rgba(99, 102, 241, 0.35);
+            --color-teal: #14b8a6;
+            --color-teal-glow: rgba(20, 184, 166, 0.35);
+            --color-accent: #6366f1;
+            --color-accent-glow: rgba(99, 102, 241, 0.35);
+
+            --color-dart-success: #14b8a6; /* Teal for success hits */
+            --color-dart-fail: #f43f5e;    /* Rose/Fuchsia for misses */
+        }
+
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-accent) !important;
+            box-shadow: 0 4px 20px var(--color-accent-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-title {
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-desc {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-indigo);
+            background: rgba(99, 102, 241, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            text-shadow: 0 0 5px var(--color-indigo-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .equation-box {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            background: var(--color-indigo);
+            box-shadow: 0 0 8px var(--color-indigo-glow);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-mode {
+            flex: 1;
+            padding: 0.6rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .btn-mode.active {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--color-indigo);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        /* Stepper actions */
+        .stepper-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .btn-action {
+            flex: 1;
+            background: rgba(255,255,255,0.03);
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 8px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .btn-action:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        .btn-action.active-run {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--color-indigo);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .select-field {
+            background: #08090d;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: var(--text-color);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            outline: none;
+            transition: all var(--transition-speed) ease;
+            width: 100%;
+        }
+
+        .select-field:focus {
+            border-color: var(--color-indigo);
+            background: rgba(99, 102, 241, 0.02);
+        }
+
+        /* Quiz elements */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(20, 184, 166, 0.08);
+            border-color: rgba(20, 184, 166, 0.3);
+            color: var(--color-teal);
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Drawer Syllabus Menu is auto-injected by shared.js -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-indigo) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Monte Carlo Simulations
+            </h1>
+            <p>Resolve mathematical systems using probability models. Estimate the circle constant ratio Pi and perform definite integrations using randomized coordinate drops.</p>
+        </header>
+
+        <!-- SECTION 1: SANDBOX CORE -->
+        <section id="sandbox">
+            <div class="section-header">
+                <span class="section-tag">Randomized Engine</span>
+                <h2>Probabilistic Estimation Workspace</h2>
+            </div>
+            <p class="section-intro">
+                Select between the **Pi Estimation Dartboard** or **Monte Carlo Area Integration**. Click Play to initiate randomized coordinate sampling.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Configurations, stats & playback -->
+                <div class="panel">
+                    <div style="display: flex; gap: 8px; margin-bottom: 1.25rem;">
+                        <button class="btn-mode active" id="btnTabPi" onclick="setVisualizerTab('pi_estimation')">Pi Estimation</button>
+                        <button class="btn-mode" id="btnTabArea" onclick="setVisualizerTab('area_integration')">Monte Carlo Integration</button>
+                    </div>
+
+                    <!-- Integration presets (Tab 2 only) -->
+                    <div class="slider-group" id="integrationPresetGroup" style="display:none; margin-bottom: 1.25rem;">
+                        <div class="slider-row">
+                            <span class="input-label" style="font-size:0.8rem; color:var(--text-muted);">Definite Integral Target</span>
+                            <select class="select-field" id="selectFunc">
+                                <option value="x2">f(x) = x² &nbsp; [Bounds: 0 to 1.0]</option>
+                                <option value="sin">f(x) = sin(x) &nbsp; [Bounds: 0 to π]</option>
+                                <option value="exp">f(x) = e⁻ˣ &nbsp; [Bounds: 0 to 1.2]</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Speed & Samples sliders -->
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Samples Dropped per Frame</span>
+                                <span class="number" id="lblSpeed">10</span>
+                            </div>
+                            <input type="range" id="slideSpeed" min="1" max="1000" value="10" step="10">
+                        </div>
+                    </div>
+
+                    <!-- Animation Playback Controls -->
+                    <div class="stepper-actions" style="margin-bottom: 1.5rem;">
+                        <button class="btn-action" id="btnPlay" onclick="playbackControl('play')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" id="playIcon"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            <span id="playText">Start Simulation</span>
+                        </button>
+                        <button class="btn-action" onclick="playbackControl('reset')">Reset</button>
+                    </div>
+
+                    <!-- Dynamic Stats Board -->
+                    <div class="math-card">
+                        <h3>Real-time Stats Ledger</h3>
+                        <div style="font-size:0.85rem; line-height:1.7; color:var(--text-muted);">
+                            <div>Total Coordinates N: <span class="number" id="statTotal" style="color:var(--text-color); font-weight:bold;">0</span></div>
+                            <div>Successful Hits (Inside): <span class="number" id="statHits" style="color:var(--color-teal);">0</span></div>
+                            <div style="margin: 8px 0; border-top: 1px solid rgba(255,255,255,0.05); padding-top:8px;"></div>
+                            <div>Running Estimate: <span class="number" id="statEstimate" style="color:var(--color-indigo); font-weight:bold; font-size:1.05rem;">0.00000</span></div>
+                            <div>True Mathematical Value: <span class="number" id="statTrue" style="color:#ffffff;">3.14159</span></div>
+                            <div>Absolute Error Rate: <span class="number" id="statError" style="color:#f43f5e;">100.00%</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Canvas & Convergence line graph -->
+                <div class="panel">
+                    <h3>Simulation Board</h3>
+                    <br>
+                    <div class="canvas-container" style="height: 300px; background:#06070a; border-radius:12px;">
+                        <canvas id="simCanvas"></canvas>
+                    </div>
+
+                    <div style="margin-top: 1.25rem;">
+                        <h3>Convergence Chart</h3>
+                        <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">Plotting estimate vs true limit value:</div>
+                        <div class="canvas-container" style="height: 120px; background:#06070a; border-radius:8px;">
+                            <canvas id="chartCanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: EXPLANATIONS -->
+        <section id="solver">
+            <div class="section-header">
+                <span class="section-tag">Trace Step Solver</span>
+                <h2>Monte Carlo Mathematical Formulations</h2>
+            </div>
+            <p class="section-intro">
+                Study the derivations, geometry models, and error convergence boundaries of randomized algorithms.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Pi Derivation details -->
+                <div class="panel">
+                    <h3>Circle Expectation Derivation</h3>
+                    <br>
+                    <div class="formula-steps" style="line-height:1.7; font-size:0.85rem;">
+                        <div><strong style="color:var(--color-indigo);">Area Ratio Mappings:</strong></div>
+                        <div style="color:var(--text-muted); margin-bottom:12px;">
+                            For a unit circle of radius $r=1$ inscribed in a square of width $W=2$, their respective areas are:
+                        </div>
+                        <div class="equation-box" style="font-size: 1.05rem; padding: 0.75rem; margin-bottom: 12px;">
+                            A<sub>circle</sub> = &pi;&middot;r² = &pi; &nbsp; &nbsp; | &nbsp; &nbsp; A<sub>square</sub> = W² = 4
+                        </div>
+                        <div style="color:var(--text-muted); margin-bottom: 12px;">
+                            The probability $P$ of a random point falling inside the circle equals the ratio of their areas:
+                        </div>
+                        <div class="equation-box" style="font-size: 1.05rem; padding: 0.75rem; margin-bottom: 12px;">
+                            P = A<sub>circle</sub> / A<sub>square</sub> = &pi; / 4
+                        </div>
+                        <div style="color:var(--text-muted);">
+                            By multiplying the empirical probability ($N_{\text{inside}} / N$) by 4, we approximate $\pi$.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Integration details & error scale -->
+                <div class="panel">
+                    <h3>Area Integration & Error Bounds</h3>
+                    <br>
+                    <div class="formula-steps" style="line-height:1.7; font-size:0.85rem;">
+                        <div><strong style="color:var(--color-teal);">Monte Carlo Definite Integrals:</strong></div>
+                        <div style="color:var(--text-muted); margin-bottom:12px;">
+                            Estimating $\int_a^b f(x)dx$ involves drawing a bounding box of area $A_{\text{box}} = (b-a) \times H$ (where $H \ge \max f(x)$) and dropping random coordinate nodes.
+                        </div>
+                        <div class="equation-box" style="font-size: 1.05rem; padding: 0.75rem; margin-bottom:12px;">
+                            Area &approx; A<sub>box</sub> &times; (Hits below curve / Total N)
+                        </div>
+
+                        <div><strong style="color:var(--color-teal);">Error Convergence Bound:</strong></div>
+                        <div style="color:var(--text-muted); margin-bottom:12px;">
+                            According to the Central Limit Theorem, the statistical error in Monte Carlo methods decreases as:
+                        </div>
+                        <div class="equation-box" style="font-size: 1.05rem; padding: 0.75rem; margin-bottom:12px;">
+                            Standard Error &propto; 1 / &radic;N
+                        </div>
+                        <div style="color:var(--text-muted);">
+                            This means to decrease the estimation error by a factor of 10, you must increase the sample size $N$ by a factor of 100.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Self Evaluation</span>
+                <h2>Monte Carlo Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Assess your theoretical grasp of probability boundaries, convergence charts, and error scaling.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Quiz Questions -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;"></h3>
+
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically by JS -->
+                        </div>
+                    </div>
+
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="feedbackBanner">Correct Answer!</strong>
+                        <p id="quizExplanationText" style="margin-top: 6px; font-size:0.85rem; color:var(--text-muted);"></p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Focus Vocabulary -->
+                <div class="panel">
+                    <h3>Focus Vocabulary</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom:0; list-style:none; display:flex; flex-direction:column; gap:16px;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-indigo); box-shadow:0 0 6px var(--color-indigo-glow);"></span>
+                                <strong>Law of Large Numbers:</strong> As sample size $N$ increases, empirical averages converge closer to mathematical expectations.
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-teal); box-shadow:0 0 6px var(--color-teal-glow);"></span>
+                                <strong>Collinear Darts:</strong> Dropping random point coordinates independently and uniformly across a bounding box coordinates system.
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:#f43f5e; box-shadow:0 0 6px rgba(244,63,94,0.35);"></span>
+                                <strong>Square-Root Convergence:</strong> Standard error drops proportional to $1/\sqrt{N}$, which is slower than linear limits.
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const simCanvas = document.getElementById('simCanvas');
+        const simCtx = simCanvas.getContext('2d');
+
+        const chartCanvas = document.getElementById('chartCanvas');
+        const chartCtx = chartCanvas.getContext('2d');
+
+        const slideSpeed = document.getElementById('slideSpeed');
+        const lblSpeed = document.getElementById('lblSpeed');
+
+        const btnPlay = document.getElementById('btnPlay');
+        const playIcon = document.getElementById('playIcon');
+        const playText = document.getElementById('playText');
+
+        const btnTabPi = document.getElementById('btnTabPi');
+        const btnTabArea = document.getElementById('btnTabArea');
+        const integrationPresetGroup = document.getElementById('integrationPresetGroup');
+        const selectFunc = document.getElementById('selectFunc');
+
+        // Stats readouts
+        const statTotal = document.getElementById('statTotal');
+        const statHits = document.getElementById('statHits');
+        const statEstimate = document.getElementById('statEstimate');
+        const statTrue = document.getElementById('statTrue');
+        const statError = document.getElementById('statError');
+
+        // Simulation parameters
+        let activeTab = 'pi_estimation'; // 'pi_estimation' or 'area_integration'
+        let isPlaying = false;
+        let animationFrameId = null;
+
+        let pointsPerFrame = 10;
+        
+        // Accumulators
+        let countN = 0;
+        let countHits = 0;
+        let trueValue = Math.PI;
+
+        // Fading queue parameters
+        let dotsQueue = []; // array of {x, y, success}
+        const maxDotsToDraw = 1200;
+
+        // Chart history
+        let estimationHistory = []; // array of running estimates
+        const maxHistoryPoints = 120;
+
+        // Definite integration parameters
+        let activeFuncKey = 'x2'; // 'x2', 'sin', 'exp'
+        let integrationBounds = { a: 0, b: 1.0, maxH: 1.0 }; // bounding box limits
+
+        // TAB SELECTION & INITIALIZATION
+        function setVisualizerTab(tab) {
+            playbackControl('pause');
+            activeTab = tab;
+            btnTabPi.classList.remove('active');
+            btnTabArea.classList.remove('active');
+            integrationPresetGroup.style.display = 'none';
+
+            if (tab === 'pi_estimation') {
+                btnTabPi.classList.add('active');
+                trueValue = Math.PI;
+                statTrue.innerText = '3.14159';
+            } else {
+                btnTabArea.classList.add('active');
+                integrationPresetGroup.style.display = 'block';
+                updateIntegrationFunction();
+            }
+
+            resetSimulation();
+        }
+
+        function updateIntegrationFunction() {
+            activeFuncKey = selectFunc.value;
+            if (activeFuncKey === 'x2') {
+                // f(x) = x^2, x in [0, 1]
+                integrationBounds = { a: 0, b: 1.0, maxH: 1.0 };
+                trueValue = 1 / 3; // 0.33333
+                statTrue.innerText = '0.33333';
+            } else if (activeFuncKey === 'sin') {
+                // f(x) = sin(x), x in [0, pi]
+                integrationBounds = { a: 0, b: Math.PI, maxH: 1.0 };
+                trueValue = 2.0; // 2.00000
+                statTrue.innerText = '2.00000';
+            } else if (activeFuncKey === 'exp') {
+                // f(x) = e^-x, x in [0, 1.2]
+                integrationBounds = { a: 0, b: 1.2, maxH: 1.0 };
+                trueValue = 1 - Math.exp(-1.2); // 0.69880
+                statTrue.innerText = trueValue.toFixed(5);
+            }
+            resetSimulation();
+        }
+
+        function resetSimulation() {
+            playbackControl('pause');
+            countN = 0;
+            countHits = 0;
+            dotsQueue = [];
+            estimationHistory = [];
+            
+            statTotal.innerText = '0';
+            statHits.innerText = '0';
+            statEstimate.innerText = '0.00000';
+            statError.innerText = '100.00%';
+
+            resizeCanvases();
+        }
+
+        function resizeCanvases() {
+            // Main simulation canvas
+            const container1 = simCanvas.parentElement;
+            simCanvas.width = container1.clientWidth;
+            simCanvas.height = container1.clientHeight;
+
+            // Chart canvas
+            const container2 = chartCanvas.parentElement;
+            chartCanvas.width = container2.clientWidth;
+            chartCanvas.height = container2.clientHeight;
+
+            drawSimulationScene();
+            drawConvergenceChart();
+        }
+
+        // SIMULATION CALCULATION TICKERS
+        function runSimulationTick() {
+            if (!isPlaying) return;
+
+            // Drop multiple coordinates per frame based on speed slider
+            for (let i = 0; i < pointsPerFrame; i++) {
+                countN++;
+                
+                if (activeTab === 'pi_estimation') {
+                    // Random point in [-1, 1] x [-1, 1]
+                    const rx = Math.random() * 2 - 1;
+                    const ry = Math.random() * 2 - 1;
+                    
+                    const success = (rx * rx + ry * ry) <= 1.0;
+                    if (success) countHits++;
+
+                    // Queue for graphics rendering
+                    dotsQueue.push({ x: rx, y: ry, success });
+                } else {
+                    // Integration mode
+                    // Random point inside bounding box [a, b] x [0, maxH]
+                    const bX = integrationBounds.b;
+                    const bY = integrationBounds.maxH;
+                    
+                    const rx = Math.random() * bX;
+                    const ry = Math.random() * bY;
+
+                    // Evaluate function height
+                    let fHeight = 0;
+                    if (activeFuncKey === 'x2') {
+                        fHeight = rx * rx;
+                    } else if (activeFuncKey === 'sin') {
+                        fHeight = Math.sin(rx);
+                    } else if (activeFuncKey === 'exp') {
+                        fHeight = Math.exp(-rx);
+                    }
+
+                    const success = ry <= fHeight;
+                    if (success) countHits++;
+
+                    // Queue for graphics
+                    dotsQueue.push({ x: rx, y: ry, success });
+                }
+            }
+
+            // Cap the rendering queue to preserve frames performance
+            if (dotsQueue.length > maxDotsToDraw) {
+                dotsQueue.splice(0, dotsQueue.length - maxDotsToDraw);
+            }
+
+            let estimate = 0;
+            if (activeTab === 'pi_estimation') {
+                estimate = 4.0 * (countHits / countN);
+            } else {
+                // Area = Box Area * ratio
+                const boxArea = (integrationBounds.b) * integrationBounds.maxH;
+                estimate = boxArea * (countHits / countN);
+            }
+
+            statTotal.innerText = countN.toLocaleString();
+            statHits.innerText = countHits.toLocaleString();
+            statEstimate.innerText = estimate.toFixed(5);
+
+            // Compute error rate
+            const error = Math.abs(estimate - trueValue) / trueValue * 100;
+            statError.innerText = `${error.toFixed(2)}%`;
+            if (error < 1.0) {
+                statError.style.color = 'var(--color-teal)';
+            } else {
+                statError.style.color = '#f43f5e';
+            }
+
+            // Record estimation history for the convergence chart
+            // Sample at a rate proportional to speeds to keep graph smooth
+            const sampleRate = Math.max(1, Math.floor(pointsPerFrame / 1.5));
+            if (countN % sampleRate === 0) {
+                estimationHistory.push(estimate);
+                if (estimationHistory.length > maxHistoryPoints) {
+                    estimationHistory.shift();
+                }
+            }
+
+            // Render
+            drawSimulationScene();
+            drawConvergenceChart();
+
+            // Next frame
+            animationFrameId = requestAnimationFrame(runSimulationTick);
+        }
+
+        // DYNAMIC CANVAS RENDER SCENES
+        function mapToScreen(x, y) {
+            const w = simCanvas.width;
+            const h = simCanvas.height;
+            const size = Math.min(w, h) - 40;
+            const midX = w / 2;
+            const midY = h / 2;
+
+            if (activeTab === 'pi_estimation') {
+                // Maps [-1, 1] to screen coordinate box
+                const px = midX + x * (size / 2);
+                const py = midY - y * (size / 2); // Inverted Y
+                return { x: px, y: py };
+            } else {
+                // Maps [0, b] x [0, maxH] to screen coordinate box (padding offset)
+                const paddingX = 40;
+                const paddingY = 40;
+                const chartW = w - paddingX * 2;
+                const chartH = h - paddingY * 2;
+
+                const bX = integrationBounds.b;
+                const bY = integrationBounds.maxH;
+
+                const px = paddingX + (x / bX) * chartW;
+                const py = h - paddingY - (y / bY) * chartH;
+                return { x: px, y: py };
+            }
+        }
+
+        function drawSimulationScene() {
+            const w = simCanvas.width;
+            const h = simCanvas.height;
+            simCtx.clearRect(0, 0, w, h);
+
+            if (activeTab === 'pi_estimation') {
+                // 1. Draw boundary square
+                const pMin = mapToScreen(-1, -1);
+                const pMax = mapToScreen(1, 1);
+                
+                simCtx.strokeStyle = 'rgba(255,255,255,0.08)';
+                simCtx.lineWidth = 2;
+                simCtx.strokeRect(pMin.x, pMax.y, pMax.x - pMin.x, pMin.y - pMax.y);
+
+                // 2. Draw unit circle border
+                const origin = mapToScreen(0,0);
+                const size = Math.min(w, h) - 40;
+                
+                simCtx.strokeStyle = 'rgba(99, 102, 241, 0.4)';
+                simCtx.beginPath();
+                simCtx.arc(origin.x, origin.y, size/2, 0, Math.PI * 2);
+                simCtx.stroke();
+
+                // Faint fill inside circle
+                simCtx.fillStyle = 'rgba(99, 102, 241, 0.03)';
+                simCtx.beginPath();
+                simCtx.arc(origin.x, origin.y, size/2, 0, Math.PI * 2);
+                simCtx.fill();
+            } else {
+                // Integration tab
+                const paddingX = 40;
+                const paddingY = 40;
+                
+                simCtx.strokeStyle = 'rgba(255,255,255,0.15)';
+                simCtx.lineWidth = 1.5;
+                simCtx.beginPath();
+                simCtx.moveTo(paddingX, paddingY);
+                simCtx.lineTo(paddingX, h - paddingY);
+                simCtx.lineTo(w - paddingX, h - paddingY);
+                simCtx.stroke();
+
+                const pBoxRight = mapToScreen(integrationBounds.b, integrationBounds.maxH);
+                simCtx.strokeStyle = 'rgba(255,255,255,0.03)';
+                simCtx.lineWidth = 1;
+                simCtx.strokeRect(paddingX, pBoxRight.y, pBoxRight.x - paddingX, h - paddingY - pBoxRight.y);
+
+                // Axis text labels
+                simCtx.fillStyle = 'rgba(255,255,255,0.3)';
+                simCtx.font = '500 8px JetBrains Mono';
+                simCtx.textAlign = 'center';
+                simCtx.fillText('0.0', paddingX, h - paddingY + 12);
+                simCtx.fillText(integrationBounds.b.toFixed(1), pBoxRight.x, h - paddingY + 12);
+
+                simCtx.strokeStyle = 'var(--color-indigo)';
+                simCtx.lineWidth = 3;
+                simCtx.shadowBlur = 8;
+                simCtx.shadowColor = 'var(--color-indigo-glow)';
+                
+                simCtx.beginPath();
+                const steps = 100;
+                for (let i = 0; i <= steps; i++) {
+                    const mathX = (i / steps) * integrationBounds.b;
+                    
+                    let mathY = 0;
+                    if (activeFuncKey === 'x2') {
+                        mathY = mathX * mathX;
+                    } else if (activeFuncKey === 'sin') {
+                        mathY = Math.sin(mathX);
+                    } else if (activeFuncKey === 'exp') {
+                        mathY = Math.exp(-mathX);
+                    }
+
+                    const screenPt = mapToScreen(mathX, mathY);
+                    if (i === 0) simCtx.moveTo(screenPt.x, screenPt.y);
+                    else simCtx.lineTo(screenPt.x, screenPt.y);
+                }
+                simCtx.stroke();
+                simCtx.shadowBlur = 0; // reset
+            }
+
+            // 3. Render Darts / Points (Fading trace logic)
+            dotsQueue.forEach((dot, idx) => {
+                const screenPt = mapToScreen(dot.x, dot.y);
+                
+                // Opacity fades for older coordinate points
+                const opacity = idx / dotsQueue.length;
+                simCtx.fillStyle = dot.success ? `rgba(20, 184, 166, ${opacity * 0.95})` : `rgba(244, 63, 94, ${opacity * 0.95})`;
+
+                simCtx.beginPath();
+                simCtx.arc(screenPt.x, screenPt.y, 2.5, 0, Math.PI * 2);
+                simCtx.fill();
+            });
+        }
+
+        function drawConvergenceChart() {
+            const w = chartCanvas.width;
+            const h = chartCanvas.height;
+            chartCtx.clearRect(0, 0, w, h);
+
+            if (estimationHistory.length < 2) {
+                chartCtx.fillStyle = 'rgba(255,255,255,0.15)';
+                chartCtx.font = '10px Outfit';
+                chartCtx.textAlign = 'center';
+                chartCtx.fillText('Simulation stopped. Waiting for coordinates...', w/2, h/2);
+                return;
+            }
+
+            const padding = 15;
+            const chartW = w - padding * 2;
+            const chartH = h - padding * 2;
+
+            let maxDeviation = 0.5; // limit view range
+            
+            // Map values to chart bounds y coordinate
+            function mapValToChartY(val) {
+                const dev = val - trueValue;
+                const ratio = dev / maxDeviation; // -1 to +1
+                // Clamp ratio
+                const clamped = Math.max(-1.0, Math.min(1.0, ratio));
+                return h / 2 - clamped * (chartH / 2);
+            }
+
+            chartCtx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+            chartCtx.lineWidth = 1;
+            chartCtx.setLineDash([4, 4]);
+            chartCtx.beginPath();
+            chartCtx.moveTo(padding, h / 2);
+            chartCtx.lineTo(w - padding, h / 2);
+            chartCtx.stroke();
+            chartCtx.setLineDash([]);
+
+            chartCtx.fillStyle = 'rgba(255,255,255,0.25)';
+            chartCtx.font = 'bold 8px JetBrains Mono';
+            chartCtx.textAlign = 'left';
+            chartCtx.fillText(`True: ${trueValue.toFixed(3)}`, padding + 4, h/2 - 4);
+
+            chartCtx.strokeStyle = 'var(--color-indigo)';
+            chartCtx.shadowColor = 'var(--color-indigo-glow)';
+            chartCtx.shadowBlur = 6;
+            chartCtx.lineWidth = 2;
+            chartCtx.beginPath();
+
+            const stepX = chartW / (maxHistoryPoints - 1);
+            const startIdx = maxHistoryPoints - estimationHistory.length;
+
+            estimationHistory.forEach((est, idx) => {
+                const cx = padding + (startIdx + idx) * stepX;
+                const cy = mapValToChartY(est);
+
+                if (idx === 0) chartCtx.moveTo(cx, cy);
+                else chartCtx.lineTo(cx, cy);
+            });
+            chartCtx.stroke();
+            chartCtx.shadowBlur = 0; // reset
+        }
+
+        // ANIMATION PLAYBACK CONTROLS
+        function playbackControl(action) {
+            if (action === 'play') {
+                if (isPlaying) {
+                    playbackControl('pause');
+                } else {
+                    isPlaying = true;
+                    playText.innerText = 'Pause Simulation';
+                    playIcon.innerHTML = `<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>`;
+                    btnPlay.classList.add('active-run');
+                    
+                    // Loop frames
+                    runSimulationTick();
+                }
+            } else if (action === 'pause') {
+                isPlaying = false;
+                playText.innerText = 'Start Simulation';
+                playIcon.innerHTML = `<polygon points="5 3 19 12 5 21 5 3"/>`;
+                btnPlay.classList.remove('active-run');
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+            } else if (action === 'reset') {
+                resetSimulation();
+            }
+        }
+
+        // Bind interactive controls
+        slideSpeed.addEventListener('input', (e) => {
+            pointsPerFrame = parseInt(e.target.value);
+            lblSpeed.innerText = pointsPerFrame;
+        });
+
+        selectFunc.addEventListener('change', () => {
+            updateIntegrationFunction();
+        });
+
+        // CONCEPTUAL QUIZ ENGINE
+        const quizQuestions = [
+            {
+                question: "What is the core principle of a Monte Carlo simulation?",
+                options: [
+                    "Solving probabilistic problems using exact calculus matrices.",
+                    "Solving mathematical or physical problems by repeating random sampling algorithms.",
+                    "Converting discrete numbers to continuous curves.",
+                    "Sorting data arrays sequentially to optimize database queries."
+                ],
+                answerIndex: 1,
+                explanation: "Monte Carlo simulations use random sampling to approximate numerical targets. Instead of exact analytical formulas, the method estimates limits experimentally by dropping coordinates uniformly."
+            },
+            {
+                question: "According to the Law of Large Numbers, what happens as the coordinate sample count N grows infinitely?",
+                options: [
+                    "The simulation speed drops exponentially to zero.",
+                    "The empirical expectation converges closer to the true analytical limit.",
+                    "The absolute error fluctuates randomly and increases.",
+                    "The random sequence repeats itself exactly every 10,000 steps."
+                ],
+                answerIndex: 1,
+                explanation: "The Law of Large Numbers establishes that as the sample size increases, the running average (the Monte Carlo estimate) stabilizes and converges toward the true theoretical expectation value."
+            },
+            {
+                question: "What is the standard error convergence rate of Monte Carlo algorithms?",
+                options: [
+                    "O(1/N) linear convergence.",
+                    "O(1/N<sup>2</sup>) quadratic convergence.",
+                    "O(1/&radic;N) square-root convergence.",
+                    "O(log N) logarithmic convergence."
+                ],
+                answerIndex: 2,
+                explanation: "According to the Central Limit Theorem, the statistical error drops at a rate proportional to 1/&radic;N. To reduce the approximation error by 10x, you must increase the sample size N by 100x."
+            },
+            {
+                question: "In the Pi estimation dartboard simulator, why is the ratio of darts multiplied by 4?",
+                options: [
+                    "Because a square has 4 coordinates vertices.",
+                    "Because the circle is split into 4 quadrants inside the square.",
+                    "Because the ratio of circle area to square area equals &pi; / 4.",
+                    "To scale up the rendering speed on the coordinate canvas."
+                ],
+                answerIndex: 2,
+                explanation: "A unit circle (radius=1, area=&pi;) inscribed in a square (width=2, area=4) yields a probability ratio of P = A<sub>circle</sub> / A<sub>square</sub> = &pi; / 4. Therefore, &pi; &approx; 4 &times; (hits / total)."
+            },
+            {
+                question: "What is a major limitation of Monte Carlo simulations compared to analytical calculus solutions?",
+                options: [
+                    "They cannot handle systems of non-linear dimensions.",
+                    "They are computationally expensive and only approximate results rather than providing exact answers.",
+                    "They require deterministic boundary matrices to initialize.",
+                    "They throw Stack Overflow errors on deep recursion loops."
+                ],
+                answerIndex: 1,
+                explanation: "Monte Carlo simulations require large numbers of random trials (often millions) to converge to high accuracy. They provide probabilistic approximations rather than absolute exact algebraic equations."
+            }
+        ];
+
+        let quizCurrentIdx = 0;
+        let quizScore = 0;
+
+        function loadQuizQuestion() {
+            const q = quizQuestions[quizCurrentIdx];
+            document.getElementById('quizProgressText').innerText = `Question ${quizCurrentIdx + 1} of ${quizQuestions.length}`;
+            document.getElementById('quizScoreText').innerText = `Score: ${quizScore}/${quizCurrentIdx}`;
+            document.getElementById('quizQuestionTitle').innerHTML = q.question;
+
+            const container = document.getElementById('quizOptionsContainer');
+            container.innerHTML = '';
+
+            document.getElementById('quizFeedbackArea').style.display = 'none';
+
+            q.options.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = 'quiz-option';
+                div.innerHTML = `<span>${opt}</span>`;
+                div.addEventListener('click', () => selectQuizOption(idx));
+                container.appendChild(div);
+            });
+        }
+
+        function selectQuizOption(selectedIndex) {
+            const q = quizQuestions[quizCurrentIdx];
+            const options = document.querySelectorAll('.quiz-option');
+            const feedbackArea = document.getElementById('quizFeedbackArea');
+            const banner = document.getElementById('feedbackBanner');
+            const expl = document.getElementById('quizExplanationText');
+
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+
+            if (selectedIndex === q.answerIndex) {
+                options[selectedIndex].classList.add('correct');
+                banner.innerText = "Correct Answer! 🎉";
+                banner.style.color = 'var(--color-teal)';
+                quizScore++;
+            } else {
+                options[selectedIndex].classList.add('incorrect');
+                options[q.answerIndex].classList.add('correct');
+                banner.innerText = "Incorrect Answer ❌";
+                banner.style.color = '#f43f5e';
+            }
+
+            expl.innerHTML = q.explanation;
+            feedbackArea.style.display = 'block';
+            document.getElementById('quizScoreText').innerText = `Score: ${quizScore}/${quizCurrentIdx + 1}`;
+        }
+
+        document.getElementById('quizNextBtn').addEventListener('click', () => {
+            quizCurrentIdx++;
+            if (quizCurrentIdx < quizQuestions.length) {
+                loadQuizQuestion();
+            } else {
+                const container = document.getElementById('quizContainer');
+                container.innerHTML = `
+                    <div style="text-align:center; padding: 2rem;">
+                        <h3 style="font-size:1.5rem; margin-bottom: 1rem; color:var(--color-indigo);">Quiz Completed!</h3>
+                        <p style="font-size:1.1rem; margin-bottom: 2rem; color:var(--text-muted);">
+                            You scored <span class="number" style="font-weight:bold; color:#ffffff;">${quizScore}</span> out of <span class="number" style="font-weight:bold; color:#ffffff;">${quizQuestions.length}</span>.
+                        </p>
+                        <button class="btn" onclick="resetQuiz()">Retake Quiz</button>
+                    </div>
+                `;
+            }
+        });
+
+        function resetQuiz() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = `
+                <div id="quizQuestionArea">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                        <span id="quizProgressText">Question 1 of 5</span>
+                        <span id="quizScoreText">Score: 0/0</span>
+                    </div>
+                    <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;"></h3>
+                    <div id="quizOptionsContainer"></div>
+                </div>
+                <div class="quiz-feedback" id="quizFeedbackArea">
+                    <strong id="feedbackBanner">Correct Answer!</strong>
+                    <p id="quizExplanationText" style="margin-top: 6px; font-size:0.85rem; color:var(--text-muted);"></p>
+                    <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                        Next Question
+                    </button>
+                </div>
+            `;
+            document.getElementById('quizNextBtn').addEventListener('click', () => {
+                quizCurrentIdx++;
+                if (quizCurrentIdx < quizQuestions.length) {
+                    loadQuizQuestion();
+                } else {
+                    const cont = document.getElementById('quizContainer');
+                    cont.innerHTML = `
+                        <div style="text-align:center; padding: 2rem;">
+                            <h3 style="font-size:1.5rem; margin-bottom: 1rem; color:var(--color-indigo);">Quiz Completed!</h3>
+                            <p style="font-size:1.1rem; margin-bottom: 2rem; color:var(--text-muted);">
+                                You scored <span class="number" style="font-weight:bold; color:#ffffff;">${quizScore}</span> out of <span class="number" style="font-weight:bold; color:#ffffff;">${quizQuestions.length}</span>.
+                            </p>
+                            <button class="btn" onclick="resetQuiz()">Retake Quiz</button>
+                        </div>
+                    `;
+                }
+            });
+            quizCurrentIdx = 0;
+            quizScore = 0;
+            loadQuizQuestion();
+        }
+
+        // PAGE STARTUP
+        window.addEventListener('resize', () => {
+            resizeCanvases();
+        });
+
+        setTimeout(() => {
+            setVisualizerTab('pi_estimation');
+            resetQuiz();
+        }, 100);
+
+    </script>
+</body>
+
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keywords & Tags - play-math</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/shared.css">
+    <style>
+        :root {
+            --bg-color: #050608;
+            --grid-color: rgba(255, 255, 255, 0.02);
+            --card-bg: rgba(13, 16, 23, 0.65);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --card-border-hover: rgba(255, 176, 0, 0.3);
+            --text-color: #e2e8f0;
+            --text-muted: #6b7c93;
+            --color-amber: #ffb000;
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            background-image:
+                radial-gradient(var(--grid-color) 1px, transparent 1px),
+                radial-gradient(var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4rem 2rem;
+        }
+
+        .bg-glow {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 650px;
+            height: 650px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 176, 0, 0.04) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+            filter: blur(50px);
+        }
+
+        header {
+            text-align: center;
+            max-width: 800px;
+            margin-bottom: 4rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ffffff 40%, var(--color-amber) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .tags-container {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tag-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: all var(--transition-speed) ease;
+        }
+
+        .tag-card:hover {
+            border-color: var(--card-border-hover);
+            transform: translateY(-2px);
+        }
+
+        .tag-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--color-amber);
+        }
+
+        .tag-link {
+            color: inherit;
+            text-decoration: none;
+            transition: color var(--transition-speed) ease;
+        }
+
+        .tag-link:hover {
+            color: #ffffff;
+        }
+
+        .tag-subtopics {
+            list-style: none;
+            padding-left: 0;
+            font-size: 0.85rem;
+        }
+
+        .tag-subtopics li {
+            margin-bottom: 6px;
+            position: relative;
+            padding-left: 12px;
+        }
+
+        .tag-subtopics li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--text-muted);
+        }
+
+        .subtopic-tag-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color var(--transition-speed) ease;
+        }
+
+        .subtopic-tag-link:hover {
+            color: var(--text-color);
+        }
+
+        footer {
+            margin-top: 6rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+
+    <div class="dashboard-card-wrapper" style="max-width: 900px;">
+        <div class="btn-back-container">
+            <a href="../../index.html" class="btn-back" id="btnBackHome">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Roadmap
+            </a>
+        </div>
+
+        <header>
+            <h1>Domain Keywords &amp; Tags</h1>
+            <p>Explore index tags and keywords compiling interactive visualizers, sandboxes, and simulation modules across the curriculum.</p>
+        </header>
+
+        <div class="tags-container">
+            
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=2D%20Area%20Model" data-clean-route="/?search=2D%20Area%20Model" class="tag-link">2D Area Model</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/factoring_and_expansion/index.html" class="subtopic-tag-link">Quadratic Area Models - Factoring & Expansion</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=2D%20Coordinate%20Explorer" data-clean-route="/?search=2D%20Coordinate%20Explorer" class="tag-link">2D Coordinate Explorer</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/discreminants/index.html" class="subtopic-tag-link">Discriminants & Root Character - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=3D%20Volumetric%20Model" data-clean-route="/?search=3D%20Volumetric%20Model" class="tag-link">3D Volumetric Model</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/factoring_and_expansion/index.html" class="subtopic-tag-link">Difference of Cubes - Factoring & Expansion</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Algebra%20Concepts" data-clean-route="/?search=Algebra%20Concepts" class="tag-link">Algebra Concepts</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/fractional_equations/index.html" class="subtopic-tag-link">Fractional Equations - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Algebra%20Core" data-clean-route="/?search=Algebra%20Core" class="tag-link">Algebra Core</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/functions/index.html" class="subtopic-tag-link">Functions & Relations - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/linear_equations_two_var/index.html" class="subtopic-tag-link">Linear Equations Two Var - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Algebra%20Principles" data-clean-route="/?search=Algebra%20Principles" class="tag-link">Algebra Principles</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/linear_equations_one_var/index.html" class="subtopic-tag-link">Linear Equations One Var - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Algebraic%20Solver" data-clean-route="/?search=Algebraic%20Solver" class="tag-link">Algebraic Solver</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/simplifying_using_quadratic_equations/index.html" class="subtopic-tag-link">Simplifying with Quadratic Equations - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/simultaneous_equations/index.html" class="subtopic-tag-link">Simultaneous Equations - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/standard_form/index.html" class="subtopic-tag-link">Standard Form - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/surds_and_indices/index.html" class="subtopic-tag-link">Surds & Indices - Algebraic Structures</a></li>
+                <li><a href="../04_trigonometry/eulers_identity/index.html" class="subtopic-tag-link">Euler's Formula & Identity - Trigonometry & Waves</a></li>
+                <li><a href="../04_trigonometry/inverse_trig_functions/index.html" class="subtopic-tag-link">Inverse Trigonometric Functions - Trigonometry & Waves</a></li>
+                <li><a href="../04_trigonometry/laws_of_sines_and_cosines/index.html" class="subtopic-tag-link">Laws of Sines & Cosines - Trigonometry & Waves</a></li>
+                <li><a href="../04_trigonometry/polar_coordinates_and_curves/index.html" class="subtopic-tag-link">Polar Coordinates & Curves - Trigonometry & Waves</a></li>
+                <li><a href="../04_trigonometry/trig_equations/index.html" class="subtopic-tag-link">Trigonometric Equations - Trigonometry & Waves</a></li>
+                <li><a href="../05_calculus/chain_rule_and_transcendentals/index.html" class="subtopic-tag-link">Chain Rule & Transcendental Derivatives - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/fundamental_theorem_of_calculus/index.html" class="subtopic-tag-link">Fundamental Theorem of Calculus - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/gaussian_integrals/index.html" class="subtopic-tag-link">Gaussian Integration - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/integration_by_power_rule/index.html" class="subtopic-tag-link">Integration & Area Under Curves - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/integration_by_usubstitution/index.html" class="subtopic-tag-link">Integration by U-Substitution - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/limits_and_continuity/index.html" class="subtopic-tag-link">Limits & Continuity - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/power_rule/index.html" class="subtopic-tag-link">Power Rule & Derivatives - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/related_rates_and_optimization/index.html" class="subtopic-tag-link">Related Rates & Optimization - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/single_variable_integrals/index.html" class="subtopic-tag-link">Single Variable Integration - Calculus & Limits</a></li>
+                <li><a href="../06_data_science_statistics/advanced_regression_correlation/index.html" class="subtopic-tag-link">Advanced Regression & Correlation - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/data_preprocessing_normalization/index.html" class="subtopic-tag-link">Data Preprocessing & Normalization - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/frequency_tables_and_tally_charts/index.html" class="subtopic-tag-link">Frequency Tables & Tally Charts - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/line_plots_fractional_data/index.html" class="subtopic-tag-link">Line Plots with Fractional Data - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/measures_of_center/index.html" class="subtopic-tag-link">Measures of Center - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/probability_and_likelihood/index.html" class="subtopic-tag-link">Probability & Likelihood - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/probability_distributions/index.html" class="subtopic-tag-link">Probability Distributions - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/recording_data/index.html" class="subtopic-tag-link">Recording Data - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/statistical_inference_hypothesis_testing/index.html" class="subtopic-tag-link">Statistical Inference & Hypothesis Testing - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/time_series/index.html" class="subtopic-tag-link">Time Series Forecasting - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/trend_lines_and_linear_models/index.html" class="subtopic-tag-link">Trend Lines & Linear Models - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/two_way_tables_and_relative_frequency/index.html" class="subtopic-tag-link">Two-Way Tables & Relative Frequency - Data Science & Stats</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Algebraic%20Substitution" data-clean-route="/?search=Algebraic%20Substitution" class="tag-link">Algebraic Substitution</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/equations/index.html" class="subtopic-tag-link">Introduction to Equations - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Anatomy%20Specs" data-clean-route="/?search=Anatomy%20Specs" class="tag-link">Anatomy Specs</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/polynomial_families/index.html" class="subtopic-tag-link">Polynomial Families & Extrema - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/rational_functions/index.html" class="subtopic-tag-link">Asymptotes & Rational Functions - Algebraic Structures</a></li>
+                <li><a href="../03_geometry_measurement/geometric_transformations/index.html" class="subtopic-tag-link">Geometric Transformations - Geometry & Space</a></li>
+                <li><a href="../05_calculus/sequences_series/index.html" class="subtopic-tag-link">Infinite Sequences & Series - Calculus & Limits</a></li>
+                <li><a href="../07_computational_math/graph_theory_networks/index.html" class="subtopic-tag-link">Graph Theory & Networks - Computational Math</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Arithmetic%20Solver" data-clean-route="/?search=Arithmetic%20Solver" class="tag-link">Arithmetic Solver</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/discreminants/index.html" class="subtopic-tag-link">Discriminants & Root Character - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/roots_relationships/index.html" class="subtopic-tag-link">Roots Relationships (Vieta's Formulas) - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Associative%20Property" data-clean-route="/?search=Associative%20Property" class="tag-link">Associative Property</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/algebra_operations_and_properties/index.html" class="subtopic-tag-link">Algebraic Operations & Properties - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Audio%20Integration" data-clean-route="/?search=Audio%20Integration" class="tag-link">Audio Integration</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../04_trigonometry/trig_graph_transformations/index.html" class="subtopic-tag-link">Trigonometric Graph Transformations - Curves & Waves</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Cartesian%20Grapher" data-clean-route="/?search=Cartesian%20Grapher" class="tag-link">Cartesian Grapher</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/extended_operations/index.html" class="subtopic-tag-link">Advanced Operations & Logarithms - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Combining%20Like%20Terms" data-clean-route="/?search=Combining%20Like%20Terms" class="tag-link">Combining Like Terms</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/simplifying_basic/index.html" class="subtopic-tag-link">Simplifying Basic Expressions - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Commutative%20Property" data-clean-route="/?search=Commutative%20Property" class="tag-link">Commutative Property</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/algebra_operations_and_properties/index.html" class="subtopic-tag-link">Algebraic Operations & Properties - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Concept%20HUD" data-clean-route="/?search=Concept%20HUD" class="tag-link">Concept HUD</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/slope/index.html" class="subtopic-tag-link">Introduction to Slope - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Coordinate%20Map" data-clean-route="/?search=Coordinate%20Map" class="tag-link">Coordinate Map</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/linear_equations_two_var/index.html" class="subtopic-tag-link">Linear Equations Two Var - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Cross%20Multiplier" data-clean-route="/?search=Cross%20Multiplier" class="tag-link">Cross Multiplier</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/fractional_equations/index.html" class="subtopic-tag-link">Fractional Equations - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Deforming%20Rope" data-clean-route="/?search=Deforming%20Rope" class="tag-link">Deforming Rope</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/polynomial_families/index.html" class="subtopic-tag-link">Polynomial Families & Extrema - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Dijkstra%20Routes" data-clean-route="/?search=Dijkstra%20Routes" class="tag-link">Dijkstra Routes</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../07_computational_math/graph_theory_networks/index.html" class="subtopic-tag-link">Graph Theory & Networks - Computational Math</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Distributive%20Law" data-clean-route="/?search=Distributive%20Law" class="tag-link">Distributive Law</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/simplifying_basic/index.html" class="subtopic-tag-link">Simplifying Basic Expressions - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Distributive%20Property" data-clean-route="/?search=Distributive%20Property" class="tag-link">Distributive Property</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/algebra_operations_and_properties/index.html" class="subtopic-tag-link">Algebraic Operations & Properties - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Divergence%20%26%20Curl" data-clean-route="/?search=Divergence%20%26%20Curl" class="tag-link">Divergence & Curl</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../05_calculus/vectors_fields/index.html" class="subtopic-tag-link">Vector Geometry & Fields - Calculus & Limits</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Drag%20%26%20Drop%20Game" data-clean-route="/?search=Drag%20%26%20Drop%20Game" class="tag-link">Drag & Drop Game</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../06_data_science_statistics/set_theory_venn/index.html" class="subtopic-tag-link">Set Theory & Venn Diagrams - Data Science & Stats</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Evaluation" data-clean-route="/?search=Evaluation" class="tag-link">Evaluation</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/discreminants/index.html" class="subtopic-tag-link">Discriminants & Root Character - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/factoring_and_expansion/index.html" class="subtopic-tag-link">Difference of Cubes - Factoring & Expansion</a></li>
+                <li><a href="../02_algebra/fractional_equations/index.html" class="subtopic-tag-link">Fractional Equations - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/functions/index.html" class="subtopic-tag-link">Functions & Relations - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/linear_equations_one_var/index.html" class="subtopic-tag-link">Linear Equations One Var - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/linear_equations_two_var/index.html" class="subtopic-tag-link">Linear Equations Two Var - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/roots_relationships/index.html" class="subtopic-tag-link">Roots Relationships (Vieta's Formulas) - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/simplifying_using_quadratic_equations/index.html" class="subtopic-tag-link">Simplifying with Quadratic Equations - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/simultaneous_equations/index.html" class="subtopic-tag-link">Simultaneous Equations - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/standard_form/index.html" class="subtopic-tag-link">Standard Form - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/surds_and_indices/index.html" class="subtopic-tag-link">Surds & Indices - Algebraic Structures</a></li>
+                <li><a href="../04_trigonometry/eulers_identity/index.html" class="subtopic-tag-link">Euler's Formula & Identity - Trigonometry & Waves</a></li>
+                <li><a href="../04_trigonometry/inverse_trig_functions/index.html" class="subtopic-tag-link">Inverse Trigonometric Functions - Trigonometry & Waves</a></li>
+                <li><a href="../04_trigonometry/laws_of_sines_and_cosines/index.html" class="subtopic-tag-link">Laws of Sines & Cosines - Trigonometry & Waves</a></li>
+                <li><a href="../04_trigonometry/polar_coordinates_and_curves/index.html" class="subtopic-tag-link">Polar Coordinates & Curves - Trigonometry & Waves</a></li>
+                <li><a href="../04_trigonometry/trig_equations/index.html" class="subtopic-tag-link">Trigonometric Equations - Trigonometry & Waves</a></li>
+                <li><a href="../05_calculus/chain_rule_and_transcendentals/index.html" class="subtopic-tag-link">Chain Rule & Transcendental Derivatives - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/fundamental_theorem_of_calculus/index.html" class="subtopic-tag-link">Fundamental Theorem of Calculus - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/gaussian_integrals/index.html" class="subtopic-tag-link">Gaussian Integration - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/integration_by_power_rule/index.html" class="subtopic-tag-link">Integration & Area Under Curves - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/integration_by_usubstitution/index.html" class="subtopic-tag-link">Integration by U-Substitution - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/limits_and_continuity/index.html" class="subtopic-tag-link">Limits & Continuity - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/power_rule/index.html" class="subtopic-tag-link">Power Rule & Derivatives - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/related_rates_and_optimization/index.html" class="subtopic-tag-link">Related Rates & Optimization - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/single_variable_integrals/index.html" class="subtopic-tag-link">Single Variable Integration - Calculus & Limits</a></li>
+                <li><a href="../06_data_science_statistics/advanced_regression_correlation/index.html" class="subtopic-tag-link">Advanced Regression & Correlation - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/data_preprocessing_normalization/index.html" class="subtopic-tag-link">Data Preprocessing & Normalization - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/frequency_tables_and_tally_charts/index.html" class="subtopic-tag-link">Frequency Tables & Tally Charts - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/line_plots_fractional_data/index.html" class="subtopic-tag-link">Line Plots with Fractional Data - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/measures_of_center/index.html" class="subtopic-tag-link">Measures of Center - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/probability_and_likelihood/index.html" class="subtopic-tag-link">Probability & Likelihood - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/probability_distributions/index.html" class="subtopic-tag-link">Probability Distributions - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/recording_data/index.html" class="subtopic-tag-link">Recording Data - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/statistical_inference_hypothesis_testing/index.html" class="subtopic-tag-link">Statistical Inference & Hypothesis Testing - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/time_series/index.html" class="subtopic-tag-link">Time Series Forecasting - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/trend_lines_and_linear_models/index.html" class="subtopic-tag-link">Trend Lines & Linear Models - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/two_way_tables_and_relative_frequency/index.html" class="subtopic-tag-link">Two-Way Tables & Relative Frequency - Data Science & Stats</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Fraction%20Simplification" data-clean-route="/?search=Fraction%20Simplification" class="tag-link">Fraction Simplification</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/simplifying_basic/index.html" class="subtopic-tag-link">Simplifying Basic Expressions - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Geometric%20Projections" data-clean-route="/?search=Geometric%20Projections" class="tag-link">Geometric Projections</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../01_arithmetic_number_sense/basic_operations/index.html" class="subtopic-tag-link">Basic Operations & Exponents - Arithmetic & Numbers</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Geometric%20Theorems" data-clean-route="/?search=Geometric%20Theorems" class="tag-link">Geometric Theorems</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../03_geometry_measurement/similarity_congruence/index.html" class="subtopic-tag-link">Similarity & Congruence - Geometry & Space</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Graph%20Mapping" data-clean-route="/?search=Graph%20Mapping" class="tag-link">Graph Mapping</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../06_data_science_statistics/combinatorics_counting/index.html" class="subtopic-tag-link">Combinatorics & Permutations - Data Science & Stats</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Identity%20%26%20Inverse%20Properties" data-clean-route="/?search=Identity%20%26%20Inverse%20Properties" class="tag-link">Identity & Inverse Properties</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/algebra_operations_and_properties/index.html" class="subtopic-tag-link">Algebraic Operations & Properties - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Identity%20Hub" data-clean-route="/?search=Identity%20Hub" class="tag-link">Identity Hub</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/algebraic_identities/index.html" class="subtopic-tag-link">Algebraic Identities - Mathematical Mastery</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Interactive%20Builder" data-clean-route="/?search=Interactive%20Builder" class="tag-link">Interactive Builder</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/algebriac_terms/index.html" class="subtopic-tag-link">Algebraic Terms & Expressions - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Interactive%20Console" data-clean-route="/?search=Interactive%20Console" class="tag-link">Interactive Console</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../07_computational_math/data_manipulation_and_dataframes/index.html" class="subtopic-tag-link">Data Manipulation & DataFrames - Computational Math</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Interactive%20Dimension%20scaling" data-clean-route="/?search=Interactive%20Dimension%20scaling" class="tag-link">Interactive Dimension scaling</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/extended_operations/index.html" class="subtopic-tag-link">Advanced Operations & Logarithms - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Interactive%20Graph" data-clean-route="/?search=Interactive%20Graph" class="tag-link">Interactive Graph</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/functions/index.html" class="subtopic-tag-link">Functions & Relations - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Interactive%20Grid" data-clean-route="/?search=Interactive%20Grid" class="tag-link">Interactive Grid</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../03_geometry_measurement/geometric_transformations/index.html" class="subtopic-tag-link">Geometric Transformations - Geometry & Space</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Interactive%20Physics" data-clean-route="/?search=Interactive%20Physics" class="tag-link">Interactive Physics</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../01_arithmetic_number_sense/negative_numbers/index.html" class="subtopic-tag-link">Negative Numbers & Directed Number Line - Arithmetic & Numbers</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Interactive%20Physics%20Game" data-clean-route="/?search=Interactive%20Physics%20Game" class="tag-link">Interactive Physics Game</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/quadratic_equations/index.html" class="subtopic-tag-link">Quadratic Equations & Parabolas - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Interactive%20Sandbox" data-clean-route="/?search=Interactive%20Sandbox" class="tag-link">Interactive Sandbox</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/discreminants/index.html" class="subtopic-tag-link">Discriminants & Root Character - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/quadratic_equations/index.html" class="subtopic-tag-link">Quadratic Equations & Parabolas - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/roots_relationships/index.html" class="subtopic-tag-link">Roots Relationships (Vieta's Formulas) - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/simplifying_using_quadratic_equations/index.html" class="subtopic-tag-link">Simplifying with Quadratic Equations - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/simultaneous_equations/index.html" class="subtopic-tag-link">Simultaneous Equations - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/slope/index.html" class="subtopic-tag-link">Introduction to Slope - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/standard_form/index.html" class="subtopic-tag-link">Standard Form - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/surds_and_indices/index.html" class="subtopic-tag-link">Surds & Indices - Algebraic Structures</a></li>
+                <li><a href="../04_trigonometry/eulers_identity/index.html" class="subtopic-tag-link">Euler's Formula & Identity - Trigonometry & Waves</a></li>
+                <li><a href="../04_trigonometry/inverse_trig_functions/index.html" class="subtopic-tag-link">Inverse Trigonometric Functions - Trigonometry & Waves</a></li>
+                <li><a href="../04_trigonometry/laws_of_sines_and_cosines/index.html" class="subtopic-tag-link">Laws of Sines & Cosines - Trigonometry & Waves</a></li>
+                <li><a href="../04_trigonometry/polar_coordinates_and_curves/index.html" class="subtopic-tag-link">Polar Coordinates & Curves - Trigonometry & Waves</a></li>
+                <li><a href="../04_trigonometry/trig_equations/index.html" class="subtopic-tag-link">Trigonometric Equations - Trigonometry & Waves</a></li>
+                <li><a href="../04_trigonometry/trig_graph_transformations/index.html" class="subtopic-tag-link">Trigonometric Graph Transformations - Curves & Waves</a></li>
+                <li><a href="../05_calculus/chain_rule_and_transcendentals/index.html" class="subtopic-tag-link">Chain Rule & Transcendental Derivatives - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/fundamental_theorem_of_calculus/index.html" class="subtopic-tag-link">Fundamental Theorem of Calculus - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/gaussian_integrals/index.html" class="subtopic-tag-link">Gaussian Integration - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/integration_by_power_rule/index.html" class="subtopic-tag-link">Integration & Area Under Curves - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/integration_by_usubstitution/index.html" class="subtopic-tag-link">Integration by U-Substitution - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/limits_and_continuity/index.html" class="subtopic-tag-link">Limits & Continuity - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/power_rule/index.html" class="subtopic-tag-link">Power Rule & Derivatives - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/related_rates_and_optimization/index.html" class="subtopic-tag-link">Related Rates & Optimization - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/single_variable_integrals/index.html" class="subtopic-tag-link">Single Variable Integration - Calculus & Limits</a></li>
+                <li><a href="../06_data_science_statistics/advanced_regression_correlation/index.html" class="subtopic-tag-link">Advanced Regression & Correlation - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/data_preprocessing_normalization/index.html" class="subtopic-tag-link">Data Preprocessing & Normalization - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/frequency_tables_and_tally_charts/index.html" class="subtopic-tag-link">Frequency Tables & Tally Charts - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/line_plots_fractional_data/index.html" class="subtopic-tag-link">Line Plots with Fractional Data - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/measures_of_center/index.html" class="subtopic-tag-link">Measures of Center - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/probability_and_likelihood/index.html" class="subtopic-tag-link">Probability & Likelihood - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/statistical_inference_hypothesis_testing/index.html" class="subtopic-tag-link">Statistical Inference & Hypothesis Testing - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/time_series/index.html" class="subtopic-tag-link">Time Series Forecasting - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/trend_lines_and_linear_models/index.html" class="subtopic-tag-link">Trend Lines & Linear Models - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/two_way_tables_and_relative_frequency/index.html" class="subtopic-tag-link">Two-Way Tables & Relative Frequency - Data Science & Stats</a></li>
+                <li><a href="../07_computational_math/algorithmic_sequences_and_recursion/index.html" class="subtopic-tag-link">Algorithmic Sequences & Recursion - Computational Math</a></li>
+                <li><a href="../07_computational_math/computational_algebra_and_matrices/index.html" class="subtopic-tag-link">Computational Algebra & Matrices - Computational Math</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Interactive%20Scale" data-clean-route="/?search=Interactive%20Scale" class="tag-link">Interactive Scale</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/equations/index.html" class="subtopic-tag-link">Introduction to Equations - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Interactive%20Shading" data-clean-route="/?search=Interactive%20Shading" class="tag-link">Interactive Shading</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../06_data_science_statistics/set_theory_venn/index.html" class="subtopic-tag-link">Set Theory & Venn Diagrams - Data Science & Stats</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Interactive%20Sonar" data-clean-route="/?search=Interactive%20Sonar" class="tag-link">Interactive Sonar</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../03_geometry_measurement/coordinate_plane_four_quadrants/index.html" class="subtopic-tag-link">Four-Quadrant Coordinate Plane - Geometry & Space</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Interactive%20Sorter" data-clean-route="/?search=Interactive%20Sorter" class="tag-link">Interactive Sorter</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/equations/index.html" class="subtopic-tag-link">Introduction to Equations - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Interactive%20Visualizer" data-clean-route="/?search=Interactive%20Visualizer" class="tag-link">Interactive Visualizer</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../01_arithmetic_number_sense/basic_operations/index.html" class="subtopic-tag-link">Basic Operations & Exponents - Arithmetic & Numbers</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Interactive%20Weight%20Balancer" data-clean-route="/?search=Interactive%20Weight%20Balancer" class="tag-link">Interactive Weight Balancer</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/inequalities/index.html" class="subtopic-tag-link">Inequalities & Balance Bridges - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Interactive%20Weight%20Model" data-clean-route="/?search=Interactive%20Weight%20Model" class="tag-link">Interactive Weight Model</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/linear_equations_one_var/index.html" class="subtopic-tag-link">Linear Equations One Var - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Interactive%20Widget" data-clean-route="/?search=Interactive%20Widget" class="tag-link">Interactive Widget</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../01_arithmetic_number_sense/fractions_unlike_denominators/index.html" class="subtopic-tag-link">Equivalent Fraction Splitter - Arithmetic & Numbers</a></li>
+                <li><a href="../01_arithmetic_number_sense/fraction_multiplication_division/index.html" class="subtopic-tag-link">Fraction Multiplication & Division - Arithmetic & Numbers</a></li>
+                <li><a href="../02_algebra/solving_linear_equations/index.html" class="subtopic-tag-link">Linear Equation Balancer - Algebraic Structures</a></li>
+                <li><a href="../07_computational_math/mathematical_visualization_with_code/index.html" class="subtopic-tag-link">Fourier Wave Composer - Computational Mathematics</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Introductory%20Anatomy" data-clean-route="/?search=Introductory%20Anatomy" class="tag-link">Introductory Anatomy</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/algebriac_terms/index.html" class="subtopic-tag-link">Algebraic Terms & Expressions - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Laws%20of%20Exponents" data-clean-route="/?search=Laws%20of%20Exponents" class="tag-link">Laws of Exponents</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/exponents_and_radicals/index.html" class="subtopic-tag-link">Exponents & Radicals - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Like%20Terms%20Combiner" data-clean-route="/?search=Like%20Terms%20Combiner" class="tag-link">Like Terms Combiner</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/algebriac_terms/index.html" class="subtopic-tag-link">Algebraic Terms & Expressions - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Magnet%20Barriers" data-clean-route="/?search=Magnet%20Barriers" class="tag-link">Magnet Barriers</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/rational_functions/index.html" class="subtopic-tag-link">Asymptotes & Rational Functions - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Mathematical%20Solver" data-clean-route="/?search=Mathematical%20Solver" class="tag-link">Mathematical Solver</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/quadratic_equations/index.html" class="subtopic-tag-link">Quadratic Equations & Parabolas - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Modular%20Congruence%20Clock" data-clean-route="/?search=Modular%20Congruence%20Clock" class="tag-link">Modular Congruence Clock</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/extended_operations/index.html" class="subtopic-tag-link">Advanced Operations & Logarithms - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Module%20Index" data-clean-route="/?search=Module%20Index" class="tag-link">Module Index</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/factoring_and_expansion/index.html" class="subtopic-tag-link">Factoring & Expansion - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Number%20Line%20Sandbox" data-clean-route="/?search=Number%20Line%20Sandbox" class="tag-link">Number Line Sandbox</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../01_arithmetic_number_sense/negative_numbers/index.html" class="subtopic-tag-link">Negative Numbers & Directed Number Line - Arithmetic & Numbers</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Numerical%20Expansion" data-clean-route="/?search=Numerical%20Expansion" class="tag-link">Numerical Expansion</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/factoring_and_expansion/index.html" class="subtopic-tag-link">Difference of Cubes - Factoring & Expansion</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Proportional%20Projection" data-clean-route="/?search=Proportional%20Projection" class="tag-link">Proportional Projection</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../03_geometry_measurement/similarity_congruence/index.html" class="subtopic-tag-link">Similarity & Congruence - Geometry & Space</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Radicals%20Dimensions" data-clean-route="/?search=Radicals%20Dimensions" class="tag-link">Radicals Dimensions</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/exponents_and_radicals/index.html" class="subtopic-tag-link">Exponents & Radicals - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Randomized%20Engine" data-clean-route="/?search=Randomized%20Engine" class="tag-link">Randomized Engine</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../07_computational_math/monte_carlo_simulations/index.html" class="subtopic-tag-link">Monte Carlo Simulations - Computational Math</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Safety%20Sandbox" data-clean-route="/?search=Safety%20Sandbox" class="tag-link">Safety Sandbox</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/inequalities/index.html" class="subtopic-tag-link">Inequalities & Balance Bridges - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Scale%20Simulator" data-clean-route="/?search=Scale%20Simulator" class="tag-link">Scale Simulator</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/fractional_equations/index.html" class="subtopic-tag-link">Fractional Equations - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Self%20Evaluation" data-clean-route="/?search=Self%20Evaluation" class="tag-link">Self Evaluation</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../01_arithmetic_number_sense/basic_operations/index.html" class="subtopic-tag-link">Basic Operations & Exponents - Arithmetic & Numbers</a></li>
+                <li><a href="../01_arithmetic_number_sense/negative_numbers/index.html" class="subtopic-tag-link">Negative Numbers & Directed Number Line - Arithmetic & Numbers</a></li>
+                <li><a href="../02_algebra/algebra_operations_and_properties/index.html" class="subtopic-tag-link">Algebraic Operations & Properties - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/algebriac_terms/index.html" class="subtopic-tag-link">Algebraic Terms & Expressions - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/equations/index.html" class="subtopic-tag-link">Introduction to Equations - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/exponents_and_radicals/index.html" class="subtopic-tag-link">Exponents & Radicals - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/extended_operations/index.html" class="subtopic-tag-link">Advanced Operations & Logarithms - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/inequalities/index.html" class="subtopic-tag-link">Inequalities & Balance Bridges - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/polynomial_families/index.html" class="subtopic-tag-link">Polynomial Families & Extrema - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/quadratic_equations/index.html" class="subtopic-tag-link">Quadratic Equations & Parabolas - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/rational_functions/index.html" class="subtopic-tag-link">Asymptotes & Rational Functions - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/simplifying_basic/index.html" class="subtopic-tag-link">Simplifying Basic Expressions - Algebraic Structures</a></li>
+                <li><a href="../02_algebra/slope/index.html" class="subtopic-tag-link">Introduction to Slope - Algebraic Structures</a></li>
+                <li><a href="../03_geometry_measurement/coordinate_plane_four_quadrants/index.html" class="subtopic-tag-link">Four-Quadrant Coordinate Plane - Geometry & Space</a></li>
+                <li><a href="../03_geometry_measurement/geometric_transformations/index.html" class="subtopic-tag-link">Geometric Transformations - Geometry & Space</a></li>
+                <li><a href="../03_geometry_measurement/similarity_congruence/index.html" class="subtopic-tag-link">Similarity & Congruence - Geometry & Space</a></li>
+                <li><a href="../04_trigonometry/trig_graph_transformations/index.html" class="subtopic-tag-link">Trigonometric Graph Transformations - Curves & Waves</a></li>
+                <li><a href="../05_calculus/sequences_series/index.html" class="subtopic-tag-link">Infinite Sequences & Series - Calculus & Limits</a></li>
+                <li><a href="../05_calculus/vectors_fields/index.html" class="subtopic-tag-link">Vector Geometry & Fields - Calculus & Limits</a></li>
+                <li><a href="../06_data_science_statistics/combinatorics_counting/index.html" class="subtopic-tag-link">Combinatorics & Permutations - Data Science & Stats</a></li>
+                <li><a href="../06_data_science_statistics/set_theory_venn/index.html" class="subtopic-tag-link">Set Theory & Venn Diagrams - Data Science & Stats</a></li>
+                <li><a href="../07_computational_math/algorithmic_sequences_and_recursion/index.html" class="subtopic-tag-link">Algorithmic Sequences & Recursion - Computational Math</a></li>
+                <li><a href="../07_computational_math/computational_algebra_and_matrices/index.html" class="subtopic-tag-link">Computational Algebra & Matrices - Computational Math</a></li>
+                <li><a href="../07_computational_math/data_manipulation_and_dataframes/index.html" class="subtopic-tag-link">Data Manipulation & DataFrames - Computational Math</a></li>
+                <li><a href="../07_computational_math/graph_theory_networks/index.html" class="subtopic-tag-link">Graph Theory & Networks - Computational Math</a></li>
+                <li><a href="../07_computational_math/monte_carlo_simulations/index.html" class="subtopic-tag-link">Monte Carlo Simulations - Computational Math</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Set%20Mapping" data-clean-route="/?search=Set%20Mapping" class="tag-link">Set Mapping</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/functions/index.html" class="subtopic-tag-link">Functions & Relations - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Spatial%20Properties" data-clean-route="/?search=Spatial%20Properties" class="tag-link">Spatial Properties</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../03_geometry_measurement/coordinate_plane_four_quadrants/index.html" class="subtopic-tag-link">Four-Quadrant Coordinate Plane - Geometry & Space</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Staircase%20Simulation" data-clean-route="/?search=Staircase%20Simulation" class="tag-link">Staircase Simulation</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/slope/index.html" class="subtopic-tag-link">Introduction to Slope - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Step-by-Step%20Solver" data-clean-route="/?search=Step-by-Step%20Solver" class="tag-link">Step-by-Step Solver</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/factoring_and_expansion/index.html" class="subtopic-tag-link">Quadratic Area Models - Factoring & Expansion</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Surd%20Operations" data-clean-route="/?search=Surd%20Operations" class="tag-link">Surd Operations</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../02_algebra/exponents_and_radicals/index.html" class="subtopic-tag-link">Exponents & Radicals - Algebraic Structures</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Syllabus%2001" data-clean-route="/?search=Syllabus%2001" class="tag-link">Syllabus 01</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../04_trigonometry/trignometric_identities/index.html" class="subtopic-tag-link">SOH CAH TOA & Unit Circle Relationship Explorer</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Syllabus%2002" data-clean-route="/?search=Syllabus%2002" class="tag-link">Syllabus 02</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../04_trigonometry/trignometric_identities/index.html" class="subtopic-tag-link">SOH CAH TOA & Unit Circle Relationship Explorer</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Syllabus%2003" data-clean-route="/?search=Syllabus%2003" class="tag-link">Syllabus 03</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../04_trigonometry/trignometric_identities/index.html" class="subtopic-tag-link">SOH CAH TOA & Unit Circle Relationship Explorer</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Syllabus%2004" data-clean-route="/?search=Syllabus%2004" class="tag-link">Syllabus 04</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../04_trigonometry/trignometric_identities/index.html" class="subtopic-tag-link">SOH CAH TOA & Unit Circle Relationship Explorer</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Syllabus%2005" data-clean-route="/?search=Syllabus%2005" class="tag-link">Syllabus 05</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../04_trigonometry/trignometric_identities/index.html" class="subtopic-tag-link">SOH CAH TOA & Unit Circle Relationship Explorer</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Trace%20Step%20Solver" data-clean-route="/?search=Trace%20Step%20Solver" class="tag-link">Trace Step Solver</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../07_computational_math/algorithmic_sequences_and_recursion/index.html" class="subtopic-tag-link">Algorithmic Sequences & Recursion - Computational Math</a></li>
+                <li><a href="../07_computational_math/computational_algebra_and_matrices/index.html" class="subtopic-tag-link">Computational Algebra & Matrices - Computational Math</a></li>
+                <li><a href="../07_computational_math/data_manipulation_and_dataframes/index.html" class="subtopic-tag-link">Data Manipulation & DataFrames - Computational Math</a></li>
+                <li><a href="../07_computational_math/monte_carlo_simulations/index.html" class="subtopic-tag-link">Monte Carlo Simulations - Computational Math</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Vault%20dial" data-clean-route="/?search=Vault%20dial" class="tag-link">Vault dial</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../06_data_science_statistics/combinatorics_counting/index.html" class="subtopic-tag-link">Combinatorics & Permutations - Data Science & Stats</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Vector%20Arrows" data-clean-route="/?search=Vector%20Arrows" class="tag-link">Vector Arrows</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../05_calculus/vectors_fields/index.html" class="subtopic-tag-link">Vector Geometry & Fields - Calculus & Limits</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Wave%20Physics" data-clean-route="/?search=Wave%20Physics" class="tag-link">Wave Physics</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../04_trigonometry/trig_graph_transformations/index.html" class="subtopic-tag-link">Trigonometric Graph Transformations - Curves & Waves</a></li>
+            </ul>
+        </div>
+        <div class="tag-card">
+            <h3 class="tag-title">
+                <a href="../../index.html?search=Zeno%27s%20Slices" data-clean-route="/?search=Zeno%27s%20Slices" class="tag-link">Zeno's Slices</a>
+            </h3>
+            <ul class="tag-subtopics">
+                        <li><a href="../05_calculus/sequences_series/index.html" class="subtopic-tag-link">Infinite Sequences & Series - Calculus & Limits</a></li>
+            </ul>
+        </div>
+        </div>
+    </div>
+
+    <footer>
+        play-math • Powered by HTML5 Canvas & CSS3<br>
+        Copyright (c) 2026: vatofichor - Sebastian Mass [>_<] <br>& Assisted By Gemini Antigravity /|    </footer>
+
+    <script>
+        function initializeTagsPage() {
+            const isLocalFile = window.location.protocol === 'file:';
+            const endsWithHtml = window.location.pathname.endsWith('.html');
+            const supportsRewriting = !isLocalFile && !endsWithHtml;
+
+            if (supportsRewriting) {
+                document.getElementById('btnBackHome').href = '/';
+                document.querySelectorAll('.tag-link').forEach(link => {
+                    const cleanRoute = link.getAttribute('data-clean-route');
+                    if (cleanRoute) {
+                        link.href = cleanRoute;
+                    }
+                });
+                
+                // Adjust subtopic links dynamically on server hosting
+                document.querySelectorAll('.subtopic-tag-link').forEach(link => {
+                    // Strip the leading "/content" or relative dots inside paths
+                    const path = link.getAttribute('href');
+                    if (path && path.includes('/content/')) {
+                        link.href = path.substring(path.indexOf('/content/') + 8);
+                    }
+                });
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', initializeTagsPage);
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|-->
