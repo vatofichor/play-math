@@ -1,0 +1,689 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Equations Two Var - Algebraic Structures</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "02_algebra",
+            logo: {"main":"Algebra","accent":"Lab","sub":"Linear Equations Two Var"},
+            navigation: [
+    {
+        "label": "Systems of Two Equations",
+        "desc": "Systems of Two Equations interactive section",
+        "href": "#overview"
+    },
+    {
+        "label": "Graphing Intersection Solver",
+        "desc": "Graphing Intersection Solver interactive section",
+        "href": "#graphing"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Algebra Domain / Rose Theme override */
+            --color-rose: #f43f5e;
+            --color-rose-glow: rgba(244, 63, 94, 0.35);
+            --color-accent: #f43f5e;
+            --color-accent-glow: rgba(244, 63, 94, 0.35);
+
+            --color-line1: #f43f5e; /* Rose for Line 1 */
+            --color-line2: #38bdf8; /* Cyan for Line 2 */
+            --color-inter: #10b981; /* Emerald for intersection */
+        }
+
+        /* Highlight active menu item */
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-rose) !important;
+            box-shadow: 0 4px 20px var(--color-rose-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-title {
+            color: var(--bg-color) !important;
+        }
+        .sidebar-drawer .syllabus-item.active a .syllabus-desc {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-rose);
+            background: rgba(244, 63, 94, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            text-shadow: 0 0 5px var(--color-rose-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        /* Status Banner */
+        .status-banner {
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .status-banner.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-banner.error {
+            background: rgba(244, 63, 94, 0.1);
+            color: #f43f5e;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+        }
+
+        .status-banner.info {
+            background: rgba(56, 189, 248, 0.1);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        /* Control Sliders */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-rose);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-rose-glow);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        /* Quiz styles */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .presets-grid-mini {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .btn-preset-mini {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-preset-mini:hover, .btn-preset-mini.active {
+            background: var(--color-rose);
+            color: var(--bg-color);
+            border-color: var(--color-rose);
+            box-shadow: 0 4px 10px var(--color-rose-glow);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Linear Equations (Two Variables)</h1>
+            <p>Understand systems of two linear equations in a 2D coordinate space. Learn to solve systems using graphing intersections and algebraic determinants (Cramer's Rule).</p>
+        </header>
+
+        <!-- SECTION 1: OVERVIEW -->
+        <section id="overview">
+            <div class="section-header">
+                <span class="section-tag">Algebra Core</span>
+                <h2>Systems of Two Equations</h2>
+            </div>
+            <p class="section-intro">
+                A **system of linear equations** consists of two or more equations with the same variables. Solving the system means finding values for $x$ and $y$ that satisfy both equations simultaneously.
+            </p>
+
+            <div class="workspace-grid">
+                <div class="panel">
+                    <h3>System Classifications</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom: 0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background-color: var(--color-inter);"></span>
+                                <strong>Consistent Independent</strong>: Lines intersect at exactly **one point**. The slopes are different.
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background-color: var(--color-line2);"></span>
+                                <strong>Consistent Dependent</strong>: Lines overlap completely (**infinite solutions**). Slopes and intercepts are identical.
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background-color: var(--color-line1);"></span>
+                                <strong>Inconsistent</strong>: Lines are parallel and never intersect (**no solution**). Slopes are equal, but intercepts differ.
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>Algebraic Methods</h3>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                        - **Substitution**: Solve one equation for one variable and substitute the result into the second equation.<br>
+                        - **Elimination**: Multiply one or both equations by constants so that adding them cancels out one variable.<br>
+                        - **Determinants (Cramer's Rule)**: Solve using ratio of coefficients matrices: $x = D_x/D$, $y = D_y/D$ (when determinant $D \neq 0$).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: GRAPHING -->
+        <section id="graphing" style="display: none;">
+            <div class="section-header">
+                <span class="section-tag">Coordinate Map</span>
+                <h2>Graphing Intersection Solver</h2>
+            </div>
+            <p class="section-intro">
+                Adjust coefficient sliders below to move the two lines. The coordinate system dynamically displays intersections and evaluates algebraic determinants.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Graph Canvas -->
+                <div class="panel">
+                    <div class="presets-grid-mini">
+                        <button class="btn-preset-mini active" id="presetIntersect">Intersecting</button>
+                        <button class="btn-preset-mini" id="presetParallel">Parallel</button>
+                        <button class="btn-preset-mini" id="presetCoincident">Coincident</button>
+                    </div>
+
+                    <div class="canvas-container" style="height: 350px;">
+                        <canvas id="graphCanvas"></canvas>
+                    </div>
+
+                    <div id="systemStatus" class="status-banner success">
+                        Unique Intersection at (1.00, 2.00).
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders & steps -->
+                <div class="panel">
+                    <!-- Equation 1 Controls -->
+                    <div class="math-card" style="border-left: 3px solid var(--color-line1); padding-left: 10px; margin-bottom: 1rem;">
+                        <h4 style="font-size:0.8rem; text-transform:uppercase; color:var(--text-muted);">Line 1 (Red)</h4>
+                        <div class="slider-group" style="gap:0.75rem; margin-top: 0.5rem; margin-bottom: 0;">
+                            <div class="slider-row">
+                                <div class="slider-label" style="font-size:0.75rem;">
+                                    <span>a₁ (x coeff) = <strong id="lblA1">1</strong></span>
+                                </div>
+                                <input type="range" id="slideA1" min="-5" max="5" step="1" value="1">
+                            </div>
+                            <div class="slider-row">
+                                <div class="slider-label" style="font-size:0.75rem;">
+                                    <span>b₁ (y coeff) = <strong id="lblB1">1</strong></span>
+                                </div>
+                                <input type="range" id="slideB1" min="-5" max="5" step="1" value="1">
+                            </div>
+                            <div class="slider-row">
+                                <div class="slider-label" style="font-size:0.75rem;">
+                                    <span>c₁ (constant) = <strong id="lblC1">3</strong></span>
+                                </div>
+                                <input type="range" id="slideC1" min="-10" max="10" step="1" value="3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Equation 2 Controls -->
+                    <div class="math-card" style="border-left: 3px solid var(--color-line2); padding-left: 10px; margin-bottom: 1rem;">
+                        <h4 style="font-size:0.8rem; text-transform:uppercase; color:var(--text-muted);">Line 2 (Blue)</h4>
+                        <div class="slider-group" style="gap:0.75rem; margin-top: 0.5rem; margin-bottom: 0;">
+                            <div class="slider-row">
+                                <div class="slider-label" style="font-size:0.75rem;">
+                                    <span>a₂ (x coeff) = <strong id="lblA2">-1</strong></span>
+                                </div>
+                                <input type="range" id="slideA2" min="-5" max="5" step="1" value="-1">
+                            </div>
+                            <div class="slider-row">
+                                <div class="slider-label" style="font-size:0.75rem;">
+                                    <span>b₂ (y coeff) = <strong id="lblB2">1</strong></span>
+                                </div>
+                                <input type="range" id="slideB2" min="-5" max="5" step="1" value="1">
+                            </div>
+                            <div class="slider-row">
+                                <div class="slider-label" style="font-size:0.75rem;">
+                                    <span>c₂ (constant) = <strong id="lblC2">1</strong></span>
+                                </div>
+                                <input type="range" id="slideC2" min="-10" max="10" step="1" value="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Solver math details -->
+                    <div class="formula-steps" id="solverSteps">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: QUIZ REMOVED -->
+    </main>
+
+    <script>
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Sidebar tabs toggling
+        const secOverview = document.getElementById('overview');
+        const secGraphing = document.getElementById('graphing');
+
+        // Sliders & controls
+        const slideA1 = document.getElementById('slideA1');
+        const slideB1 = document.getElementById('slideB1');
+        const slideC1 = document.getElementById('slideC1');
+        const slideA2 = document.getElementById('slideA2');
+        const slideB2 = document.getElementById('slideB2');
+        const slideC2 = document.getElementById('slideC2');
+
+        const lblA1 = document.getElementById('lblA1');
+        const lblB1 = document.getElementById('lblB1');
+        const lblC1 = document.getElementById('lblC1');
+        const lblA2 = document.getElementById('lblA2');
+        const lblB2 = document.getElementById('lblB2');
+        const lblC2 = document.getElementById('lblC2');
+
+        const systemStatus = document.getElementById('systemStatus');
+        const solverSteps = document.getElementById('solverSteps');
+
+        // Preset Buttons
+        const presetIntersect = document.getElementById('presetIntersect');
+        const presetParallel = document.getElementById('presetParallel');
+        const presetCoincident = document.getElementById('presetCoincident');
+
+        let a1 = 1, b1 = 1, c1 = 3;
+        let a2 = -1, b2 = 1, c2 = 1;
+
+        function setSliders(newA1, newB1, newC1, newA2, newB2, newC2) {
+            a1 = newA1; b1 = newB1; c1 = newC1;
+            a2 = newA2; b2 = newB2; c2 = newC2;
+
+            slideA1.value = a1; slideB1.value = b1; slideC1.value = c1;
+            slideA2.value = a2; slideB2.value = b2; slideC2.value = c2;
+
+            updateSystem();
+        }
+
+        presetIntersect.addEventListener('click', () => {
+            [presetIntersect, presetParallel, presetCoincident].forEach(b => b.classList.remove('active'));
+            presetIntersect.classList.add('active');
+            setSliders(1, 1, 3, -1, 1, 1);
+        });
+
+        presetParallel.addEventListener('click', () => {
+            [presetIntersect, presetParallel, presetCoincident].forEach(b => b.classList.remove('active'));
+            presetParallel.classList.add('active');
+            setSliders(1, -2, 2, 2, -4, -4);
+        });
+
+        presetCoincident.addEventListener('click', () => {
+            [presetIntersect, presetParallel, presetCoincident].forEach(b => b.classList.remove('active'));
+            presetCoincident.classList.add('active');
+            setSliders(1, 2, 3, 2, 4, 6);
+        });
+
+        function resizeCanvas() {
+            if (canvas.offsetParent === null) return;
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            drawGraph();
+        }
+
+        // Coordinate transforms
+        // Math x: [-10, 10], y: [-10, 10]
+        function graphToPixel(x, y) {
+            const margin = 20;
+            const w = canvas.width - 2 * margin;
+            const h = canvas.height - 2 * margin;
+            const px = margin + ((x + 10) / 20) * w;
+            const py = margin + ((10 - y) / 20) * h;
+            return { x: px, y: py };
+        }
+
+        function drawGraph() {
+            if (canvas.offsetParent === null) return;
+            const margin = 20;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.font = '9px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            for (let i = -10; i <= 10; i += 2) {
+                if (i === 0) continue;
+                let p1 = graphToPixel(i, 0);
+                ctx.beginPath();
+                ctx.moveTo(p1.x, margin);
+                ctx.lineTo(p1.x, canvas.height - margin);
+                ctx.stroke();
+                ctx.fillText(i, p1.x, canvas.height - margin + 12);
+
+                let p2 = graphToPixel(0, i);
+                ctx.beginPath();
+                ctx.moveTo(margin, p2.y);
+                ctx.lineTo(canvas.width - margin, p2.y);
+                ctx.stroke();
+                ctx.fillText(i, margin - 15, p2.y);
+            }
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.lineWidth = 1.5;
+            let center = graphToPixel(0,0);
+            
+            // X axis
+            ctx.beginPath();
+            ctx.moveTo(margin, center.y);
+            ctx.lineTo(canvas.width - margin, center.y);
+            ctx.stroke();
+
+            // Y axis
+            ctx.beginPath();
+            ctx.moveTo(center.x, margin);
+            ctx.lineTo(center.x, canvas.height - margin);
+            ctx.stroke();
+
+            // if b1 != 0 => y = (c1 - a1 x) / b1
+            // if b1 == 0 => x = c1 / a1 (vertical line)
+            ctx.lineWidth = 2;
+            
+            ctx.strokeStyle = 'rgba(244, 63, 94, 0.8)'; // Red
+            ctx.beginPath();
+            if (b1 !== 0) {
+                let p1 = graphToPixel(-10, (c1 - a1 * (-10)) / b1);
+                let p2 = graphToPixel(10, (c1 - a1 * 10) / b1);
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+            } else {
+                let p1 = graphToPixel(c1 / a1, -10);
+                let p2 = graphToPixel(c1 / a1, 10);
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+            }
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.8)'; // Blue
+            ctx.beginPath();
+            if (b2 !== 0) {
+                let p1 = graphToPixel(-10, (c2 - a2 * (-10)) / b2);
+                let p2 = graphToPixel(10, (c2 - a2 * 10) / b2);
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+            } else {
+                let p1 = graphToPixel(c2 / a2, -10);
+                let p2 = graphToPixel(c2 / a2, 10);
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+            }
+            ctx.stroke();
+
+            const det = a1 * b2 - a2 * b1;
+            if (det !== 0) {
+                const x = (c1 * b2 - c2 * b1) / det;
+                const y = (a1 * c2 - a2 * c1) / det;
+                if (x >= -10 && x <= 10 && y >= -10 && y <= 10) {
+                    let p = graphToPixel(x, y);
+                    ctx.fillStyle = '#10b981'; // Green
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 6, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        function updateSystem() {
+            lblA1.textContent = a1;
+            lblB1.textContent = b1;
+            lblC1.textContent = c1;
+            lblA2.textContent = a2;
+            lblB2.textContent = b2;
+            lblC2.textContent = c2;
+
+            // Algebraic determinants
+            const det = a1 * b2 - a2 * b1;
+            const detX = c1 * b2 - c2 * b1;
+            const detY = a1 * c2 - a2 * c1;
+
+            let html = `
+                <div><strong>1. Cramer's Rule Determinants:</strong></div>
+                <div style="margin-left: 10px; font-size: 0.8rem; color: var(--text-muted);">
+                    D = (a₁b₂ - a₂b₁) = (${a1}&middot;${b2}) - (${a2}&middot;${b1}) = ${det} <br>
+                    D_x = (c₁b₂ - c₂b₁) = (${c1}&middot;${b2}) - (${c2}&middot;${b1}) = ${detX} <br>
+                    D_y = (a₁c₂ - a₂c₁) = (${a1}&middot;${c2}) - (${a2}&middot;${c1}) = ${detY}
+                </div>
+                <br>
+                <div><strong>2. Evaluation Result:</strong></div>
+            `;
+
+            if (det !== 0) {
+                const x = detX / det;
+                const y = detY / det;
+                systemStatus.className = 'status-banner success';
+                systemStatus.textContent = `Unique Intersection at (${x.toFixed(2)}, ${y.toFixed(2)}).`;
+
+                html += `
+                    <div style="margin-left: 10px; color: var(--color-inter); font-weight: 700;">
+                        x = D_x / D = ${detX} / ${det} = ${x.toFixed(3)} <br>
+                        y = D_y / D = ${detY} / ${det} = ${y.toFixed(3)}
+                    </div>
+                `;
+            } else {
+                if (detX === 0 && detY === 0) {
+                    systemStatus.className = 'status-banner info';
+                    systemStatus.textContent = 'Lines Coincident (Infinite Solutions).';
+                    html += `
+                        <div style="margin-left: 10px; color: #38bdf8; font-weight: 700;">
+                            D = 0 and D_x = D_y = 0. The equations describe the exact same line.
+                        </div>
+                    `;
+                } else {
+                    systemStatus.className = 'status-banner error';
+                    systemStatus.textContent = 'Lines Parallel (No Solution).';
+                    html += `
+                        <div style="margin-left: 10px; color: #f43f5e; font-weight: 700;">
+                            D = 0 but D_x / D_y != 0. Parallel lines never cross.
+                        </div>
+                    `;
+                }
+            }
+
+            solverSteps.innerHTML = html;
+            drawGraph();
+        }
+
+        slideA1.addEventListener('input', (e) => { a1 = parseInt(e.target.value); updateSystem(); });
+        slideB1.addEventListener('input', (e) => { b1 = parseInt(e.target.value); updateSystem(); });
+        slideC1.addEventListener('input', (e) => { c1 = parseInt(e.target.value); updateSystem(); });
+        slideA2.addEventListener('input', (e) => { a2 = parseInt(e.target.value); updateSystem(); });
+        slideB2.addEventListener('input', (e) => { b2 = parseInt(e.target.value); updateSystem(); });
+        slideC2.addEventListener('input', (e) => { c2 = parseInt(e.target.value); updateSystem(); });
+
+        function handleHashRoute() {
+            const hash = window.location.hash || '#overview';
+            const sections = {
+                '#overview': secOverview,
+                '#graphing': secGraphing
+            };
+            
+            Object.keys(sections).forEach(key => {
+                if (key === hash) {
+                    sections[key].style.display = 'block';
+                } else {
+                    sections[key].style.display = 'none';
+                }
+            });
+            
+            document.querySelectorAll('.syllabus-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            const activeLink = document.querySelector(`.syllabus-item a[href*="${hash}"]`);
+            if (activeLink) {
+                activeLink.closest('.syllabus-item').classList.add('active');
+            }
+            
+            setTimeout(resizeCanvas, 50);
+        }
+
+        window.addEventListener('hashchange', handleHashRoute);
+        window.addEventListener('load', handleHashRoute);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvas, 300);
+            });
+
+            updateSystem();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

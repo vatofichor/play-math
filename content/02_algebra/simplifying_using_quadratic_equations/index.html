@@ -1,0 +1,1055 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simplifying with Quadratic Equations - Algebraic Structures</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "02_algebra",
+            logo: {"main":"Algebra","accent":"Lab","sub":"Simplifying with Quadratic Equations"},
+            navigation: [
+    {
+        "label": "Rational Function Plotter",
+        "desc": "Rational Function Plotter interactive section",
+        "href": "#visualizer"
+    },
+    {
+        "label": "Step-by-Step Factoring & Simplification",
+        "desc": "Step-by-Step Factoring & Simplification interactive section",
+        "href": "#step-solver"
+    },
+    {
+        "label": "Conceptual Quiz",
+        "desc": "Conceptual Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Algebra Rose Theme */
+            --color-rose: #f43f5e;
+            --color-rose-glow: rgba(244, 63, 94, 0.35);
+            --color-accent: #f43f5e;
+            --color-accent-glow: rgba(244, 63, 94, 0.35);
+
+            --color-num: #38bdf8; /* Cyan for Numerator */
+            --color-den: #ffb000; /* Amber for Denominator */
+            --color-hole: #a855f7; /* Purple for Holes */
+            --color-asymp: #f43f5e; /* Rose for Asymptotes */
+        }
+
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-rose) !important;
+            box-shadow: 0 4px 20px var(--color-rose-glow) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-rose);
+            background: rgba(244, 63, 94, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            text-shadow: 0 0 5px var(--color-rose-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            line-height: 1.8;
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row.coeff-num input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-num);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-num);
+        }
+        .slider-row.coeff-den input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-den);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-den);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .math-symbol {
+            font-style: italic;
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .canvas-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--text-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid var(--card-border);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .fraction-math {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            align-items: center;
+            padding: 0 4px;
+        }
+        .fraction-math span.top {
+            border-bottom: 1px solid var(--text-color);
+            padding-bottom: 2px;
+            text-align: center;
+        }
+        .fraction-math span.bottom {
+            padding-top: 2px;
+            text-align: center;
+        }
+        .strike {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Simplifying with Quadratic Equations</h1>
+            <p>Learn how to simplify rational algebraic fractions by factoring quadratic polynomials. Discover the difference between a **removable discontinuity (hole)** and an **infinite discontinuity (vertical asymptote)**.</p>
+        </header>
+
+        <!-- SECTION 1: DYNAMIC VISUALIZER -->
+        <section id="visualizer">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Rational Function Plotter</h2>
+            </div>
+            <p class="section-intro">
+                Load presets or adjust the roots of the numerator and denominator. Watch where holes form (common roots that cancel) and where asymptotes sit (roots remaining in the denominator).
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Graph Canvas -->
+                <div class="panel" style="position: relative;">
+                    <div class="canvas-label">Plot: y = N(x) / D(x)</div>
+                    <div class="canvas-container" style="height: 380px;">
+                        <canvas id="graphCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders, Presets and Live Equation -->
+                <div class="panel">
+                    <div class="presets-grid">
+                        <button class="btn-preset active" id="btnPreset1" onclick="loadPreset(2, 3, 2, -2, 'btnPreset1')">Preset 1 (Hole x=2)</button>
+                        <button class="btn-preset" id="btnPreset2" onclick="loadPreset(3, -2, 3, 1, 'btnPreset2')">Preset 2 (Hole x=3)</button>
+                        <button class="btn-preset" id="btnPreset3" onclick="loadPreset(3, -3, -2, -3, 'btnPreset3')">Preset 3 (Hole x=-3)</button>
+                    </div>
+
+                    <div class="math-card">
+                        <h3>Active Rational Function</h3>
+                        <div class="equation-box" id="eqDisplay">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Sliders for Roots -->
+                    <div class="slider-group">
+                        <h4 style="color:var(--color-num); border-bottom:1px solid rgba(56,189,248,0.1); padding-bottom:4px;">Numerator Roots</h4>
+                        <div class="slider-row coeff-num">
+                            <div class="slider-label">
+                                <span>Root 1 (<span class="math-symbol">n₁</span>)</span>
+                                <span class="number" id="lblN1">2.0</span>
+                            </div>
+                            <input type="range" id="slideN1" min="-5.0" max="5.0" step="1.0" value="2.0">
+                        </div>
+                        <div class="slider-row coeff-num">
+                            <div class="slider-label">
+                                <span>Root 2 (<span class="math-symbol">n₂</span>)</span>
+                                <span class="number" id="lblN2">3.0</span>
+                            </div>
+                            <input type="range" id="slideN2" min="-5.0" max="5.0" step="1.0" value="3.0">
+                        </div>
+
+                        <h4 style="color:var(--color-den); border-bottom:1px solid rgba(255,176,0,0.1); padding-bottom:4px; margin-top:0.5rem;">Denominator Roots</h4>
+                        <div class="slider-row coeff-den">
+                            <div class="slider-label">
+                                <span>Root 1 (<span class="math-symbol">d₁</span>)</span>
+                                <span class="number" id="lblD1">2.0</span>
+                            </div>
+                            <input type="range" id="slideD1" min="-5.0" max="5.0" step="1.0" value="2.0">
+                        </div>
+                        <div class="slider-row coeff-den">
+                            <div class="slider-label">
+                                <span>Root 2 (<span class="math-symbol">d₂</span>)</span>
+                                <span class="number" id="lblD2">-2.0</span>
+                            </div>
+                            <input type="range" id="slideD2" min="-5.0" max="5.0" step="1.0" value="-2.0">
+                        </div>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>A purple circle indicates a hole (removable point), and a dashed red line represents a vertical asymptote.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: STEP-BY-STEP SOLVER -->
+        <section id="step-solver">
+            <div class="section-header">
+                <span class="section-tag">Algebraic Solver</span>
+                <h2>Step-by-Step Factoring & Simplification</h2>
+            </div>
+            <p class="section-intro">
+                Trace how factoring the trinomials reveals common factors that cancel, and how we classify the remaining constraints.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Calculation Steps -->
+                <div class="panel">
+                    <h3>Algebraic Simplification</h3>
+                    <br>
+                    <div class="formula-steps" id="solveSteps">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Right Panel: Discontinuity Status -->
+                <div class="panel">
+                    <h3>Discontinuities Analysis</h3>
+                    <br>
+                    <div class="math-card" style="border-color: rgba(168, 85, 247, 0.15);">
+                        <h3>Removable Discontinuities (Holes)</h3>
+                        <p style="font-size: 0.9rem; line-height: 1.5; color: var(--text-color);" id="holesAnalysisText">
+                            None.
+                        </p>
+                    </div>
+
+                    <div class="math-card" style="border-color: rgba(244, 63, 94, 0.15);">
+                        <h3>Vertical Asymptotes</h3>
+                        <p style="font-size: 0.9rem; line-height: 1.5; color: var(--text-color);" id="asympAnalysisText">
+                            None.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Conceptual Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Test your understanding of simplifying rational expressions and identifying holes/asymptotes.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Question Board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">If the rational function f(x) = (x-3)(x+1) / (x-3)(x-2) is simplified, what exists at x = 3?</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text goes here...</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Cheatsheet -->
+                <div class="panel" id="quizStatsPanel">
+                    <h3>Rational Rules Summary</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom: 0; list-style: none; display: flex; flex-direction: column; gap: 10px;">
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-num); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-num);"></span>
+                            <span>Factor trinomials to find linear root terms.</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-hole); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-hole);"></span>
+                            <span>Hole: Forms at x = a if (x-a) cancels out.</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-asymp); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-asymp);"></span>
+                            <span>Asymptote: Forms at x = a if (x-a) remains in denominator.</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-rose); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-rose-glow);"></span>
+                            <span>Hole values: Evaluate simplified form at x = hole.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Sliders
+        const slideN1 = document.getElementById('slideN1');
+        const slideN2 = document.getElementById('slideN2');
+        const slideD1 = document.getElementById('slideD1');
+        const slideD2 = document.getElementById('slideD2');
+
+        const lblN1 = document.getElementById('lblN1');
+        const lblN2 = document.getElementById('lblN2');
+        const lblD1 = document.getElementById('lblD1');
+        const lblD2 = document.getElementById('lblD2');
+
+        const eqDisplay = document.getElementById('eqDisplay');
+        const solveSteps = document.getElementById('solveSteps');
+        const holesAnalysisText = document.getElementById('holesAnalysisText');
+        const asympAnalysisText = document.getElementById('asympAnalysisText');
+
+        // Roots state
+        let n1 = 2.0;
+        let n2 = 3.0;
+        let d1 = 2.0;
+        let d2 = -2.0;
+
+        function loadPreset(pn1, pn2, pd1, pd2, btnId) {
+            n1 = pn1;
+            n2 = pn2;
+            d1 = pd1;
+            d2 = pd2;
+
+            slideN1.value = n1;
+            slideN2.value = n2;
+            slideD1.value = d1;
+            slideD2.value = d2;
+
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+            document.getElementById(btnId).classList.add('active');
+
+            updateAll();
+        }
+
+        function resizeCanvases() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            drawAll();
+        }
+
+        // Coordinate Conversions (Math range x: [-8, 8], y: [-8, 8])
+        function toPixel(gx, gy) {
+            const margin = 35;
+            const w = canvas.width - 2 * margin;
+            const h = canvas.height - 2 * margin;
+            const px = margin + ((gx + 8) / 16) * w;
+            const py = margin + ((8 - gy) / 16) * h;
+            return { x: px, y: py };
+        }
+
+        function toGraph(px, py) {
+            const margin = 35;
+            const w = canvas.width - 2 * margin;
+            const h = canvas.height - 2 * margin;
+            const gx = -8 + ((px - margin) / w) * 16;
+            const gy = 8 - ((py - margin) / h) * 16;
+            return { x: gx, y: gy };
+        }
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const margin = 35;
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.font = '9px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+
+            for (let i = -8; i <= 8; i++) {
+                if (i === 0) continue;
+                let p1 = toPixel(i, 0);
+                ctx.beginPath();
+                ctx.moveTo(p1.x, margin);
+                ctx.lineTo(p1.x, canvas.height - margin);
+                ctx.stroke();
+                ctx.fillText(i, p1.x, canvas.height - margin + 12);
+
+                let p2 = toPixel(0, i);
+                ctx.beginPath();
+                ctx.moveTo(margin, p2.y);
+                ctx.lineTo(canvas.width - margin, p2.y);
+                ctx.stroke();
+                ctx.fillText(i, margin - 15, p2.y);
+            }
+
+            // Primary Axes
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 1.5;
+            let center = toPixel(0, 0);
+
+            ctx.beginPath();
+            ctx.moveTo(margin, center.y);
+            ctx.lineTo(canvas.width - margin, center.y);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(center.x, margin);
+            ctx.lineTo(center.x, canvas.height - margin);
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.font = '10px JetBrains Mono';
+            ctx.fillText('x', canvas.width - margin + 15, center.y);
+            ctx.fillText('y', center.x, margin - 12);
+        }
+
+        function drawAll() {
+            drawGrid();
+
+            // Evaluate simplification, holes and asymptotes
+            const analysis = analyzeSimplification();
+
+            ctx.strokeStyle = 'rgba(244, 63, 94, 0.5)';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            analysis.asymptotes.forEach(a => {
+                let p = toPixel(a, 0);
+                ctx.beginPath();
+                ctx.moveTo(p.x, 35);
+                ctx.lineTo(p.x, canvas.height - 35);
+                ctx.stroke();
+
+                ctx.fillStyle = '#f43f5e';
+                ctx.font = '8px JetBrains Mono';
+                ctx.fillText(`x=${a}`, p.x + 15, 45);
+            });
+            ctx.setLineDash([]);
+
+            ctx.strokeStyle = 'var(--color-rose)';
+            ctx.lineWidth = 2.5;
+
+            // To do this cleanly, sort asymptotes
+            const sortedAsymp = [...analysis.asymptotes].sort((a, b) => a - b);
+
+            function evalY(x) {
+                if (analysis.asymptotes.includes(x) || analysis.holes.some(h => h.x === x)) {
+                    return null;
+                }
+                const num = (x - n1) * (x - n2);
+                const den = (x - d1) * (x - d2);
+                if (Math.abs(den) < 1e-5) return null;
+                return num / den;
+            }
+
+            let xMin = -8.0;
+            let xMax = 8.0;
+            let step = 0.02;
+
+            let segments = [];
+            let currentSegment = [];
+
+            for (let x = xMin; x <= xMax; x += step) {
+                let nearAsymp = false;
+                for (let a of sortedAsymp) {
+                    if (Math.abs(x - a) < 0.1) {
+                        nearAsymp = true;
+                        break;
+                    }
+                }
+
+                if (nearAsymp) {
+                    if (currentSegment.length > 0) {
+                        segments.push(currentSegment);
+                        currentSegment = [];
+                    }
+                } else {
+                    let y = evalY(x);
+                    if (y !== null && y >= -15 && y <= 15) {
+                        currentSegment.push({ x, y });
+                    } else {
+                        if (currentSegment.length > 0) {
+                            segments.push(currentSegment);
+                            currentSegment = [];
+                        }
+                    }
+                }
+            }
+            if (currentSegment.length > 0) {
+                segments.push(currentSegment);
+            }
+
+            segments.forEach(seg => {
+                if (seg.length < 2) return;
+                ctx.beginPath();
+                let pStart = toPixel(seg[0].x, seg[0].y);
+                ctx.moveTo(pStart.x, pStart.y);
+                for (let i = 1; i < seg.length; i++) {
+                    let p = toPixel(seg[i].x, seg[i].y);
+                    // Prevent crazy jumping
+                    if (Math.abs(p.y - toPixel(seg[i-1].x, seg[i-1].y).y) < 150) {
+                        ctx.lineTo(p.x, p.y);
+                    } else {
+                        ctx.stroke();
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                    }
+                }
+                ctx.stroke();
+            });
+
+            analysis.holes.forEach(h => {
+                if (h.x >= -8 && h.x <= 8 && h.y >= -8 && h.y <= 8) {
+                    let p = toPixel(h.x, h.y);
+                    ctx.fillStyle = '#08090d'; // body background color
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 6, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    ctx.strokeStyle = '#a855f7'; // hole theme color
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 5, 0, 2 * Math.PI);
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#a855f7';
+                    ctx.font = 'bold 9px JetBrains Mono';
+                    ctx.fillText(`Hole (${h.x}, ${h.y.toFixed(2)})`, p.x, p.y - 12);
+                }
+            });
+        }
+
+        // Mathematical Simplification Analysis
+        function analyzeSimplification() {
+            // Numerator factors: (x - n1), (x - n2)
+            // Denominator factors: (x - d1), (x - d2)
+            let holes = [];
+            let asymptotes = [];
+
+            // We cancel matching factors. Let's do this systematically
+            let numRoots = [n1, n2];
+            let denRoots = [d1, d2];
+
+            let canceledNum = [false, false];
+            let canceledDen = [false, false];
+
+            // Match numerator roots to denominator roots
+            for (let i = 0; i < 2; i++) {
+                for (let j = 0; j < 2; j++) {
+                    if (!canceledNum[i] && !canceledDen[j] && numRoots[i] === denRoots[j]) {
+                        canceledNum[i] = true;
+                        canceledDen[j] = true;
+                    }
+                }
+            }
+
+            // Canceled terms are holes
+            for (let i = 0; i < 2; i++) {
+                if (canceledNum[i]) {
+                    const holeX = numRoots[i];
+                    // To find hole Y, evaluate simplified expression at x = holeX
+                    let simplifiedNum = 1;
+                    let simplifiedDen = 1;
+                    let numActive = [];
+                    let denActive = [];
+
+                    for (let k = 0; k < 2; k++) {
+                        if (k !== i) numActive.push(numRoots[k]);
+                    }
+                    // Since it matched, find which denominator index it canceled
+                    let canceledDenIdx = -1;
+                    for (let j = 0; j < 2; j++) {
+                        if (denRoots[j] === holeX && !denActive.includes(j)) {
+                            canceledDenIdx = j;
+                            break;
+                        }
+                    }
+                    for (let k = 0; k < 2; k++) {
+                        if (k !== canceledDenIdx) denActive.push(denRoots[k]);
+                    }
+
+                    // Evaluate at holeX
+                    numActive.forEach(r => simplifiedNum *= (holeX - r));
+                    denActive.forEach(r => simplifiedDen *= (holeX - r));
+
+                    let holeY = simplifiedDen !== 0 ? simplifiedNum / simplifiedDen : null;
+                    if (holeY !== null) {
+                        if (!holes.some(h => h.x === holeX)) {
+                            holes.push({ x: holeX, y: holeY });
+                        }
+                    }
+                }
+            }
+
+            // Remaining denominator roots are vertical asymptotes
+            for (let j = 0; j < 2; j++) {
+                if (!canceledDen[j]) {
+                    const asympX = denRoots[j];
+                    if (!asymptotes.includes(asympX)) {
+                        asymptotes.push(asympX);
+                    }
+                }
+            }
+
+            return { holes, asymptotes, numRoots, denRoots, canceledNum, canceledDen };
+        }
+
+        function updateSolver() {
+            lblN1.textContent = n1.toFixed(1);
+            lblN2.textContent = n2.toFixed(1);
+            lblD1.textContent = d1.toFixed(1);
+            lblD2.textContent = d2.toFixed(1);
+
+            slideN1.value = n1;
+            slideN2.value = n2;
+            slideD1.value = d1;
+            slideD2.value = d2;
+
+            // Expand numerator & denominator quadratic forms
+            // N(x) = (x-n1)(x-n2) = x^2 - (n1+n2)x + n1*n2
+            // D(x) = (x-d1)(x-d2) = x^2 - (d1+d2)x + d1*d2
+            const sumN = n1 + n2;
+            const prodN = n1 * n2;
+            const sumD = d1 + d2;
+            const prodD = d1 * d2;
+
+            const signNumB = -sumN >= 0 ? '+' : '-';
+            const valNumB = Math.abs(-sumN).toFixed(1);
+            const signNumC = prodN >= 0 ? '+' : '-';
+            const valNumC = Math.abs(prodN).toFixed(1);
+
+            const signDenB = -sumD >= 0 ? '+' : '-';
+            const valDenB = Math.abs(-sumD).toFixed(1);
+            const signDenC = prodD >= 0 ? '+' : '-';
+            const valDenC = Math.abs(prodD).toFixed(1);
+
+            // Rational layout
+            eqDisplay.innerHTML = `
+                <div class="fraction-math">
+                    <span class="top">y = x² ${signNumB} ${valNumB}x ${signNumC} ${valNumC}</span>
+                    <span class="bottom">x² ${signDenB} ${valDenB}x ${signDenC} ${valDenC}</span>
+                </div>
+            `;
+
+            const analysis = analyzeSimplification();
+
+            // Display step solving
+            let htmlSteps = '';
+            
+            // Step 1: factored form
+            htmlSteps += `
+                <div><strong>1. Factor Trinomials into Binomial Roots Form:</strong></div>
+                <div style="margin-left: 10px; margin-top: 5px; margin-bottom: 15px;">
+                    f(x) = 
+                    <div class="fraction-math">
+                        <span class="top">(x ${n1 >= 0 ? '-' : '+'} ${Math.abs(n1).toFixed(1)})(x ${n2 >= 0 ? '-' : '+'} ${Math.abs(n2).toFixed(1)})</span>
+                        <span class="bottom">(x ${d1 >= 0 ? '-' : '+'} ${Math.abs(d1).toFixed(1)})(x ${d2 >= 0 ? '-' : '+'} ${Math.abs(d2).toFixed(1)})</span>
+                    </div>
+                </div>
+            `;
+
+            // Step 2: Show cancellation
+            let topHTML = '';
+            let botHTML = '';
+
+            let termN1 = `(x ${n1 >= 0 ? '-' : '+'} ${Math.abs(n1).toFixed(1)})`;
+            let termN2 = `(x ${n2 >= 0 ? '-' : '+'} ${Math.abs(n2).toFixed(1)})`;
+            let termD1 = `(x ${d1 >= 0 ? '-' : '+'} ${Math.abs(d1).toFixed(1)})`;
+            let termD2 = `(x ${d2 >= 0 ? '-' : '+'} ${Math.abs(d2).toFixed(1)})`;
+
+            if (analysis.canceledNum[0]) termN1 = `<span class="strike" style="color:var(--color-hole);">${termN1}</span>`;
+            if (analysis.canceledNum[1]) termN2 = `<span class="strike" style="color:var(--color-hole);">${termN2}</span>`;
+            if (analysis.canceledDen[0]) termD1 = `<span class="strike" style="color:var(--color-hole);">${termD1}</span>`;
+            if (analysis.canceledDen[1]) termD2 = `<span class="strike" style="color:var(--color-hole);">${termD2}</span>`;
+
+            htmlSteps += `
+                <div><strong>2. Cancel Matching Binomial Factors:</strong></div>
+                <div style="margin-left: 10px; margin-top: 5px; margin-bottom: 15px;">
+                    f(x) = 
+                    <div class="fraction-math">
+                        <span class="top">${termN1}${termN2}</span>
+                        <span class="bottom">${termD1}${termD2}</span>
+                    </div>
+                </div>
+            `;
+
+            // Step 3: Simplified expression
+            let simplNumParts = [];
+            let simplDenParts = [];
+            if (!analysis.canceledNum[0]) simplNumParts.push(`(x ${n1 >= 0 ? '-' : '+'} ${Math.abs(n1).toFixed(1)})`);
+            if (!analysis.canceledNum[1]) simplNumParts.push(`(x ${n2 >= 0 ? '-' : '+'} ${Math.abs(n2).toFixed(1)})`);
+            if (!analysis.canceledDen[0]) simplDenParts.push(`(x ${d1 >= 0 ? '-' : '+'} ${Math.abs(d1).toFixed(1)})`);
+            if (!analysis.canceledDen[1]) simplDenParts.push(`(x ${d2 >= 0 ? '-' : '+'} ${Math.abs(d2).toFixed(1)})`);
+
+            let simplifiedNumStr = simplNumParts.join('') || '1';
+            let simplifiedDenStr = simplDenParts.join('') || '1';
+
+            htmlSteps += `
+                <div><strong>3. Final Simplified Form:</strong></div>
+                <div style="margin-left: 10px; margin-top: 5px; font-weight:700; color:var(--color-rose);">
+                    f(x) = 
+                    <div class="fraction-math">
+                        <span class="top">${simplifiedNumStr}</span>
+                        <span class="bottom">${simplifiedDenStr}</span>
+                    </div>
+                    <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal; margin-left:10px;">
+                        (Domain constraints: ${analysis.holes.length > 0 ? 'x &ne; ' + analysis.numRoots[analysis.canceledNum.indexOf(true)].toFixed(1) : ''}
+                        ${analysis.asymptotes.length > 0 ? ', x &ne; ' + analysis.asymptotes.map(a=>a.toFixed(1)).join(', ') : ''})
+                    </span>
+                </div>
+            `;
+
+            solveSteps.innerHTML = htmlSteps;
+
+            if (analysis.holes.length > 0) {
+                holesAnalysisText.innerHTML = analysis.holes.map(h => `
+                    &bull; A removable hole exists at <strong>x = ${h.x.toFixed(1)}</strong> because the binomial term cancelled. <br>
+                    Coordinates: <strong>(${h.x.toFixed(1)}, ${h.y.toFixed(2)})</strong>
+                `).join('<br><br>');
+            } else {
+                holesAnalysisText.innerHTML = "No matching binomial terms canceled. Therefore, the function has no removable discontinuities (holes).";
+            }
+
+            if (analysis.asymptotes.length > 0) {
+                asympAnalysisText.innerHTML = analysis.asymptotes.map(a => `
+                    &bull; An infinite discontinuity (vertical asymptote) sits at <strong>x = ${a.toFixed(1)}</strong> where the denominator evaluates to zero.
+                `).join('<br><br>');
+            } else {
+                asympAnalysisText.innerHTML = "No infinite vertical asymptotes exist. The denominator does not have roots that remain after cancellation (or the expression simplifies to a flat polynomial).";
+            }
+        }
+
+        function updateAll() {
+            updateSolver();
+            drawAll();
+        }
+
+        slideN1.addEventListener('input', (e) => {
+            n1 = parseFloat(e.target.value);
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+            updateAll();
+        });
+        slideN2.addEventListener('input', (e) => {
+            n2 = parseFloat(e.target.value);
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+            updateAll();
+        });
+        slideD1.addEventListener('input', (e) => {
+            d1 = parseFloat(e.target.value);
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+            updateAll();
+        });
+        slideD2.addEventListener('input', (e) => {
+            d2 = parseFloat(e.target.value);
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+            updateAll();
+        });
+
+        // Quiz State & Data
+        const quizQuestions = [
+            {
+                question: "If a rational equation simplifies to f(x) = (x-2)(x-3) / (x-2)(x+2) = (x-3) / (x+2), what discontinuity exists at x = 2?",
+                options: [
+                    "A vertical asymptote",
+                    "A removable hole",
+                    "A horizontal asymptote",
+                    "No discontinuity exists"
+                ],
+                correct: 1,
+                explanation: "Because the factor (x-2) is common to both the numerator and denominator, it cancels out, producing a removable discontinuity (hole) at x = 2."
+            },
+            {
+                question: "Using the same equation f(x) = (x-3)/(x+2), what discontinuity occurs at x = -2?",
+                options: [
+                    "A vertical asymptote",
+                    "A removable hole",
+                    "A coordinate jump",
+                    "The graph crosses the axis smoothly"
+                ],
+                correct: 0,
+                explanation: "The factor (x+2) remains in the denominator. When x = -2, we are dividing by zero, which results in y shooting to infinity, forming a vertical asymptote."
+            },
+            {
+                question: "What are the coordinates of the hole for f(x) = (x² - x - 6) / (x² - 4x + 3)? Note: numerator is (x-3)(x+2) and denominator is (x-3)(x-1).",
+                options: [
+                    "Hole at (3, 2.5)",
+                    "Hole at (-2, 0)",
+                    "Hole at (1, undefined)",
+                    "Hole at (3, 0)"
+                ],
+                correct: 0,
+                explanation: "Factor: f(x) = (x-3)(x+2) / [(x-3)(x-1)]. The hole is at x = 3. Substitute x = 3 into simplified version (x+2)/(x-1) = (3+2)/(3-1) = 5/2 = 2.5. Thus, the hole is at (3, 2.5)."
+            },
+            {
+                question: "If a rational function has numerator roots at {2, 5} and denominator roots at {5, 7}, where does the vertical asymptote reside?",
+                options: [
+                    "At x = 2",
+                    "At x = 5",
+                    "At x = 7",
+                    "At x = 5 and x = 7"
+                ],
+                correct: 2,
+                explanation: "The root x = 5 cancels out (forming a hole). The root x = 7 remains only in the denominator, which forms a vertical asymptote at x = 7."
+            },
+            {
+                question: "Simplify the rational expression: (x² + 5x + 6) / (x² - 9).",
+                options: [
+                    "(x + 2) / (x - 3)",
+                    "(x + 2) / (x + 3)",
+                    "(x - 2) / (x - 3)",
+                    "1 / (x - 3)"
+                ],
+                correct: 0,
+                explanation: "Factor: (x+2)(x+3) / [(x-3)(x+3)]. The factor (x+3) cancels, leaving the simplified expression (x+2) / (x-3)."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-rose); box-shadow:0 4px 15px var(--color-rose-glow);">
+                        Restart Quiz Evaluation
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function() {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvases, 300);
+            });
+            updateAll();
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

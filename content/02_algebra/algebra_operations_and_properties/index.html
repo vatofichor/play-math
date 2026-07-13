@@ -1,0 +1,1627 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algebraic Operations & Properties - Algebraic Structures</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "02_algebra",
+            logo: {"main":"Algebra","accent":"Lab","sub":"Algebraic Operations & Properties"},
+            navigation: [
+    {
+        "label": "Commutative Sandbox",
+        "desc": "Commutative Sandbox interactive section",
+        "href": "#commutative"
+    },
+    {
+        "label": "Associative Sandbox",
+        "desc": "Associative Sandbox interactive section",
+        "href": "#associative"
+    },
+    {
+        "label": "Distributive Area Sandbox",
+        "desc": "Distributive Area Sandbox interactive section",
+        "href": "#distributive"
+    },
+    {
+        "label": "Identity & Inverse Sandbox",
+        "desc": "Identity & Inverse Sandbox interactive section",
+        "href": "#identityInverse"
+    },
+    {
+        "label": "Conceptual Quiz",
+        "desc": "Conceptual Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Algebra Domain / Rose Theme override */
+            --color-rose: #f43f5e;
+            --color-rose-glow: rgba(244, 63, 94, 0.35);
+            --color-accent: #f43f5e;
+            --color-accent-glow: rgba(244, 63, 94, 0.35);
+
+            --color-a: #f43f5e;     /* Rose for operand A */
+            --color-b: #38bdf8;     /* Cyan for operand B */
+            --color-c: #a855f7;     /* Purple for operand C */
+            --color-neutral: #e2e8f0;
+        }
+
+        /* Highlight classes on sidebar active menu for Algebra Domain */
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-rose) !important;
+            box-shadow: 0 4px 20px var(--color-rose-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-title {
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-desc {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-rose);
+            background: rgba(244, 63, 94, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            text-shadow: 0 0 5px var(--color-rose-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        /* Control Tab Bar */
+        .form-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+        }
+
+        .form-tab {
+            flex: 1;
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
+            padding: 0.6rem;
+            border-radius: 8px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .form-tab.active {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--color-rose);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        /* Control Sliders */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-rose);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-rose-glow);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        /* Animation Trigger Button */
+        .btn-action {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(244, 63, 94, 0.1);
+            color: var(--color-rose);
+            border: 1px solid rgba(244, 63, 94, 0.25);
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-action:hover {
+            background: var(--color-rose);
+            color: #000000;
+            box-shadow: 0 4px 15px var(--color-rose-glow);
+            transform: translateY(-1px);
+        }
+
+        /* Quiz layout rules */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .quiz-score-overlay {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1
+                style="background: linear-gradient(135deg, #ffffff 30%, var(--color-rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Algebraic Operations & Properties</h1>
+            <p>Master the properties governing mathematical operations. Explore visually why numbers can swap order, group independently, distribute across addition, and pair up to annihilate.</p>
+        </header>
+
+        <!-- SECTION 1: COMMUTATIVE PROPERTY -->
+        <section id="commutative">
+            <div class="section-header">
+                <span class="section-tag">Commutative Property</span>
+                <h2>Commutative Sandbox</h2>
+            </div>
+            <p class="section-intro">
+                The **Commutative Property** states that order does not affect the outcome. For addition: <span class="math-symbol">a + b = b + a</span>. For multiplication: <span class="math-symbol">a &middot; b = b &middot; a</span>. Swap the orders below and watch the blocks adapt!
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Canvas -->
+                <div class="panel">
+                    <div class="form-tabs">
+                        <button class="form-tab active" id="btnCommAdd">Addition (+)</button>
+                        <button class="form-tab" id="btnCommMul">Multiplication (&times;)</button>
+                    </div>
+
+                    <div class="canvas-container" style="height: 340px;">
+                        <canvas id="commutativeCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders & Actions -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Commutative Expression</h3>
+                        <div class="equation-box" id="commEqDisplay" style="color:var(--color-a);">
+                            5 + 3 = 3 + 5
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Operand <span class="math-symbol" style="color:var(--color-a); font-weight:700;">a</span></span>
+                                <span class="number" id="lblCommA">5</span>
+                            </div>
+                            <input type="range" id="slideCommA" min="1" max="8" value="5" step="1">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Operand <span class="math-symbol" style="color:var(--color-b); font-weight:700;">b</span></span>
+                                <span class="number" id="lblCommB">3</span>
+                            </div>
+                            <input type="range" id="slideCommB" min="1" max="8" value="3" step="1">
+                        </div>
+                    </div>
+
+                    <button class="btn-action" id="btnCommAction">Animate Swap Order</button>
+
+                    <div class="formula-steps">
+                        <div><strong>Commutative Rule Explanation:</strong></div>
+                        <div id="commExplanation" style="margin-top: 8px; font-size:0.85rem; line-height:1.5; color:var(--text-muted);">
+                            Addition merges two separate block groups. Order is commutative because joining Group A to Group B yields the exact same total sum as joining Group B to Group A.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: ASSOCIATIVE PROPERTY -->
+        <section id="associative">
+            <div class="section-header">
+                <span class="section-tag">Associative Property</span>
+                <h2>Associative Sandbox</h2>
+            </div>
+            <p class="section-intro">
+                The **Associative Property** states that grouping does not change the result. For addition: <span class="math-symbol">(a + b) + c = a + (b + c)</span>. For multiplication: <span class="math-symbol">(a &middot; b) &middot; c = a &middot; (b &middot; c)</span>. Toggle the grouping brackets below.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Canvas -->
+                <div class="panel">
+                    <div class="form-tabs">
+                        <button class="form-tab active" id="btnAssocAdd">Addition (+)</button>
+                        <button class="form-tab" id="btnAssocMul">Multiplication (&times;)</button>
+                    </div>
+
+                    <div class="canvas-container" style="height: 340px; background:rgba(0,0,0,0.35)">
+                        <canvas id="associativeCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders & Actions -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Associative Expression</h3>
+                        <div class="equation-box" id="assocEqDisplay" style="color:var(--color-b); font-size:1.3rem;">
+                            (3 + 2) + 4 = 3 + (2 + 4)
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Operand <span class="math-symbol" style="color:var(--color-a); font-weight:700;">a</span></span>
+                                <span class="number" id="lblAssocA">3</span>
+                            </div>
+                            <input type="range" id="slideAssocA" min="1" max="5" value="3" step="1">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Operand <span class="math-symbol" style="color:var(--color-b); font-weight:700;">b</span></span>
+                                <span class="number" id="lblAssocB">2</span>
+                            </div>
+                            <input type="range" id="slideAssocB" min="1" max="5" value="2" step="1">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Operand <span class="math-symbol" style="color:var(--color-c); font-weight:700;">c</span></span>
+                                <span class="number" id="lblAssocC">4</span>
+                            </div>
+                            <input type="range" id="slideAssocC" min="1" max="5" value="4" step="1">
+                        </div>
+                    </div>
+
+                    <button class="btn-action" id="btnAssocAction">Animate Slicing Groups</button>
+
+                    <div class="formula-steps">
+                        <div><strong>Associative Rule Explanation:</strong></div>
+                        <div id="assocExplanation" style="margin-top: 8px; font-size:0.85rem; line-height:1.5; color:var(--text-muted);">
+                            Brackets enclose what we compute first. Associativity means that whichever pair we group first, the overall sum or volume product remains identical.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: DISTRIBUTIVE PROPERTY -->
+        <section id="distributive">
+            <div class="section-header">
+                <span class="section-tag">Distributive Property</span>
+                <h2>Distributive Area Sandbox</h2>
+            </div>
+            <p class="section-intro">
+                The **Distributive Property** scales a sum: <span class="math-symbol">a &middot; (b + c) = a &middot; b + a &middot; c</span>. Visually, a rectangle of height <span class="math-symbol">a</span> and total width <span class="math-symbol">b + c</span> can be split into two separate rectangles of areas <span class="math-symbol">a &middot; b</span> and <span class="math-symbol">a &middot; c</span>.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Canvas -->
+                <div class="panel">
+                    <div class="canvas-container" style="height: 340px;">
+                        <canvas id="distributiveCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders & Actions -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Distributive Area Model</h3>
+                        <div class="equation-box" id="distEqDisplay" style="color:var(--color-c); font-size:1.35rem;">
+                            3 &middot; (2 + 4) = 3&middot;2 + 3&middot;4
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Height (<span class="math-symbol" style="color:var(--color-a); font-weight:700;">a</span>)</span>
+                                <span class="number" id="lblDistA">3</span>
+                            </div>
+                            <input type="range" id="slideDistA" min="1" max="5" value="3" step="1">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Width 1 (<span class="math-symbol" style="color:var(--color-b); font-weight:700;">b</span>)</span>
+                                <span class="number" id="lblDistB">2</span>
+                            </div>
+                            <input type="range" id="slideDistB" min="1" max="4" value="2" step="1">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Width 2 (<span class="math-symbol" style="color:var(--color-c); font-weight:700;">c</span>)</span>
+                                <span class="number" id="lblDistC">4</span>
+                            </div>
+                            <input type="range" id="slideDistC" min="1" max="4" value="4" step="1">
+                        </div>
+                    </div>
+
+                    <button class="btn-action" id="btnDistAction">Split Area</button>
+
+                    <div class="formula-steps">
+                        <div><strong>Distribution Area Steps:</strong></div>
+                        <div id="distSteps" style="margin-top: 6px; font-weight:700; color:var(--color-rose);">
+                            3 &times; 6 = 6 + 12 = 18
+                        </div>
+                        <div style="margin-top: 8px; font-size:0.8rem; color:var(--text-muted);">
+                            Scaling a sum distributes multiplication to both terms separately.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: IDENTITY & INVERSE -->
+        <section id="identityInverse">
+            <div class="section-header">
+                <span class="section-tag">Identity & Inverse Properties</span>
+                <h2>Identity & Inverse Sandbox</h2>
+            </div>
+            <p class="section-intro">
+                Identities leave values unchanged: <span class="math-symbol">a + 0 = a</span> and <span class="math-symbol">a &middot; 1 = a</span>. Inverses undo values back to identities: <span class="math-symbol">a + (-a) = 0</span> and <span class="math-symbol">a &middot; (1/a) = 1</span>. Select a property to observe the block reactions.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Canvas -->
+                <div class="panel">
+                    <div class="form-tabs" style="display:grid; grid-template-columns: repeat(2,1fr); gap:6px;">
+                        <button class="form-tab active" id="tabIdAdd">Additive Identity</button>
+                        <button class="form-tab" id="tabInvAdd">Additive Inverse</button>
+                        <button class="form-tab" id="tabIdMul">Multiplicative Identity</button>
+                        <button class="form-tab" id="tabInvMul">Multiplicative Inverse</button>
+                    </div>
+
+                    <div class="canvas-container" style="height: 320px;">
+                        <canvas id="idInvCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders & Actions -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Identity / Inverse Statement</h3>
+                        <div class="equation-box" id="idInvEqDisplay" style="color:var(--color-a);">
+                            5 + 0 = 5
+                        </div>
+                    </div>
+
+                    <div class="slider-group" id="idInvSliderRow">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Value (<span class="math-symbol" style="font-weight:700;">a</span>)</span>
+                                <span class="number" id="lblIdInvA">5</span>
+                            </div>
+                            <input type="range" id="slideIdInvA" min="1" max="8" value="5" step="1">
+                        </div>
+                    </div>
+
+                    <button class="btn-action" id="btnIdInvAction" style="display:none;">Annihilate Inverses</button>
+
+                    <div class="formula-steps">
+                        <div><strong>Property Explanation:</strong></div>
+                        <div id="idInvExplanation" style="margin-top: 8px; font-size:0.85rem; line-height:1.6; color:var(--text-muted);">
+                            Additive Identity: Adding 0 (an empty basket) leaves the quantity unchanged.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Self Evaluation</span>
+                <h2>Conceptual Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Verify your vocabulary and property classifications by completing the quiz below.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Quiz Questions -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div
+                            style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Identify the property: 4 × (5 + 7) = 20 + 28.</h3>
+
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong>Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text goes here.</p>
+                        <button class="btn" id="quizNextBtn"
+                            style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Concept Summary -->
+                <div class="panel">
+                    <h3>Focus Benchmarks</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom:0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background:var(--color-a); box-shadow:0 0 6px var(--color-a);"></span>Commutative: Swap order ($ab = ba$)</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background:var(--color-b); box-shadow:0 0 6px var(--color-b);"></span>Associative: Bracket grouping</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background:var(--color-c); box-shadow:0 0 6px var(--color-c);"></span>Distributive: Area multiplier distribution</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background:var(--color-neutral); box-shadow:0 0 6px var(--color-neutral);"></span>Identities: $a+0=a$ and $a \cdot 1=a$</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background:var(--color-rose); box-shadow:0 0 6px var(--color-rose);"></span>Inverses: $a+(-a)=0$ and $a \cdot \frac{1}{a}=1$</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // DOMAIN THEME JS COLORS FOR CANVAS
+        const colorA = '#f43f5e';       // Rose
+        const colorB = '#38bdf8';       // Cyan
+        const colorC = '#a855f7';       // Purple
+        const colorNeutral = '#e2e8f0'; // Light Gray
+        const colorRose = '#f43f5e';
+
+        // COMMUTATIVE PROPERTY STATE & DRAWING
+        const commCanvas = document.getElementById('commutativeCanvas');
+        const commCtx = commCanvas.getContext('2d');
+        const slideCommA = document.getElementById('slideCommA');
+        const slideCommB = document.getElementById('slideCommB');
+        const lblCommA = document.getElementById('lblCommA');
+        const lblCommB = document.getElementById('lblCommB');
+        const btnCommAdd = document.getElementById('btnCommAdd');
+        const btnCommMul = document.getElementById('btnCommMul');
+        const btnCommAction = document.getElementById('btnCommAction');
+        const commEqDisplay = document.getElementById('commEqDisplay');
+        const commExplanation = document.getElementById('commExplanation');
+
+        let commMode = 'add'; // 'add', 'mul'
+        let commA = 5;
+        let commB = 3;
+        let commSwapProgress = 0.0;
+        let isCommAnimating = false;
+        let commAnimDirection = 1; // 1 = swap to B+A, -1 = swap back to A+B
+
+        // ASSOCIATIVE PROPERTY STATE & DRAWING
+        const assocCanvas = document.getElementById('associativeCanvas');
+        const assocCtx = assocCanvas.getContext('2d');
+        const slideAssocA = document.getElementById('slideAssocA');
+        const slideAssocB = document.getElementById('slideAssocB');
+        const slideAssocC = document.getElementById('slideAssocC');
+        const lblAssocA = document.getElementById('lblAssocA');
+        const lblAssocB = document.getElementById('lblAssocB');
+        const lblAssocC = document.getElementById('lblAssocC');
+        const btnAssocAdd = document.getElementById('btnAssocAdd');
+        const btnAssocMul = document.getElementById('btnAssocMul');
+        const btnAssocAction = document.getElementById('btnAssocAction');
+        const assocEqDisplay = document.getElementById('assocEqDisplay');
+        const assocExplanation = document.getElementById('assocExplanation');
+
+        let assocMode = 'add'; // 'add', 'mul'
+        let assocA = 3;
+        let assocB = 2;
+        let assocC = 4;
+        let assocSliceProgress = 0.0;
+        let isAssocAnimating = false;
+        let assocAnimDirection = 1; // 1 = slice apart, -1 = combine
+
+        // DISTRIBUTIVE PROPERTY STATE & DRAWING
+        const distCanvas = document.getElementById('distributiveCanvas');
+        const distCtx = distCanvas.getContext('2d');
+        const slideDistA = document.getElementById('slideDistA');
+        const slideDistB = document.getElementById('slideDistB');
+        const slideDistC = document.getElementById('slideDistC');
+        const lblDistA = document.getElementById('lblDistA');
+        const lblDistB = document.getElementById('lblDistB');
+        const lblDistC = document.getElementById('lblDistC');
+        const btnDistAction = document.getElementById('btnDistAction');
+        const distEqDisplay = document.getElementById('distEqDisplay');
+        const distSteps = document.getElementById('distSteps');
+
+        let distA = 3;
+        let distB = 2;
+        let distC = 4;
+        let distSplitProgress = 0.0;
+        let isDistAnimating = false;
+        let distAnimDirection = 1; // 1 = split apart, -1 = merge
+
+        // IDENTITY & INVERSE STATE & DRAWING
+        const idInvCanvas = document.getElementById('idInvCanvas');
+        const idInvCtx = idInvCanvas.getContext('2d');
+        const tabIdAdd = document.getElementById('tabIdAdd');
+        const tabInvAdd = document.getElementById('tabInvAdd');
+        const tabIdMul = document.getElementById('tabIdMul');
+        const tabInvMul = document.getElementById('tabInvMul');
+        const slideIdInvA = document.getElementById('slideIdInvA');
+        const lblIdInvA = document.getElementById('lblIdInvA');
+        const btnIdInvAction = document.getElementById('btnIdInvAction');
+        const idInvEqDisplay = document.getElementById('idInvEqDisplay');
+        const idInvExplanation = document.getElementById('idInvExplanation');
+        const idInvSliderRow = document.getElementById('idInvSliderRow');
+
+        let idInvMode = 'idAdd'; // 'idAdd', 'invAdd', 'idMul', 'invMul'
+        let idInvA = 5;
+        let idInvProgress = 0.0;
+        let isIdInvAnimating = false;
+
+        // General helper
+        function resizeCanvas(canvasElement) {
+            const container = canvasElement.parentElement;
+            canvasElement.width = container.clientWidth;
+            canvasElement.height = container.clientHeight;
+        }
+
+        // --- 1. COMMUTATIVE LOGIC ---
+        function initCommutative() {
+            slideCommA.addEventListener('input', (e) => {
+                commA = parseInt(e.target.value);
+                lblCommA.textContent = commA;
+                updateCommDisplay();
+            });
+            slideCommB.addEventListener('input', (e) => {
+                commB = parseInt(e.target.value);
+                lblCommB.textContent = commB;
+                updateCommDisplay();
+            });
+
+            btnCommAdd.addEventListener('click', () => {
+                btnCommAdd.classList.add('active');
+                btnCommMul.classList.remove('active');
+                commMode = 'add';
+                btnCommAction.textContent = "Animate Swap Order";
+                commSwapProgress = 0.0;
+                updateCommDisplay();
+            });
+
+            btnCommMul.addEventListener('click', () => {
+                btnCommMul.classList.add('active');
+                btnCommAdd.classList.remove('active');
+                commMode = 'mul';
+                btnCommAction.textContent = "Animate Grid Rotation";
+                commSwapProgress = 0.0;
+                updateCommDisplay();
+            });
+
+            btnCommAction.addEventListener('click', () => {
+                if (isCommAnimating) return;
+                isCommAnimating = true;
+                animateCommutative();
+            });
+
+            updateCommDisplay();
+        }
+
+        function updateCommDisplay() {
+            if (commMode === 'add') {
+                commEqDisplay.innerHTML = `${commA} + ${commB} = ${commB} + ${commA} = ${commA + commB}`;
+                commExplanation.innerHTML = `Addition merges two separate block groups. Order is commutative because joining Group A to Group B yields the exact same total sum as joining Group B to Group A.`;
+            } else {
+                commEqDisplay.innerHTML = `${commA} &times; ${commB} = ${commB} &times; ${commA} = ${commA * commB}`;
+                commExplanation.innerHTML = `Multiplication represents a grid. An ${commA} &times; ${commB} grid (having ${commA} rows) has the exact same area as a ${commB} &times; ${commA} grid (having ${commB} rows). Toggling the rotation flips the grid showing they represent the same product.`;
+            }
+            drawCommutative();
+        }
+
+        function animateCommutative() {
+            const duration = 800; // ms
+            const start = performance.now();
+            const startVal = commSwapProgress;
+            const targetVal = commAnimDirection === 1 ? 1.0 : 0.0;
+
+            function step(time) {
+                const elapsed = time - start;
+                const progress = Math.min(elapsed / duration, 1.0);
+                // easeInOutQuad
+                const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+                commSwapProgress = startVal + (targetVal - startVal) * ease;
+                drawCommutative();
+
+                if (progress < 1.0) {
+                    requestAnimationFrame(step);
+                } else {
+                    commSwapProgress = targetVal;
+                    isCommAnimating = false;
+                    commAnimDirection = commAnimDirection === 1 ? -1 : 1; // reverse next time
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        function drawCommutative() {
+            resizeCanvas(commCanvas);
+            const w = commCanvas.width;
+            const h = commCanvas.height;
+            commCtx.clearRect(0, 0, w, h);
+
+            const cx = w / 2;
+            const cy = h / 2;
+
+            if (commMode === 'add') {
+                const blockSize = 24;
+                const gap = 12;
+                const totalW = (commA + commB) * blockSize + gap;
+                const startX = cx - totalW / 2;
+
+                // We interpolate positions based on commSwapProgress
+                // Group A moves from left to right:
+                // Start X position of Group A is startX
+                // Target X position of Group A is startX + commB * blockSize + gap
+                // Group B moves from right to left:
+                // Start X position of Group B is startX + commA * blockSize + gap
+                // Target X position of Group B is startX
+
+                const startXA = startX;
+                const targetXA = startX + commB * blockSize + gap;
+                const startXB = startX + commA * blockSize + gap;
+                const targetXB = startX;
+
+                const currXA = startXA + (targetXA - startXA) * commSwapProgress;
+                const currXB = startXB + (targetXB - startXB) * commSwapProgress;
+
+                // Animate arc trajectories
+                const arcH = 35;
+                const offsetYA = -Math.sin(commSwapProgress * Math.PI) * arcH;
+                const offsetYB = Math.sin(commSwapProgress * Math.PI) * arcH;
+
+                commCtx.strokeStyle = 'rgba(0,0,0,0.15)';
+                commCtx.lineWidth = 1;
+                for (let i = 0; i < commA; i++) {
+                    commCtx.fillStyle = colorA;
+                    commCtx.beginPath();
+                    commCtx.roundRect(currXA + i * blockSize + 2, cy - blockSize / 2 + offsetYA + 2, blockSize - 4, blockSize - 4, 4);
+                    commCtx.fill();
+                    commCtx.stroke();
+                }
+
+                for (let i = 0; i < commB; i++) {
+                    commCtx.fillStyle = colorB;
+                    commCtx.beginPath();
+                    commCtx.roundRect(currXB + i * blockSize + 2, cy - blockSize / 2 + offsetYB + 2, blockSize - 4, blockSize - 4, 4);
+                    commCtx.fill();
+                    commCtx.stroke();
+                }
+
+                // Labels
+                commCtx.fillStyle = '#ffffff';
+                commCtx.font = 'bold 11px Outfit';
+                commCtx.textAlign = 'center';
+                commCtx.fillText(`a = ${commA}`, currXA + (commA * blockSize) / 2, cy - blockSize + offsetYA);
+                commCtx.fillText(`b = ${commB}`, currXB + (commB * blockSize) / 2, cy - blockSize + offsetYB);
+
+            } else {
+                // Multiplication mode: a x b grid rotating to overlay b x a
+                const size = Math.min(26, 180 / Math.max(commA, commB));
+                const gridW = commB * size;
+                const gridH = commA * size;
+
+                const targetGridW = commA * size;
+                const targetGridH = commB * size;
+
+                commCtx.strokeStyle = 'rgba(255,255,255,0.04)';
+                commCtx.fillStyle = 'rgba(255,255,255,0.005)';
+                for (let r = 0; r < commB; r++) {
+                    for (let c = 0; c < commA; c++) {
+                        commCtx.strokeRect(cx - targetGridW / 2 + c * size, cy - targetGridH / 2 + r * size, size, size);
+                    }
+                }
+
+                commCtx.save();
+                commCtx.translate(cx, cy);
+                commCtx.rotate(commSwapProgress * Math.PI / 2);
+
+                commCtx.strokeStyle = 'rgba(0,0,0,0.15)';
+                commCtx.lineWidth = 1;
+                
+                // As it rotates, interpolate colors slightly to blend from Rose to Purple/Cyan
+                for (let r = 0; r < commA; r++) {
+                    for (let c = 0; c < commB; c++) {
+                        commCtx.fillStyle = `hsl(${350 - commSwapProgress * 160}, 80%, 55%)`; // fades from Rose (350) to Cyan (190)
+                        commCtx.beginPath();
+                        commCtx.roundRect(-gridW / 2 + c * size + 1.5, -gridH / 2 + r * size + 1.5, size - 3, size - 3, 4);
+                        commCtx.fill();
+                        commCtx.stroke();
+                    }
+                }
+                commCtx.restore();
+
+                // HUD indicators
+                commCtx.fillStyle = '#ffffff';
+                commCtx.font = 'bold 11px Outfit';
+                commCtx.textAlign = 'center';
+                // Interpolate indicator text
+                const textA = commSwapProgress < 0.5 ? `${commA} rows` : `${commA} columns`;
+                const textB = commSwapProgress < 0.5 ? `${commB} columns` : `${commB} rows`;
+                commCtx.fillText(textA, cx - 80, cy + 110);
+                commCtx.fillText(textB, cx + 80, cy + 110);
+            }
+        }
+
+
+        // --- 2. ASSOCIATIVE LOGIC ---
+        function initAssociative() {
+            const sliders = [slideAssocA, slideAssocB, slideAssocC];
+            sliders.forEach(slider => {
+                slider.addEventListener('input', () => {
+                    assocA = parseInt(slideAssocA.value);
+                    assocB = parseInt(slideAssocB.value);
+                    assocC = parseInt(slideAssocC.value);
+                    lblAssocA.textContent = assocA;
+                    lblAssocB.textContent = assocB;
+                    lblAssocC.textContent = assocC;
+                    updateAssocDisplay();
+                });
+            });
+
+            btnAssocAdd.addEventListener('click', () => {
+                btnAssocAdd.classList.add('active');
+                btnAssocMul.classList.remove('active');
+                assocMode = 'add';
+                btnAssocAction.textContent = "Animate Bracket Shift";
+                assocSliceProgress = 0.0;
+                updateAssocDisplay();
+            });
+
+            btnAssocMul.addEventListener('click', () => {
+                btnAssocMul.classList.add('active');
+                btnAssocAdd.classList.remove('active');
+                assocMode = 'mul';
+                btnAssocAction.textContent = "Animate Volume Slicing";
+                assocSliceProgress = 0.0;
+                updateAssocDisplay();
+            });
+
+            btnAssocAction.addEventListener('click', () => {
+                if (isAssocAnimating) return;
+                isAssocAnimating = true;
+                animateAssociative();
+            });
+
+            updateAssocDisplay();
+        }
+
+        function updateAssocDisplay() {
+            if (assocMode === 'add') {
+                assocEqDisplay.innerHTML = `(${assocA} + ${assocB}) + ${assocC} = ${assocA} + (${assocB} + ${assocC}) = ${assocA + assocB + assocC}`;
+                assocExplanation.innerHTML = `Addition grouping brackets shift. Brackets dictate which numbers we add first, but the total sum is unchanged.`;
+            } else {
+                assocEqDisplay.innerHTML = `(${assocA} &times; ${assocB}) &times; ${assocC} = ${assocA} &times; (${assocB} &times; ${assocC}) = ${assocA * assocB * assocC}`;
+                assocExplanation.innerHTML = `Multiplication Associativity: (${assocA} &times; ${assocB}) &times; ${assocC} models $c$ horizontal plate layers of size $a \times b$. $a \times (b \times c)$ models $a$ vertical slices of size $b \times c$. Animate the slicing to see both groupings compose the identical total volume!`;
+            }
+            drawAssociative();
+        }
+
+        function animateAssociative() {
+            const duration = 900;
+            const start = performance.now();
+            const startVal = assocSliceProgress;
+            const targetVal = assocAnimDirection === 1 ? 1.0 : 0.0;
+
+            function step(time) {
+                const elapsed = time - start;
+                const progress = Math.min(elapsed / duration, 1.0);
+                const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+                assocSliceProgress = startVal + (targetVal - startVal) * ease;
+                drawAssociative();
+
+                if (progress < 1.0) {
+                    requestAnimationFrame(step);
+                } else {
+                    assocSliceProgress = targetVal;
+                    isAssocAnimating = false;
+                    assocAnimDirection = assocAnimDirection === 1 ? -1 : 1;
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        function drawAssociative() {
+            resizeCanvas(assocCanvas);
+            const w = associativeCanvas.width;
+            const h = associativeCanvas.height;
+            assocCtx.clearRect(0, 0, w, h);
+
+            const cx = w / 2;
+            const cy = h / 2;
+
+            if (assocMode === 'add') {
+                // Brackets grouping animation for Addition
+                const blockSize = 24;
+                const totalBlocks = assocA + assocB + assocC;
+                const totalW = totalBlocks * blockSize + 24; // additional space for brackets
+                const startX = cx - totalW / 2 + 10;
+
+                const yVal = cy;
+
+                assocCtx.strokeStyle = 'rgba(0,0,0,0.12)';
+                assocCtx.lineWidth = 1;
+                for (let i = 0; i < assocA; i++) {
+                    assocCtx.fillStyle = colorA;
+                    assocCtx.beginPath();
+                    assocCtx.roundRect(startX + i * blockSize + 2, yVal - blockSize / 2 + 2, blockSize - 4, blockSize - 4, 4);
+                    assocCtx.fill();
+                    assocCtx.stroke();
+                }
+
+                for (let i = 0; i < assocB; i++) {
+                    assocCtx.fillStyle = colorB;
+                    assocCtx.beginPath();
+                    assocCtx.roundRect(startX + (assocA + i) * blockSize + 2, yVal - blockSize / 2 + 2, blockSize - 4, blockSize - 4, 4);
+                    assocCtx.fill();
+                    assocCtx.stroke();
+                }
+
+                for (let i = 0; i < assocC; i++) {
+                    assocCtx.fillStyle = colorC;
+                    assocCtx.beginPath();
+                    assocCtx.roundRect(startX + (assocA + assocB + i) * blockSize + 2, yVal - blockSize / 2 + 2, blockSize - 4, blockSize - 4, 4);
+                    assocCtx.fill();
+                    assocCtx.stroke();
+                }
+
+                // Left bracket starts at:
+                // Group 1: Enclose A & B. (startX to startX + (A+B)*blockSize)
+                // Group 2: Enclose B & C. (startX + A*blockSize to startX + (A+B+C)*blockSize)
+                const bracketLeftStart = startX - 6;
+                const bracketLeftTarget = startX + assocA * blockSize - 6;
+                const bracketLeftX = bracketLeftStart + (bracketLeftTarget - bracketLeftStart) * assocSliceProgress;
+
+                const bracketRightStart = startX + (assocA + assocB) * blockSize + 6;
+                const bracketRightTarget = startX + totalBlocks * blockSize + 6;
+                const bracketRightX = bracketRightStart + (bracketRightTarget - bracketRightStart) * assocSliceProgress;
+
+                assocCtx.strokeStyle = '#ffffff';
+                assocCtx.lineWidth = 2.5;
+
+                // Left parenthesis (
+                assocCtx.beginPath();
+                assocCtx.arc(bracketLeftX + 5, yVal, blockSize - 4, Math.PI * 0.75, Math.PI * 1.25);
+                assocCtx.stroke();
+
+                // Right parenthesis )
+                assocCtx.beginPath();
+                assocCtx.arc(bracketRightX - 5, yVal, blockSize - 4, -Math.PI * 0.25, Math.PI * 0.25);
+                assocCtx.stroke();
+
+            } else {
+                // 3D Isometric Volume associative slicing
+                // Vol: assocA x assocB x assocC
+                // Slicing horizontal layers (c sheets of axB) if progress = 0.
+                // Slicing vertical sheets (a sheets of bxC) if progress = 1.
+                const size = Math.min(22, 110 / Math.max(assocA, assocB, assocC));
+                const angle = Math.PI / 6;
+
+                // Base coordinates shifting depending on progress
+                // Let's iterate coordinates.
+                // We back-to-front rendering.
+                for (let z = 0; z < assocC; z++) {
+                    for (let y = assocB - 1; y >= 0; y--) {
+                        for (let x = assocA - 1; x >= 0; x--) {
+                            // Coordinate calculations
+                            // Slice spacing displacement:
+                            // If progress = 0, we space out horizontal layers (along Z axis)
+                            // If progress = 1, we space out vertical layers (along X axis)
+                            const sliceOffsetZ = z * assocSliceProgress * 15;
+                            const sliceOffsetX = x * (1 - assocSliceProgress) * 15;
+
+                            const isoX = (x - y) * size * Math.cos(angle) + sliceOffsetX * Math.cos(angle);
+                            const isoY = (x + y) * size * Math.sin(angle) - z * size + sliceOffsetX * Math.sin(angle) - sliceOffsetZ;
+
+                            const bx = cx + isoX;
+                            const by = cy + 40 + isoY;
+
+                            // Shade faces
+                            // Top
+                            assocCtx.fillStyle = `hsl(${270 - assocSliceProgress * 100}, 75%, 65%)`; // shifts color base
+                            assocCtx.strokeStyle = 'rgba(0,0,0,0.15)';
+                            assocCtx.lineWidth = 0.5;
+                            assocCtx.beginPath();
+                            assocCtx.moveTo(bx, by - size);
+                            assocCtx.lineTo(bx + size * Math.cos(angle), by - size - size * Math.sin(angle));
+                            assocCtx.lineTo(bx, by - size - size * 2 * Math.sin(angle));
+                            assocCtx.lineTo(bx - size * Math.cos(angle), by - size - size * Math.sin(angle));
+                            assocCtx.closePath();
+                            assocCtx.fill();
+                            assocCtx.stroke();
+
+                            // Left
+                            assocCtx.fillStyle = `hsl(${270 - assocSliceProgress * 100}, 75%, 45%)`;
+                            assocCtx.beginPath();
+                            assocCtx.moveTo(bx - size * Math.cos(angle), by - size * Math.sin(angle) - size);
+                            assocCtx.lineTo(bx, by - size);
+                            assocCtx.lineTo(bx, by);
+                            assocCtx.lineTo(bx - size * Math.cos(angle), by - size * Math.sin(angle));
+                            assocCtx.closePath();
+                            assocCtx.fill();
+                            assocCtx.stroke();
+
+                            // Right
+                            assocCtx.fillStyle = `hsl(${270 - assocSliceProgress * 100}, 75%, 53%)`;
+                            assocCtx.beginPath();
+                            assocCtx.moveTo(bx, by - size);
+                            assocCtx.lineTo(bx + size * Math.cos(angle), by - size * Math.sin(angle) - size);
+                            assocCtx.lineTo(bx + size * Math.cos(angle), by - size * Math.sin(angle));
+                            assocCtx.lineTo(bx, by);
+                            assocCtx.closePath();
+                            assocCtx.fill();
+                            assocCtx.stroke();
+                        }
+                    }
+                }
+            }
+        }
+
+
+        // --- 3. DISTRIBUTIVE LOGIC ---
+        function initDistributive() {
+            const sliders = [slideDistA, slideDistB, slideDistC];
+            sliders.forEach(slider => {
+                slider.addEventListener('input', () => {
+                    distA = parseInt(slideDistA.value);
+                    distB = parseInt(slideDistB.value);
+                    distC = parseInt(slideDistC.value);
+                    lblDistA.textContent = distA;
+                    lblDistB.textContent = distB;
+                    lblDistC.textContent = distC;
+                    updateDistDisplay();
+                });
+            });
+
+            btnDistAction.addEventListener('click', () => {
+                if (isDistAnimating) return;
+                isDistAnimating = true;
+                animateDistributive();
+            });
+
+            updateDistDisplay();
+        }
+
+        function updateDistDisplay() {
+            distEqDisplay.innerHTML = `${distA} &middot; (${distB} + ${distC}) = ${distA}&middot;${distB} + ${distA}&middot;${distC}`;
+            distSteps.innerHTML = `${distA} &times; ${distB + distC} = ${distA * distB} + ${distA * distC} = ${distA * (distB + distC)}`;
+            drawDistributive();
+        }
+
+        function animateDistributive() {
+            const duration = 800;
+            const start = performance.now();
+            const startVal = distSplitProgress;
+            const targetVal = distAnimDirection === 1 ? 1.0 : 0.0;
+
+            function step(time) {
+                const elapsed = time - start;
+                const progress = Math.min(elapsed / duration, 1.0);
+                const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+                distSplitProgress = startVal + (targetVal - startVal) * ease;
+                drawDistributive();
+
+                if (progress < 1.0) {
+                    requestAnimationFrame(step);
+                } else {
+                    distSplitProgress = targetVal;
+                    isDistAnimating = false;
+                    distAnimDirection = distAnimDirection === 1 ? -1 : 1;
+                    btnDistAction.textContent = distAnimDirection === 1 ? "Split Area" : "Merge Area";
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        function drawDistributive() {
+            resizeCanvas(distCanvas);
+            const w = distCanvas.width;
+            const h = distCanvas.height;
+            distCtx.clearRect(0, 0, w, h);
+
+            const cx = w / 2;
+            const cy = h / 2;
+
+            const size = Math.min(30, 200 / Math.max(distA, distB + distC));
+
+            const totalW = (distB + distC) * size;
+            const totalH = distA * size;
+
+            // Interpolate gap spacing between split rectangles
+            const splitGap = distSplitProgress * 40;
+
+            const startX = cx - totalW / 2 - splitGap / 2;
+            const startY = cy - totalH / 2;
+
+            distCtx.strokeStyle = 'rgba(0,0,0,0.15)';
+            distCtx.lineWidth = 1;
+
+            // Left sub-rectangle: a x b (Rose)
+            for (let r = 0; r < distA; r++) {
+                for (let c = 0; c < distB; c++) {
+                    distCtx.fillStyle = colorA;
+                    distCtx.beginPath();
+                    distCtx.roundRect(startX + c * size + 1.5, startY + r * size + 1.5, size - 3, size - 3, 4);
+                    distCtx.fill();
+                    distCtx.stroke();
+                }
+            }
+
+            // Right sub-rectangle: a x c (Cyan)
+            const rightStartX = startX + distB * size + splitGap;
+            for (let r = 0; r < distA; r++) {
+                for (let c = 0; c < distC; c++) {
+                    distCtx.fillStyle = colorB;
+                    distCtx.beginPath();
+                    distCtx.roundRect(rightStartX + c * size + 1.5, startY + r * size + 1.5, size - 3, size - 3, 4);
+                    distCtx.fill();
+                    distCtx.stroke();
+                }
+            }
+
+            // Write area measurements
+            distCtx.fillStyle = '#ffffff';
+            distCtx.font = 'bold 11px Outfit';
+            distCtx.textAlign = 'center';
+
+            // Left area labels
+            distCtx.fillText(`${distA} &times; ${distB}`, startX + (distB * size) / 2, startY - 10);
+            distCtx.fillText(`Area: ${distA * distB}`, startX + (distB * size) / 2, startY + totalH + 18);
+
+            // Right area labels
+            distCtx.fillText(`${distA} &times; ${distC}`, rightStartX + (distC * size) / 2, startY - 10);
+            distCtx.fillText(`Area: ${distA * distC}`, rightStartX + (distC * size) / 2, startY + totalH + 18);
+        }
+
+
+        // --- 4. IDENTITY & INVERSE LOGIC ---
+        function initIdentityInverse() {
+            slideIdInvA.addEventListener('input', (e) => {
+                idInvA = parseInt(e.target.value);
+                lblIdInvA.textContent = idInvA;
+                resetIdInvAnimation();
+                updateIdInvDisplay();
+            });
+
+            const tabs = [
+                { tab: tabIdAdd, mode: 'idAdd', label: 'Additive Identity', desc: 'Additive Identity: Adding 0 to any number leaves it exactly the same (its identity is preserved). Since 0 represents nothing (an empty basket), adding it does not change the starting quantity: a + 0 = a.', eq: () => `${idInvA} + 0 = ${idInvA}`, showBtn: false },
+                { tab: tabInvAdd, mode: 'invAdd', label: 'Additive Inverse', desc: 'Additive Inverse: Adding the negative opposite cancels out the value. Negative elements annihilate positive elements, summing to 0.', eq: () => `${idInvA} + (-${idInvA}) = 0`, showBtn: true },
+                { tab: tabIdMul, mode: 'idMul', label: 'Multiplicative Identity', desc: 'Multiplicative Identity: Multiplying by 1 (creating exactly 1 copy of the group) preserves the quantity.', eq: () => `${idInvA} &times; 1 = ${idInvA}`, showBtn: false },
+                { tab: tabInvMul, mode: 'invMul', label: 'Multiplicative Inverse', desc: 'Multiplicative Inverse: Multiplying a value by its reciprocal scales the dimensions, returning exactly a single unit 1.', eq: () => `${idInvA} &times; 1/${idInvA} = 1`, showBtn: true }
+            ];
+
+            tabs.forEach(item => {
+                item.tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.tab.classList.remove('active'));
+                    item.tab.classList.add('active');
+                    idInvMode = item.mode;
+                    idInvExplanation.innerHTML = item.desc;
+                    btnIdInvAction.style.display = item.showBtn ? 'flex' : 'none';
+                    btnIdInvAction.textContent = item.mode === 'invAdd' ? 'Annihilate Inverses' : 'Animate Multiplicative Scale';
+                    resetIdInvAnimation();
+                    updateIdInvDisplay();
+                });
+            });
+
+            btnIdInvAction.addEventListener('click', () => {
+                if (isIdInvAnimating) return;
+                isIdInvAnimating = true;
+                animateIdInv();
+            });
+
+            updateIdInvDisplay();
+        }
+
+        function updateIdInvDisplay() {
+            if (idInvMode === 'idAdd') {
+                idInvEqDisplay.innerHTML = `${idInvA} + 0 = ${idInvA}`;
+            } else if (idInvMode === 'invAdd') {
+                idInvEqDisplay.innerHTML = `${idInvA} + (-${idInvA}) = 0`;
+            } else if (idInvMode === 'idMul') {
+                idInvEqDisplay.innerHTML = `${idInvA} &times; 1 = ${idInvA}`;
+            } else if (idInvMode === 'invMul') {
+                idInvEqDisplay.innerHTML = `${idInvA} &times; 1/${idInvA} = 1`;
+            }
+            drawIdInv();
+        }
+
+        function resetIdInvAnimation() {
+            idInvProgress = 0.0;
+            isIdInvAnimating = false;
+        }
+
+        function animateIdInv() {
+            const duration = 1000;
+            const start = performance.now();
+            
+            function step(time) {
+                const elapsed = time - start;
+                idInvProgress = Math.min(elapsed / duration, 1.0);
+                drawIdInv();
+
+                if (idInvProgress < 1.0) {
+                    requestAnimationFrame(step);
+                } else {
+                    isIdInvAnimating = false;
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        function drawIdInv() {
+            resizeCanvas(idInvCanvas);
+            const w = idInvCanvas.width;
+            const h = idInvCanvas.height;
+            idInvCtx.clearRect(0, 0, w, h);
+
+            const cx = w / 2;
+            const cy = h / 2;
+
+            if (idInvMode === 'idAdd') {
+                // Additive identity: show A blocks and an empty basket representing 0
+                const size = 26;
+                const totalW = idInvA * size + 60;
+                const startX = cx - totalW / 2;
+
+                for (let i = 0; i < idInvA; i++) {
+                    idInvCtx.fillStyle = colorA;
+                    idInvCtx.fillRect(startX + i * size + 2, cy - size / 2, size - 4, size - 4);
+                }
+
+                idInvCtx.strokeStyle = 'rgba(255,255,255,0.25)';
+                idInvCtx.setLineDash([4, 4]);
+                idInvCtx.strokeRect(startX + idInvA * size + 20, cy - size / 2, size, size);
+                idInvCtx.setLineDash([]);
+
+                // Label
+                idInvCtx.fillStyle = '#ffffff';
+                idInvCtx.font = '10px JetBrains Mono';
+                idInvCtx.textAlign = 'center';
+                idInvCtx.fillText(`+ 0`, startX + idInvA * size + 20 + size / 2, cy - 20);
+
+            } else if (idInvMode === 'invAdd') {
+                // Additive inverse: A positive blocks (Rose, +) on top row, A negative blocks (Cyan, -) on bottom row
+                const size = 26;
+                const startX = cx - (idInvA * size) / 2;
+
+                // Vertical translation towards center cy
+                const startYPos = cy - size - 12;
+                const targetYPos = cy - size / 2;
+                const currYPos = startYPos + (targetYPos - startYPos) * idInvProgress;
+
+                const startYNeg = cy + 12;
+                const targetYNeg = cy - size / 2;
+                const currYNeg = startYNeg + (targetYNeg - startYNeg) * idInvProgress;
+
+                // Positive blocks (Rose, +)
+                const opacity = Math.max(0, 1 - (idInvProgress - 0.7) * 3.3);
+                idInvCtx.globalAlpha = opacity;
+
+                for (let i = 0; i < idInvA; i++) {
+                    const bx = startX + i * size;
+                    idInvCtx.fillStyle = colorA;
+                    idInvCtx.fillRect(bx + 2, currYPos + 2, size - 4, size - 4);
+
+                    idInvCtx.fillStyle = '#ffffff';
+                    idInvCtx.font = 'bold 12px Outfit';
+                    idInvCtx.textAlign = 'center';
+                    idInvCtx.textBaseline = 'middle';
+                    idInvCtx.fillText('+', bx + size / 2, currYPos + size / 2);
+                }
+
+                // Negative blocks (Cyan, -)
+                for (let i = 0; i < idInvA; i++) {
+                    const bx = startX + i * size;
+                    idInvCtx.fillStyle = colorB;
+                    idInvCtx.fillRect(bx + 2, currYNeg + 2, size - 4, size - 4);
+
+                    idInvCtx.fillStyle = '#000000';
+                    idInvCtx.font = 'bold 12px Outfit';
+                    idInvCtx.textAlign = 'center';
+                    idInvCtx.textBaseline = 'middle';
+                    idInvCtx.fillText('-', bx + size / 2, currYNeg + size / 2);
+                }
+                idInvCtx.globalAlpha = 1.0; // reset
+
+                if (idInvProgress > 0.8) {
+                    const sparkR = (idInvProgress - 0.8) * 40;
+                    idInvCtx.strokeStyle = colorRose;
+                    idInvCtx.lineWidth = 1.5;
+                    idInvCtx.beginPath();
+                    idInvCtx.arc(cx, cy, sparkR, 0, Math.PI * 2);
+                    idInvCtx.stroke();
+                }
+
+            } else if (idInvMode === 'idMul') {
+                // Multiplicative identity: show 1 group of A blocks
+                const size = 26;
+                const gridW = idInvA * size;
+                const startX = cx - gridW / 2;
+
+                idInvCtx.strokeStyle = 'rgba(255,255,255,0.08)';
+                idInvCtx.strokeRect(startX - 10, cy - size / 2 - 10, gridW + 20, size + 20);
+
+                for (let i = 0; i < idInvA; i++) {
+                    idInvCtx.fillStyle = colorA;
+                    idInvCtx.fillRect(startX + i * size + 2, cy - size / 2, size - 4, size - 4);
+                }
+
+                idInvCtx.fillStyle = '#ffffff';
+                idInvCtx.font = '10px JetBrains Mono';
+                idInvCtx.textAlign = 'center';
+                idInvCtx.fillText(`1 copy of group of ${idInvA}`, cx, cy - 25);
+
+            } else if (idInvMode === 'invMul') {
+                // Multiplicative inverse: Block of width A, scaled down by 1/A to exactly size 1
+                const size = 30;
+                
+                // Original width is A * size. Target width is size (exactly 1 unit).
+                const startW = idInvA * size;
+                const targetW = size;
+                const currW = startW + (targetW - startW) * idInvProgress;
+
+                const startX = cx - currW / 2;
+
+                idInvCtx.fillStyle = colorA;
+                idInvCtx.strokeStyle = '#ffffff';
+                idInvCtx.lineWidth = 1.5;
+                idInvCtx.beginPath();
+                idInvCtx.roundRect(startX, cy - size / 2, currW, size, 6);
+                idInvCtx.fill();
+                idInvCtx.stroke();
+
+                idInvCtx.fillStyle = '#ffffff';
+                idInvCtx.font = 'bold 11px Outfit';
+                idInvCtx.textAlign = 'center';
+                
+                const widthLabel = idInvProgress < 0.5 ? `Width: ${idInvA}` : `Width: 1`;
+                idInvCtx.fillText(widthLabel, cx, cy - 22);
+            }
+        }
+
+
+        // --- 5. CONCEPTUAL QUIZ LOGIC ---
+        const quizData = [
+            {
+                question: "Identify the property: 4 × (5 + 7) = 20 + 28.",
+                options: [
+                    "Associative Property of Multiplication",
+                    "Commutative Property of Addition",
+                    "Distributive Property",
+                    "Inverse Property"
+                ],
+                correct: 2,
+                explanation: "The Distributive Property states that scaling a sum divides the multiplier to both values: a(b + c) = ab + ac. Here, 4 is distributed to 5 and 7, yielding 20 and 28."
+            },
+            {
+                question: "Which expression demonstrates the Associative Property of Addition?",
+                options: [
+                    "3 + (5 + 8) = (3 + 5) + 8",
+                    "3 + 5 = 5 + 3",
+                    "3 + 0 = 3",
+                    "3 + (-3) = 0"
+                ],
+                correct: 0,
+                explanation: "The Associative Property governs groupings. Moving the parenthesis brackets around the values does not alter the outcome sum: a + (b + c) = (a + b) + c."
+            },
+            {
+                question: "What property states that x × 1 = x?",
+                options: [
+                    "Multiplicative Inverse Property",
+                    "Multiplicative Identity Property",
+                    "Commutative Property of Multiplication",
+                    "Distributive Property"
+                ],
+                correct: 1,
+                explanation: "The Multiplicative Identity states that multiplying any number by 1 leaves its value unchanged. Thus, 1 is the multiplicative identity."
+            },
+            {
+                question: "What is the Multiplicative Inverse of 6?",
+                options: [
+                    "-6",
+                    "0",
+                    "1/6",
+                    "1"
+                ],
+                correct: 2,
+                explanation: "The Multiplicative Inverse is the value which undoes a multiplier, returning the identity 1. The multiplicative inverse of a number x is its reciprocal 1/x: 6 × 1/6 = 1."
+            },
+            {
+                question: "Does the Commutative Property hold for Subtraction? (i.e. does a - b = b - a?)",
+                options: [
+                    "Yes, order never matters in subtraction.",
+                    "No, because swapping subtraction order flips the sign of the result: 5 - 3 = 2, but 3 - 5 = -2.",
+                    "Yes, but only for positive integer values.",
+                    "No, because subtraction has no inverse elements."
+                ],
+                correct: 1,
+                explanation: "Commutativity does NOT hold for subtraction. Changing the order flips the sign of the result: a - b = -(b - a). Thus, 5 - 3 ≠ 3 - 5."
+            }
+        ];
+
+        let quizCurrentIndex = 0;
+        let quizScore = 0;
+        let quizAnswered = false;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function initQuiz() {
+            quizNextBtn.addEventListener('click', () => {
+                quizCurrentIndex++;
+                if (quizCurrentIndex < quizData.length) {
+                    loadQuizQuestion();
+                } else {
+                    showQuizResults();
+                }
+            });
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            quizAnswered = false;
+            quizFeedbackArea.style.display = 'none';
+
+            const q = quizData[quizCurrentIndex];
+            quizProgressText.textContent = `Question ${quizCurrentIndex + 1} of ${quizData.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizCurrentIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            quizOptionsContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = 'quiz-option';
+                div.innerHTML = `
+                    <span>${opt}</span>
+                    <svg class="opt-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="display:none;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                `;
+                div.addEventListener('click', () => selectQuizOption(idx));
+                quizOptionsContainer.appendChild(div);
+            });
+        }
+
+        function selectQuizOption(selectedIndex) {
+            if (quizAnswered) return;
+            quizAnswered = true;
+
+            const q = quizData[quizCurrentIndex];
+            const options = quizOptionsContainer.children;
+
+            if (selectedIndex === q.correct) {
+                quizScore++;
+                options[selectedIndex].classList.add('correct');
+                showCheckmark(options[selectedIndex]);
+                quizFeedbackArea.querySelector('strong').textContent = "Correct Answer!";
+                quizFeedbackArea.querySelector('strong').style.color = '#10b981';
+            } else {
+                options[selectedIndex].classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                showCheckmark(options[q.correct]);
+                quizFeedbackArea.querySelector('strong').textContent = "Incorrect Answer";
+                quizFeedbackArea.querySelector('strong').style.color = '#f43f5e';
+            }
+
+            quizScoreText.textContent = `Score: ${quizScore}/${quizCurrentIndex + 1}`;
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+        }
+
+        function showCheckmark(optionElement) {
+            const icon = optionElement.querySelector('.opt-icon');
+            if (icon) icon.style.display = 'block';
+        }
+
+        function showQuizResults() {
+            quizProgressText.textContent = `Evaluation Completed`;
+            quizQuestionTitle.style.display = 'none';
+            quizOptionsContainer.innerHTML = `
+                <div class="quiz-score-overlay">
+                    <h2 style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--color-rose);">
+                        ${((quizScore / quizData.length) * 100).toFixed(0)}% Correct
+                    </h2>
+                    <p style="color:var(--text-muted); margin-bottom:1.5rem;">
+                        You scored ${quizScore} out of ${quizData.length} conceptual questions.
+                    </p>
+                    <button class="btn" onclick="restartQuiz()" style="width:auto; margin:0 auto; padding:8px 24px;">Restart Quiz</button>
+                </div>
+            `;
+            quizFeedbackArea.style.display = 'none';
+        }
+
+        window.restartQuiz = function() {
+            quizCurrentIndex = 0;
+            quizScore = 0;
+            quizQuestionTitle.style.display = 'block';
+            loadQuizQuestion();
+        };
+
+        // DOM Initializations
+        document.addEventListener('DOMContentLoaded', () => {
+            initCommutative();
+            initAssociative();
+            initDistributive();
+            initIdentityInverse();
+            initQuiz();
+
+            // Resize redrawing
+            window.addEventListener('resize', () => {
+                drawCommutative();
+                drawAssociative();
+                drawDistributive();
+                drawIdInv();
+            });
+        });
+    </script>
+</body>
+
+</html>

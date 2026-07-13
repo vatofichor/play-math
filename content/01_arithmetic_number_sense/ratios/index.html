@@ -1,0 +1,305 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to Ratios - Arithmetic & Numbers</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "01_arithmetic_number_sense",
+            logo: {"main":"Number","accent":"Lab","sub":"Introduction to Ratios"},
+            navigation: [
+    {
+        "label": "Comparing Quantities with Ratios",
+        "desc": "Comparing Quantities with Ratios interactive section",
+        "href": "#section1"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Cyan Theme for Arithmetic */
+            --color-primary: #38bdf8;
+            --color-primary-glow: rgba(56, 189, 248, 0.35);
+            
+            --color-item-a: #f43f5e; /* Rose Red */
+            --color-item-b: #10b981; /* Emerald Green */
+            
+            --color-paint-blue: #2563eb;
+            --color-paint-yellow: #eab308;
+        }
+
+        /* Ratio Notation display cards */
+        .ratio-notation-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 1.5rem;
+        }
+
+        .notation-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .notation-type {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .notation-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        /* Apples Visual Container */
+        .apples-row-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            margin: 1.5rem 0;
+            min-height: 80px;
+        }
+
+        .apple-icon {
+            width: 40px;
+            height: 40px;
+            transition: transform 0.2s;
+        }
+
+        .apple-icon:hover {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        /* Paint mixer visualizer */
+
+
+        /* Value control buttons */
+        .btn-value {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid var(--card-border);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-color);
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-value:hover {
+            background: var(--color-primary);
+            color: var(--bg-color);
+            border-color: var(--color-primary);
+        }
+
+        .control-panel-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer (Managed by shared.js) -->
+    <aside></aside>
+
+    <!-- Main Workspace Content -->
+    <main>
+        <!-- SECTION 1: UNDERSTANDING RATIOS -->
+        <section id="section1">
+            <header>
+                <h1>Comparing Quantities with Ratios</h1>
+                <p>Discover how ratios compare two quantities. Change the counts of red and green apples, and explore the different notations and phrases used to write ratios.</p>
+            </header>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Interactive Counts & Visual row -->
+                <div class="panel">
+                    <!-- Red Apples Control -->
+                    <div class="control-panel-row">
+                        <span style="font-weight:600; color:var(--color-item-a);">Red Apples:</span>
+                        <div class="value-control">
+                            <button class="btn-value" onclick="changeAppleA(-1)">−</button>
+                            <span class="category-value-text" id="appleAText">3</span>
+                            <button class="btn-value" onclick="changeAppleA(1)">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Green Apples Control -->
+                    <div class="control-panel-row" style="margin-bottom: 1.5rem;">
+                        <span style="font-weight:600; color:var(--color-item-b);">Green Apples:</span>
+                        <div class="value-control">
+                            <button class="btn-value" onclick="changeAppleB(-1)">−</button>
+                            <span class="category-value-text" id="appleBText">2</span>
+                            <button class="btn-value" onclick="changeAppleB(1)">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Visual Apple Grid -->
+                    <div class="apples-row-container" id="applesGrid">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <!-- Notation Formats -->
+                    <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:6px;">Part-to-Part Ratio Notations (Red : Green)</div>
+                    <div class="ratio-notation-grid">
+                        <div class="notation-card">
+                            <span class="notation-type">Colon</span>
+                            <span class="notation-value" id="ratioColon">3:2</span>
+                        </div>
+                        <div class="notation-card">
+                            <span class="notation-type">Words</span>
+                            <span class="notation-value" style="font-size:1.15rem;" id="ratioWord">3 to 2</span>
+                        </div>
+                        <div class="notation-card">
+                            <span class="notation-type">Fraction</span>
+                            <span class="notation-value" id="ratioFraction">3/2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Explanation Card -->
+                <div class="panel">
+                    <div class="math-card" style="border-color: rgba(56, 189, 248, 0.15);">
+                        <h3>What is a Ratio?</h3>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6; margin-bottom:0.75rem;">
+                            A **Ratio** is a mathematical comparison of two numbers. It shows how much of one thing exists compared to another.
+                        </p>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6; margin-bottom:0.75rem;">
+                            *   **Part-to-Part:** Compares two distinct categories directly. E.g., "For every 3 red apples, there are 2 green apples."
+                        </p>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;">
+                            *   **Part-to-Whole:** Compares one category to the **entire sum**. E.g., Red apples to total apples is **$3 : 5$** (or the fraction **$\frac{3}{5}$**).
+                        </p>
+                    </div>
+
+                    <div class="math-card">
+                        <h3>Part-to-Whole Link</h3>
+                        <div style="font-family:'JetBrains Mono', monospace; font-size:1.1rem; color:var(--color-primary);" id="partToWholeReadout">
+                            Red to Total Ratio = 3 : 5 (3/5)
+                        </div>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>Interactive Tip: Change the counts above. Notice how the part-to-part ratio flips if you read Green to Red ($2:3$) versus Red to Green ($3:2$). Order matters in ratios!</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // DATA STATE VARIABLES
+        let appleA = 3; // Red
+        let appleB = 2; // Green
+
+        const applesGrid = document.getElementById('applesGrid');
+        const appleAText = document.getElementById('appleAText');
+        const appleBText = document.getElementById('appleBText');
+        const ratioColon = document.getElementById('ratioColon');
+        const ratioWord = document.getElementById('ratioWord');
+        const ratioFraction = document.getElementById('ratioFraction');
+        const partToWholeReadout = document.getElementById('partToWholeReadout');
+
+        function changeAppleA(delta) {
+            let val = appleA + delta;
+            if (val < 1) val = 1;
+            if (val > 10) val = 10;
+            appleA = val;
+            appleAText.innerText = appleA;
+            updateApplesNotations();
+            renderApplesRow();
+        }
+
+        function changeAppleB(delta) {
+            let val = appleB + delta;
+            if (val < 1) val = 1;
+            if (val > 10) val = 10;
+            appleB = val;
+            appleBText.innerText = appleB;
+            updateApplesNotations();
+            renderApplesRow();
+        }
+
+        function renderApplesRow() {
+            applesGrid.innerHTML = '';
+            
+            for (let i = 0; i < appleA; i++) {
+                const img = document.createElement('div');
+                img.className = 'apple-icon';
+                img.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="var(--color-item-a)">
+                        <path d="M12 2c.4 0 .8.1 1.1.2.6-.7 1.4-1.1 2.3-1.3.4-.1.7.2.6.6a5 5 0 0 1-1.6 3.1c1.2.8 1.8 2.2 1.8 3.8 0 3.3-2.2 5.5-4 5.5s-4-2.2-4-5.5c0-1.6.6-3 1.8-3.8A5 5 0 0 1 8.2 1.5c-.1-.4.2-.7.6-.6.9.2 1.7.6 2.3 1.3.3-.1.6-.2 1-.2zm0 14.5c.6 0 1.2.2 1.7.5s.8.7 1 1.2c.2.5.2 1.1-.1 1.6a2 2 0 0 1-1 1c-.5.3-1 .4-1.6.4s-1.1-.1-1.6-.4a2 2 0 0 1-1-1 2 2 0 0 1-.1-1.6c.2-.5.5-.9 1-1.2s1.1-.5 1.7-.5z"/>
+                    </svg>
+                `;
+                applesGrid.appendChild(img);
+            }
+
+            for (let i = 0; i < appleB; i++) {
+                const img = document.createElement('div');
+                img.className = 'apple-icon';
+                img.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="var(--color-item-b)">
+                        <path d="M12 2c.4 0 .8.1 1.1.2.6-.7 1.4-1.1 2.3-1.3.4-.1.7.2.6.6a5 5 0 0 1-1.6 3.1c1.2.8 1.8 2.2 1.8 3.8 0 3.3-2.2 5.5-4 5.5s-4-2.2-4-5.5c0-1.6.6-3 1.8-3.8A5 5 0 0 1 8.2 1.5c-.1-.4.2-.7.6-.6.9.2 1.7.6 2.3 1.3.3-.1.6-.2 1-.2zm0 14.5c.6 0 1.2.2 1.7.5s.8.7 1 1.2c.2.5.2 1.1-.1 1.6a2 2 0 0 1-1 1c-.5.3-1 .4-1.6.4s-1.1-.1-1.6-.4a2 2 0 0 1-1-1 2 2 0 0 1-.1-1.6c.2-.5.5-.9 1-1.2s1.1-.5 1.7-.5z"/>
+                    </svg>
+                `;
+                applesGrid.appendChild(img);
+            }
+        }
+
+        function gcd(a, b) {
+            return b === 0 ? a : gcd(b, a % b);
+        }
+
+        function updateApplesNotations() {
+            ratioColon.innerText = `${appleA}:${appleB}`;
+            ratioWord.innerText = `${appleA} to ${appleB}`;
+            
+            const divisor = gcd(appleA, appleB);
+            const simpleA = appleA / divisor;
+            const simpleB = appleB / divisor;
+            ratioFraction.innerText = `${simpleA}/${simpleB}`;
+
+            const total = appleA + appleB;
+            partToWholeReadout.innerText = `Red to Total Ratio = ${appleA} : ${total} (${appleA}/${total})`;
+        }
+
+        renderApplesRow();
+        updateApplesNotations();
+    </script>
+</body>
+</html>

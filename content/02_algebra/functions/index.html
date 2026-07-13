@@ -1,0 +1,926 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functions & Relations - Algebraic Structures</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "02_algebra",
+            logo: {"main":"Algebra","accent":"Lab","sub":"Functions & Relations"},
+            navigation: [
+    {
+        "label": "What is a Function?",
+        "desc": "What is a Function? interactive section",
+        "href": "#overview"
+    },
+    {
+        "label": "Vertical Line Test Simulator",
+        "desc": "Vertical Line Test Simulator interactive section",
+        "href": "#vlt"
+    },
+    {
+        "label": "Mapping Diagrams",
+        "desc": "Mapping Diagrams interactive section",
+        "href": "#mapping"
+    },
+    {
+        "label": "Conceptual Quiz",
+        "desc": "Conceptual Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Algebra Domain / Rose Theme override */
+            --color-rose: #f43f5e;
+            --color-rose-glow: rgba(244, 63, 94, 0.35);
+            --color-accent: #f43f5e;
+            --color-accent-glow: rgba(244, 63, 94, 0.35);
+
+            --color-func: #10b981;  /* Emerald for function */
+            --color-rel: #f43f5e;   /* Rose for relation */
+            --color-domain: #38bdf8;/* Cyan for domain */
+            --color-range: #a855f7; /* Purple for range */
+        }
+
+        /* Highlight active menu item */
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-rose) !important;
+            box-shadow: 0 4px 20px var(--color-rose-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-title {
+            color: var(--bg-color) !important;
+        }
+        .sidebar-drawer .syllabus-item.active a .syllabus-desc {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-rose);
+            background: rgba(244, 63, 94, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            text-shadow: 0 0 5px var(--color-rose-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        /* Status Banner */
+        .status-banner {
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .status-banner.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-banner.error {
+            background: rgba(244, 63, 94, 0.1);
+            color: #f43f5e;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+        }
+
+        /* Quiz styles */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Functions & Relations</h1>
+            <p>Master mathematical mapping criteria. Visualize domain-to-range connectivity, run the vertical line test dynamically, and identify function constraints.</p>
+        </header>
+
+        <!-- SECTION 1: OVERVIEW -->
+        <section id="overview">
+            <div class="section-header">
+                <span class="section-tag">Algebra Core</span>
+                <h2>What is a Function?</h2>
+            </div>
+            <p class="section-intro">
+                A **function** is a specific type of relation where each element in the **Domain** (set of inputs) maps to *exactly one* element in the **Range** (set of outputs). If an input maps to multiple outputs, it is a **Relation**, not a function.
+            </p>
+
+            <div class="workspace-grid">
+                <div class="panel">
+                    <h3>Definitions & Rules</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom: 0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background-color: var(--color-domain); box-shadow:0 0 6px var(--color-domain);"></span>
+                                <strong>Domain</strong>: The set of all possible input values (typically x).
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background-color: var(--color-range); box-shadow:0 0 6px var(--color-range);"></span>
+                                <strong>Range</strong>: The set of all actual output values (typically f(x) or y).
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot"></span>
+                                <strong>Vertical Line Test</strong>: If any vertical line intersects a graph more than once, the graph represents a relation, not a function.
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>Visual Mapping Machine</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
+                        Think of a function as a machine:<br>
+                        - You drop an input x in.<br>
+                        - The machine performs a rule: f(x) = x² + 1.<br>
+                        - You get exactly one output y.<br><br>
+                        If a machine could output both +3 and -3 for the single input 9 (like y² = x), it is not a function.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: VERTICAL LINE TEST -->
+        <section id="vlt" style="display: none;">
+            <div class="section-header">
+                <span class="section-tag">Interactive Graph</span>
+                <h2>Vertical Line Test Simulator</h2>
+            </div>
+            <p class="section-intro">
+                Select a relation preset, then drag the mouse across the canvas to draw a vertical line. If the line intersects the curve more than once, it fails the test.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: VLT Plotter -->
+                <div class="panel">
+                    <div class="presets-grid">
+                        <button class="btn-preset active" data-preset="line">y = 0.5x + 1 (Linear)</button>
+                        <button class="btn-preset" data-preset="parabola">y = 0.2x² - 3 (Parabola)</button>
+                        <button class="btn-preset" data-preset="circle">x² + y² = 16 (Circle)</button>
+                        <button class="btn-preset" data-preset="sideways">x = 0.15y² - 4 (Sideways)</button>
+                        <button class="btn-preset" data-preset="sine">y = 3sin(0.8x) (Sine Wave)</button>
+                    </div>
+
+                    <div class="canvas-container" style="height: 350px; cursor: col-resize;">
+                        <canvas id="vltCanvas"></canvas>
+                    </div>
+
+                    <div id="vltStatus" class="status-banner success">
+                        It is a Function (Maximum of 1 intersection).
+                    </div>
+                </div>
+
+                <!-- Right Panel: Theoretical Context -->
+                <div class="panel">
+                    <h3>Relation Audit</h3>
+                    <br>
+                    <div class="math-card">
+                        <h3>Equation</h3>
+                        <p class="number" style="font-size: 1.25rem; font-weight: 700; color: var(--color-rose);" id="vltEqText">
+                            y = 0.5x + 1
+                        </p>
+                    </div>
+
+                    <div class="math-card">
+                        <h3>Intersections Count</h3>
+                        <p class="number" style="font-size: 1.25rem; font-weight: 700; color: var(--color-domain);" id="vltCountText">
+                            1 intersection
+                        </p>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>If a vertical line crosses at multiple points, a single x maps to multiple y values, violating the mapping criteria.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: DOMAIN-RANGE MAPPING -->
+        <section id="mapping" style="display: none;">
+            <div class="section-header">
+                <span class="section-tag">Set Mapping</span>
+                <h2>Mapping Diagrams</h2>
+            </div>
+            <p class="section-intro">
+                Examine mapping connections between domain inputs and range outputs. Toggles different relation types.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Mapping diagram canvas -->
+                <div class="panel">
+                    <div class="presets-grid">
+                        <button class="btn-preset active" id="btnMapOneOne">One-to-One (Function)</button>
+                        <button class="btn-preset" id="btnMapManyOne">Many-to-One (Function)</button>
+                        <button class="btn-preset" id="btnMapOneMany">One-to-Many (Relation)</button>
+                    </div>
+
+                    <div class="canvas-container" style="height: 320px;">
+                        <canvas id="mappingCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Description -->
+                <div class="panel">
+                    <h3>Classification details</h3>
+                    <br>
+                    <div class="math-card" style="margin-bottom: 1.5rem;">
+                        <h3 id="mappingTitle">One-to-One Mapping</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-top: 0.5rem;" id="mappingDesc">
+                            Each input in the Domain points to a unique output in the Range. It represents a strictly Injective Function.
+                        </p>
+                    </div>
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>Notice how in the 'One-to-Many' mode, a single node branches out to multiple outputs, rendering it an invalid function.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: QUIZ -->
+        <section id="quiz" style="display: none;">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Conceptual Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Solve the questions below to test your understanding of domain, range, and vertical line tests.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Quiz board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 4</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Does the equation x² + y² = 9 define y as a function of x?</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">No, it defines a circle of radius 3. Moving a vertical line across x in (-3, 3) gives two y-intersections, failing the vertical line test.</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: focus list -->
+                <div class="panel">
+                    <h3>Focus Topics</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom: 0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background-color: var(--color-domain);"></span>Vertical Line Test</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background-color: var(--color-range);"></span>Domain Restrictions</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"></span>Injective vs Surjective</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const vCanvas = document.getElementById('vltCanvas');
+        const vCtx = vCanvas.getContext('2d');
+        const mCanvas = document.getElementById('mappingCanvas');
+        const mCtx = mCanvas.getContext('2d');
+
+        const secOverview = document.getElementById('overview');
+        const secVlt = document.getElementById('vlt');
+        const secMapping = document.getElementById('mapping');
+        const secQuiz = document.getElementById('quiz');
+
+        function handleHashRoute() {
+            const hash = window.location.hash || '#overview';
+            
+            const sectionMap = {
+                '#overview': secOverview,
+                '#vlt': secVlt,
+                '#mapping': secMapping,
+                '#quiz': secQuiz
+            };
+            
+            const activeSection = sectionMap[hash] || secOverview;
+            [secOverview, secVlt, secMapping, secQuiz].forEach(s => {
+                if (s) s.style.display = (s === activeSection) ? 'block' : 'none';
+            });
+            
+            document.querySelectorAll('.syllabus-item').forEach(m => m.classList.remove('active'));
+            const activeLink = document.querySelector(`.syllabus-item a[href="${hash}"]`);
+            if (activeLink) {
+                activeLink.parentElement.classList.add('active');
+            }
+            
+            setTimeout(resizeCanvases, 50);
+        }
+
+        window.addEventListener('hashchange', handleHashRoute);
+        window.addEventListener('load', handleHashRoute);
+
+        // Preset VLT Buttons
+        const presets = document.querySelectorAll('.btn-preset[data-preset]');
+        const vltEqText = document.getElementById('vltEqText');
+        const vltCountText = document.getElementById('vltCountText');
+        const vltStatus = document.getElementById('vltStatus');
+
+        let activePreset = 'line';
+        let mouseXVal = 0; // x-position in math coords for vertical line
+        let isMouseInVLT = false;
+
+        presets.forEach(btn => {
+            btn.addEventListener('click', () => {
+                presets.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                activePreset = btn.getAttribute('data-preset');
+                updateVLTEquationText();
+                drawVLT();
+            });
+        });
+
+        function updateVLTEquationText() {
+            let txt = '';
+            if (activePreset === 'line') txt = 'y = 0.5x + 1';
+            else if (activePreset === 'parabola') txt = 'y = 0.2x² - 3';
+            else if (activePreset === 'circle') txt = 'x² + y² = 16';
+            else if (activePreset === 'sideways') txt = 'x = 0.15y² - 4';
+            else if (activePreset === 'sine') txt = 'y = 3sin(0.8x)';
+            vltEqText.textContent = txt;
+        }
+
+        function resizeCanvases() {
+            [vCanvas, mCanvas].forEach(c => {
+                if (c.offsetParent !== null) {
+                    const container = c.parentElement;
+                    c.width = container.clientWidth;
+                    c.height = container.clientHeight;
+                }
+            });
+            drawVLT();
+            drawMapping();
+        }
+
+        // VLT Graph coordinates
+        // Math x: [-8, 8], y: [-8, 8]
+        function graphToPixel(x, y) {
+            const margin = 30;
+            const w = vCanvas.width - 2 * margin;
+            const h = vCanvas.height - 2 * margin;
+            const px = margin + ((x + 8) / 16) * w;
+            const py = margin + ((8 - y) / 16) * h;
+            return { x: px, y: py };
+        }
+
+        function pixelToGraph(px, py) {
+            const margin = 30;
+            const w = vCanvas.width - 2 * margin;
+            const h = vCanvas.height - 2 * margin;
+            const gx = -8 + ((px - margin) / w) * 16;
+            const gy = 8 - ((py - margin) / h) * 16;
+            return { x: gx, y: gy };
+        }
+
+        function drawVLT() {
+            if (vCanvas.offsetParent === null) return;
+            const margin = 30;
+            vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
+
+            vCtx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
+            vCtx.lineWidth = 1;
+            vCtx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+            vCtx.font = '9px JetBrains Mono';
+            vCtx.textAlign = 'center';
+            vCtx.textBaseline = 'middle';
+
+            for (let i = -8; i <= 8; i++) {
+                if (i === 0) continue;
+                let p1 = graphToPixel(i, 0);
+                vCtx.beginPath();
+                vCtx.moveTo(p1.x, margin);
+                vCtx.lineTo(p1.x, vCanvas.height - margin);
+                vCtx.stroke();
+                vCtx.fillText(i, p1.x, vCanvas.height - margin + 12);
+
+                let p2 = graphToPixel(0, i);
+                vCtx.beginPath();
+                vCtx.moveTo(margin, p2.y);
+                vCtx.lineTo(vCanvas.width - margin, p2.y);
+                vCtx.stroke();
+                vCtx.fillText(i, margin - 15, p2.y);
+            }
+
+            vCtx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            vCtx.lineWidth = 1.5;
+            let center = graphToPixel(0,0);
+            
+            // X axis
+            vCtx.beginPath();
+            vCtx.moveTo(margin, center.y);
+            vCtx.lineTo(vCanvas.width - margin, center.y);
+            vCtx.stroke();
+
+            // Y axis
+            vCtx.beginPath();
+            vCtx.moveTo(center.x, margin);
+            vCtx.lineTo(center.x, vCanvas.height - margin);
+            vCtx.stroke();
+
+            vCtx.fillStyle = 'rgba(255,255,255,0.6)';
+            vCtx.fillText('x', vCanvas.width - margin + 12, center.y);
+            vCtx.fillText('y', center.x, margin - 12);
+
+            vCtx.strokeStyle = '#f43f5e';
+            vCtx.lineWidth = 2.5;
+            vCtx.beginPath();
+
+            let firstPt = true;
+
+            if (activePreset === 'line') {
+                for (let x = -8; x <= 8; x += 0.1) {
+                    let y = 0.5 * x + 1;
+                    let p = graphToPixel(x, y);
+                    if (firstPt) { vCtx.moveTo(p.x, p.y); firstPt = false; }
+                    else vCtx.lineTo(p.x, p.y);
+                }
+                vCtx.stroke();
+            } else if (activePreset === 'parabola') {
+                for (let x = -8; x <= 8; x += 0.1) {
+                    let y = 0.2 * x * x - 3;
+                    let p = graphToPixel(x, y);
+                    if (firstPt) { vCtx.moveTo(p.x, p.y); firstPt = false; }
+                    else vCtx.lineTo(p.x, p.y);
+                }
+                vCtx.stroke();
+            } else if (activePreset === 'sine') {
+                for (let x = -8; x <= 8; x += 0.1) {
+                    let y = 3 * Math.sin(0.8 * x);
+                    let p = graphToPixel(x, y);
+                    if (firstPt) { vCtx.moveTo(p.x, p.y); firstPt = false; }
+                    else vCtx.lineTo(p.x, p.y);
+                }
+                vCtx.stroke();
+            } else if (activePreset === 'circle') {
+                // Circle equation x² + y² = 16 => y = +/- sqrt(16 - x²)
+                vCtx.beginPath();
+                for (let x = -4; x <= 4; x += 0.05) {
+                    let y = Math.sqrt(16 - x * x);
+                    let p = graphToPixel(x, y);
+                    if (x === -4) vCtx.moveTo(p.x, p.y);
+                    else vCtx.lineTo(p.x, p.y);
+                }
+                for (let x = 4; x >= -4; x -= 0.05) {
+                    let y = -Math.sqrt(16 - x * x);
+                    let p = graphToPixel(x, y);
+                    vCtx.lineTo(p.x, p.y);
+                }
+                vCtx.closePath();
+                vCtx.stroke();
+            } else if (activePreset === 'sideways') {
+                // x = 0.15y² - 4 => y = +/- sqrt((x + 4) / 0.15)
+                vCtx.beginPath();
+                for (let x = -4; x <= 8; x += 0.1) {
+                    let y = Math.sqrt((x + 4) / 0.15);
+                    let p = graphToPixel(x, y);
+                    if (x === -4) vCtx.moveTo(p.x, p.y);
+                    else vCtx.lineTo(p.x, p.y);
+                }
+                vCtx.stroke();
+                
+                vCtx.beginPath();
+                firstPt = true;
+                for (let x = -4; x <= 8; x += 0.1) {
+                    let y = -Math.sqrt((x + 4) / 0.15);
+                    let p = graphToPixel(x, y);
+                    if (firstPt) { vCtx.moveTo(p.x, p.y); firstPt = false; }
+                    else vCtx.lineTo(p.x, p.y);
+                }
+                vCtx.stroke();
+            }
+
+            if (isMouseInVLT) {
+                let pLine = graphToPixel(mouseXVal, 0);
+                
+                vCtx.strokeStyle = 'rgba(255, 176, 0, 0.4)';
+                vCtx.lineWidth = 1.5;
+                vCtx.setLineDash([4, 4]);
+                vCtx.beginPath();
+                vCtx.moveTo(pLine.x, margin);
+                vCtx.lineTo(pLine.x, vCanvas.height - margin);
+                vCtx.stroke();
+                vCtx.setLineDash([]);
+
+                // Find intersection points
+                let intersections = [];
+                if (activePreset === 'line') {
+                    intersections.push(0.5 * mouseXVal + 1);
+                } else if (activePreset === 'parabola') {
+                    intersections.push(0.2 * mouseXVal * mouseXVal - 3);
+                } else if (activePreset === 'sine') {
+                    intersections.push(3 * Math.sin(0.8 * mouseXVal));
+                } else if (activePreset === 'circle') {
+                    if (mouseXVal >= -4 && mouseXVal <= 4) {
+                        intersections.push(Math.sqrt(16 - mouseXVal * mouseXVal));
+                        if (mouseXVal !== -4 && mouseXVal !== 4) {
+                            intersections.push(-Math.sqrt(16 - mouseXVal * mouseXVal));
+                        }
+                    }
+                } else if (activePreset === 'sideways') {
+                    if (mouseXVal >= -4) {
+                        intersections.push(Math.sqrt((mouseXVal + 4) / 0.15));
+                        if (mouseXVal !== -4) {
+                            intersections.push(-Math.sqrt((mouseXVal + 4) / 0.15));
+                        }
+                    }
+                }
+
+                intersections.forEach(y => {
+                    if (y >= -8 && y <= 8) {
+                        let p = graphToPixel(mouseXVal, y);
+                        vCtx.fillStyle = '#ffb000';
+                        vCtx.beginPath();
+                        vCtx.arc(p.x, p.y, 6, 0, 2 * Math.PI);
+                        vCtx.fill();
+                        vCtx.strokeStyle = '#08090d';
+                        vCtx.lineWidth = 1.5;
+                        vCtx.stroke();
+                    }
+                });
+
+                vltCountText.textContent = `${intersections.length} intersection${intersections.length === 1 ? '' : 's'}`;
+                
+                const isFunction = (intersections.length <= 1);
+                if (isFunction) {
+                    vltStatus.className = 'status-banner success';
+                    vltStatus.textContent = 'It is a Function (Maximum of 1 intersection).';
+                } else {
+                    vltStatus.className = 'status-banner error';
+                    vltStatus.textContent = 'Fails the test. It is a Relation, not a function.';
+                }
+            } else {
+                vltCountText.textContent = 'Move mouse to test';
+            }
+        }
+
+        vCanvas.addEventListener('mousemove', (e) => {
+            const rect = vCanvas.getBoundingClientRect();
+            const px = e.clientX - rect.left;
+            mouseXVal = pixelToGraph(px, 0).x;
+            isMouseInVLT = (mouseXVal >= -8 && mouseXVal <= 8);
+            drawVLT();
+        });
+
+        vCanvas.addEventListener('mouseleave', () => {
+            isMouseInVLT = false;
+            drawVLT();
+        });
+
+        let mappingType = 'one-to-one'; // 'one-to-one', 'many-to-one', 'one-to-many'
+        const btnMapOneOne = document.getElementById('btnMapOneOne');
+        const btnMapManyOne = document.getElementById('btnMapManyOne');
+        const btnMapOneMany = document.getElementById('btnMapOneMany');
+        const mappingTitle = document.getElementById('mappingTitle');
+        const mappingDesc = document.getElementById('mappingDesc');
+
+        btnMapOneOne.addEventListener('click', () => {
+            setMappingType('one-to-one', btnMapOneOne, 'One-to-One Mapping', 'Each input in the Domain points to a unique output in the Range. It represents a strictly Injective Function.');
+        });
+        btnMapManyOne.addEventListener('click', () => {
+            setMappingType('many-to-one', btnMapManyOne, 'Many-to-One Mapping', 'Multiple inputs in the Domain can point to the same output in the Range (e.g. f(-2) = 4 and f(2) = 4). This is still a valid function.');
+        });
+        btnMapOneMany.addEventListener('click', () => {
+            setMappingType('one-to-many', btnMapOneMany, 'One-to-Many Mapping', 'A single input in the Domain points to multiple outputs in the Range. This violates the function definition and is a Relation only.');
+        });
+
+        function setMappingType(type, btn, title, desc) {
+            [btnMapOneOne, btnMapManyOne, btnMapOneMany].forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            mappingType = type;
+            mappingTitle.textContent = title;
+            mappingDesc.textContent = desc;
+            drawMapping();
+        }
+
+        function drawMapping() {
+            if (mCanvas.offsetParent === null) return;
+            mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
+
+            const w = mCanvas.width;
+            const h = mCanvas.height;
+
+            const domainX = w * 0.25;
+            const rangeX = w * 0.75;
+
+            mCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            mCtx.fillStyle = 'rgba(255, 255, 255, 0.01)';
+            mCtx.lineWidth = 2;
+
+            mCtx.beginPath();
+            mCtx.roundRect(domainX - 45, 30, 90, h - 60, 45);
+            mCtx.fill();
+            mCtx.stroke();
+
+            mCtx.beginPath();
+            mCtx.roundRect(rangeX - 45, 30, 90, h - 60, 45);
+            mCtx.fill();
+            mCtx.stroke();
+
+            mCtx.fillStyle = '#ffffff';
+            mCtx.font = '11px JetBrains Mono';
+            mCtx.textAlign = 'center';
+            mCtx.fillText("Domain (X)", domainX, 20);
+            mCtx.fillText("Range (Y)", rangeX, 20);
+
+            // Nodes coordinates
+            const nodeCount = 4;
+            const stepY = (h - 80) / (nodeCount - 1);
+
+            const dNodes = [];
+            const rNodes = [];
+
+            for (let i = 0; i < nodeCount; i++) {
+                dNodes.push({x: domainX, y: 40 + i * stepY});
+                rNodes.push({x: rangeX, y: 40 + i * stepY});
+            }
+
+            const arrows = [];
+            if (mappingType === 'one-to-one') {
+                arrows.push({from: 0, to: 0}, {from: 1, to: 1}, {from: 2, to: 2}, {from: 3, to: 3});
+            } else if (mappingType === 'many-to-one') {
+                arrows.push({from: 0, to: 0}, {from: 1, to: 0}, {from: 2, to: 1}, {from: 3, to: 2});
+            } else if (mappingType === 'one-to-many') {
+                arrows.push({from: 0, to: 0}, {from: 0, to: 1}, {from: 1, to: 2}, {from: 2, to: 3});
+            }
+
+            arrows.forEach(arr => {
+                const start = dNodes[arr.from];
+                const end = rNodes[arr.to];
+
+                mCtx.strokeStyle = mappingType === 'one-to-many' ? '#f43f5e' : '#38bdf8';
+                mCtx.lineWidth = 2;
+
+                mCtx.beginPath();
+                mCtx.moveTo(start.x + 10, start.y);
+                mCtx.lineTo(end.x - 10, end.y);
+                mCtx.stroke();
+
+                const angle = Math.atan2(end.y - start.y, end.x - start.x);
+                mCtx.fillStyle = mappingType === 'one-to-many' ? '#f43f5e' : '#38bdf8';
+                mCtx.beginPath();
+                mCtx.moveTo(end.x - 10, end.y);
+                mCtx.lineTo(end.x - 18 * Math.cos(angle - Math.PI/12), end.y - 18 * Math.sin(angle - Math.PI/12));
+                mCtx.lineTo(end.x - 18 * Math.cos(angle + Math.PI/12), end.y - 18 * Math.sin(angle + Math.PI/12));
+                mCtx.closePath();
+                mCtx.fill();
+            });
+
+            dNodes.forEach((n, idx) => {
+                mCtx.fillStyle = '#38bdf8';
+                mCtx.beginPath();
+                mCtx.arc(n.x, n.y, 6, 0, 2 * Math.PI);
+                mCtx.fill();
+                mCtx.fillStyle = '#ffffff';
+                mCtx.fillText(`x${idx+1}`, n.x - 22, n.y + 4);
+            });
+
+            rNodes.forEach((n, idx) => {
+                mCtx.fillStyle = '#a855f7';
+                mCtx.beginPath();
+                mCtx.arc(n.x, n.y, 6, 0, 2 * Math.PI);
+                mCtx.fill();
+                mCtx.fillStyle = '#ffffff';
+                mCtx.fillText(`y${idx+1}`, n.x + 22, n.y + 4);
+            });
+        }
+
+        // Quiz State & Data
+        const quizQuestions = [
+            {
+                question: "Which of the following relations represents y as a function of x?",
+                options: ["y² = x + 1", "y = x² + 2", "x² + y² = 16", "x = y²"],
+                correct: 1,
+                explanation: "For y = x² + 2, every x maps to a single y value (maximum of 1 intersection on the VLT). For the others, a single x value yields multiple y values."
+            },
+            {
+                question: "What is the domain restriction of the function f(x) = 5 / (x - 3)?",
+                options: ["x != 5", "x != 0", "x != 3", "x != -3"],
+                correct: 2,
+                explanation: "The denominator of a fraction cannot be zero. Setting x - 3 = 0 gives x = 3, so x = 3 is restricted from the domain."
+            },
+            {
+                question: "If a function maps multiple inputs to the same output, what classification describes this mapping?",
+                options: ["One-to-Many", "Many-to-One", "One-to-One", "Not a function"],
+                correct: 1,
+                explanation: "This is a Many-to-One mapping, which is a completely valid function (like f(x) = x² where f(-2) = 4 and f(2) = 4)."
+            },
+            {
+                question: "What is the Range of the function f(x) = x² + 4?",
+                options: ["All real numbers", "y >= 0", "y >= 4", "y <= 4"],
+                correct: 2,
+                explanation: "Since x² is always non-negative (x² >= 0), x² + 4 must be greater than or equal to 4 (y >= 4). Thus, the range starts at 4."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-rose); box-shadow:0 4px 15px var(--color-rose-glow);">
+                        Restart Functions Quiz
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function() {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+            
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvases, 300);
+            });
+
+            updateVLTEquationText();
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

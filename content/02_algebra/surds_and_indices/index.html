@@ -1,0 +1,1087 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surds & Indices - Algebraic Structures</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "02_algebra",
+            logo: {"main":"Algebra","accent":"Lab","sub":"Surds & Indices"},
+            navigation: [
+    {
+        "label": "Surd & Power Explorer",
+        "desc": "Surd & Power Explorer interactive section",
+        "href": "#visualizer"
+    },
+    {
+        "label": "Laws of Exponents & Radicals",
+        "desc": "Laws of Exponents & Radicals interactive section",
+        "href": "#step-solver"
+    },
+    {
+        "label": "Conceptual Quiz",
+        "desc": "Conceptual Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Algebra Rose Theme */
+            --color-rose: #f43f5e;
+            --color-rose-glow: rgba(244, 63, 94, 0.35);
+            --color-accent: #f43f5e;
+            --color-accent-glow: rgba(244, 63, 94, 0.35);
+
+            --color-index: #38bdf8; /* Cyan for indices */
+            --color-surd: #ffb000; /* Amber for surds */
+            --color-base: #a855f7; /* Purple for bases */
+            --color-power: #10b981; /* Emerald for exponents */
+        }
+
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-rose) !important;
+            box-shadow: 0 4px 20px var(--color-rose-glow) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-rose);
+            background: rgba(244, 63, 94, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            text-shadow: 0 0 5px var(--color-rose-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row.surd-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-surd);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-surd);
+        }
+        .slider-row.index-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-index);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-index);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .math-symbol {
+            font-style: italic;
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .canvas-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--text-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid var(--card-border);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .tabs-header {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 10px;
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            text-align: center;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+        }
+
+        .tab-btn.active {
+            background: var(--color-rose);
+            color: var(--bg-color);
+            border-color: var(--color-rose);
+            box-shadow: 0 4px 15px var(--color-rose-glow);
+        }
+
+        /* Exponential Selector styling */
+        .expo-selector {
+            display: flex;
+            gap: 8px;
+            margin-top: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        
+        .expo-btn {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+        .expo-btn.active {
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--color-linear);
+            border-color: rgba(56, 189, 248, 0.3);
+        }
+
+        .laws-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .law-item {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .law-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .law-math {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            color: var(--color-index);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Surds and Indices</h1>
+            <p>Master exponent operations (indices) and rational roots (surds). Visualize square factors geometrically and trace how fractional exponents map to exponential curves.</p>
+        </header>
+
+        <!-- SECTION 1: DYNAMIC VISUALIZER -->
+        <section id="visualizer">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Surd & Power Explorer</h2>
+            </div>
+            <p class="section-intro">
+                Toggle between simplifying radical surds geometrically on the grid, or plotting indices and power curves on the coordinate plane.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Graph Canvas -->
+                <div class="panel" style="position: relative;">
+                    <div class="canvas-label" id="canvasTitle">Surd Square Factoring Grid</div>
+                    <div class="canvas-container" style="height: 380px;">
+                        <canvas id="graphCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders & Live Equation -->
+                <div class="panel">
+                    <div class="tabs-header">
+                        <button class="tab-btn active" id="tabSurd" onclick="switchTab('surd')">Surd Simplifier: &radic;N</button>
+                        <button class="tab-btn" id="tabIndex" onclick="switchTab('index')">Curve Plotter: y = f(x)</button>
+                    </div>
+
+                    <div class="math-card">
+                        <h3 id="eqHeader">Active Surd</h3>
+                        <div class="equation-box" id="eqDisplay">
+                            &radic;12 = 2&radic;3
+                        </div>
+                    </div>
+
+                    <!-- Sliders for Surds -->
+                    <div class="slider-group" id="surdControls">
+                        <div class="slider-row surd-slider">
+                            <div class="slider-label">
+                                <span>Radicand Value (<span class="math-symbol">N</span>)</span>
+                                <span class="number" id="lblN">12</span>
+                            </div>
+                            <input type="range" id="slideN" min="1" max="100" step="1" value="12">
+                        </div>
+                    </div>
+
+                    <!-- Sliders for Curves -->
+                    <div class="slider-group" id="indexControls" style="display: none;">
+                        <div class="expo-selector">
+                            <button class="expo-btn active" id="btnExp" onclick="switchCurveType('exponential')">Exponential (a &bull; b^x)</button>
+                            <button class="expo-btn" id="btnRad" onclick="switchCurveType('radical')">Radical (x^(1/n))</button>
+                        </div>
+                        <div class="slider-row index-slider">
+                            <div class="slider-label">
+                                <span id="lblIndex1Name">Coefficient <span class="math-symbol">a</span></span>
+                                <span class="number" id="lblIndex1">1.0</span>
+                            </div>
+                            <input type="range" id="slideIndex1" min="0.5" max="3.0" step="0.1" value="1.0">
+                        </div>
+                        <div class="slider-row index-slider">
+                            <div class="slider-label">
+                                <span id="lblIndex2Name">Base <span class="math-symbol">b</span></span>
+                                <span class="number" id="lblIndex2">2.0</span>
+                            </div>
+                            <input type="range" id="slideIndex2" min="0.1" max="4.0" step="0.1" value="2.0">
+                        </div>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span id="hintText">Shaded grids inside the canvas denote the largest perfect square factor that can be rooted outside the radical.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: STEP-BY-STEP SOLVER -->
+        <section id="step-solver">
+            <div class="section-header">
+                <span class="section-tag">Algebraic Solver</span>
+                <h2>Laws of Exponents & Radicals</h2>
+            </div>
+            <p class="section-intro">
+                Study the mathematical properties that govern exponential indices and radical simplifying.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Calculation Steps -->
+                <div class="panel">
+                    <h3 id="solverTitle">Factorizing the Radical</h3>
+                    <br>
+                    <div class="formula-steps" id="solveSteps">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Right Panel: Exponent Laws -->
+                <div class="panel">
+                    <h3>Exponents & Radicals Laws</h3>
+                    <br>
+                    <ul class="laws-list">
+                        <li class="law-item">
+                            <span class="law-title">Product Law</span>
+                            <span class="law-math">x<sup>a</sup> &bull; x<sup>b</sup> = x<sup>a + b</sup></span>
+                        </li>
+                        <li class="law-item">
+                            <span class="law-title">Quotient Law</span>
+                            <span class="law-math">x<sup>a</sup> / x<sup>b</sup> = x<sup>a - b</sup></span>
+                        </li>
+                        <li class="law-item">
+                            <span class="law-title">Power of a Power</span>
+                            <span class="law-math">(x<sup>a</sup>)<sup>b</sup> = x<sup>ab</sup></span>
+                        </li>
+                        <li class="law-item">
+                            <span class="law-title">Fractional Exponent</span>
+                            <span class="law-math">x<sup>a/b</sup> = <sup>b</sup>&radic;x<sup>a</sup></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Conceptual Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Test your understanding of exponents, laws of indices, and surd simplification.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Question Board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Simplify the surd &radic;72 into its simplest radical form.</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text goes here...</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Cheatsheet -->
+                <div class="panel" id="quizStatsPanel">
+                    <h3>Indices & Surds Cheatsheet</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom: 0; list-style: none; display: flex; flex-direction: column; gap: 10px;">
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-surd); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-surd);"></span>
+                            <span>Simplifying: Pull out perfect squares: &radic;(A&sup2; &bull; B) = A&radic;B</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-power); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-power);"></span>
+                            <span>Negative Index: x<sup>-p</sup> = 1 / x<sup>p</sup></span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-index); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-index);"></span>
+                            <span>Fractional: x<sup>1/2</sup> = &radic;x, x<sup>1/3</sup> = <sup>3</sup>&radic;x</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-rose); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-rose-glow);"></span>
+                            <span>Zero Exponent: x<sup>0</sup> = 1 (for x &ne; 0)</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Sliders Surd
+        const slideN = document.getElementById('slideN');
+        const lblN = document.getElementById('lblN');
+        const surdControls = document.getElementById('surdControls');
+
+        // Sliders Index
+        const indexControls = document.getElementById('indexControls');
+        const slideIndex1 = document.getElementById('slideIndex1');
+        const slideIndex2 = document.getElementById('slideIndex2');
+        const lblIndex1 = document.getElementById('lblIndex1');
+        const lblIndex2 = document.getElementById('lblIndex2');
+        const lblIndex1Name = document.getElementById('lblIndex1Name');
+        const lblIndex2Name = document.getElementById('lblIndex2Name');
+
+        const canvasTitle = document.getElementById('canvasTitle');
+        const eqHeader = document.getElementById('eqHeader');
+        const eqDisplay = document.getElementById('eqDisplay');
+        const hintText = document.getElementById('hintText');
+
+        // Solver
+        const solverTitle = document.getElementById('solverTitle');
+        const solveSteps = document.getElementById('solveSteps');
+
+        // State
+        let activeTab = 'surd'; // 'surd' or 'index'
+        let curveType = 'exponential'; // 'exponential' or 'radical'
+
+        // Values
+        let surdN = 12;
+        let indexA = 1.0;
+        let indexB = 2.0;
+
+        function switchTab(tabType) {
+            activeTab = tabType;
+            if (tabType === 'surd') {
+                document.getElementById('tabSurd').classList.add('active');
+                document.getElementById('tabIndex').classList.remove('active');
+                surdControls.style.display = 'flex';
+                indexControls.style.display = 'none';
+                canvasTitle.textContent = "Surd Square Factoring Grid";
+                eqHeader.textContent = "Active Surd Simplification";
+                hintText.textContent = "Shaded grids inside the canvas denote the largest perfect square factor that can be rooted outside the radical.";
+                solverTitle.textContent = "Radicand Factorization Steps";
+            } else {
+                document.getElementById('tabSurd').classList.remove('active');
+                document.getElementById('tabIndex').classList.add('active');
+                surdControls.style.display = 'none';
+                indexControls.style.display = 'flex';
+                canvasTitle.textContent = "Function Graph: y = f(x)";
+                eqHeader.textContent = "Active Exponent Function";
+                hintText.textContent = "Exponents map values exponentially or as roots, representing curved growth parameters.";
+                solverTitle.textContent = "Function Evaluation Steps";
+            }
+            updateAll();
+        }
+
+        function switchCurveType(type) {
+            curveType = type;
+            if (type === 'exponential') {
+                document.getElementById('btnExp').classList.add('active');
+                document.getElementById('btnRad').classList.remove('active');
+
+                lblIndex1Name.innerHTML = `Multiplier <span class="math-symbol">a</span>`;
+                lblIndex2Name.innerHTML = `Base <span class="math-symbol">b</span>`;
+
+                slideIndex1.min = 0.5; slideIndex1.max = 3.0; slideIndex1.step = 0.1; slideIndex1.value = 1.0;
+                slideIndex2.min = 0.1; slideIndex2.max = 4.0; slideIndex2.step = 0.1; slideIndex2.value = 2.0;
+            } else {
+                document.getElementById('btnExp').classList.remove('active');
+                document.getElementById('btnRad').classList.add('active');
+
+                lblIndex1Name.innerHTML = `Multiplier <span class="math-symbol">a</span>`;
+                lblIndex2Name.innerHTML = `Root Index <span class="math-symbol">n</span>`;
+
+                slideIndex1.min = 0.5; slideIndex1.max = 3.0; slideIndex1.step = 0.1; slideIndex1.value = 1.0;
+                slideIndex2.min = 2; slideIndex2.max = 5; slideIndex2.step = 1; slideIndex2.value = 2;
+            }
+            indexA = parseFloat(slideIndex1.value);
+            indexB = parseFloat(slideIndex2.value);
+            updateAll();
+        }
+
+        function resizeCanvases() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            drawAll();
+        }
+
+        // Coordinate transforms
+        function toPixel(gx, gy) {
+            const margin = 35;
+            const w = canvas.width - 2 * margin;
+            const h = canvas.height - 2 * margin;
+            const px = margin + ((gx + 8) / 16) * w;
+            const py = margin + ((8 - gy) / 16) * h;
+            return { x: px, y: py };
+        }
+
+        function toGraph(px, py) {
+            const margin = 35;
+            const w = canvas.width - 2 * margin;
+            const h = canvas.height - 2 * margin;
+            const gx = -8 + ((px - margin) / w) * 16;
+            const gy = 8 - ((py - margin) / h) * 16;
+            return { x: gx, y: gy };
+        }
+
+        // Simplifies square root of N: returns {a, b} where sqrt(N) = a * sqrt(b)
+        function simplifySurd(n) {
+            let maxSquare = 1;
+            let a = 1;
+            for (let i = 1; i * i <= n; i++) {
+                if (n % (i * i) === 0) {
+                    maxSquare = i * i;
+                    a = i;
+                }
+            }
+            let b = n / maxSquare;
+            return { a, b };
+        }
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const margin = 35;
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.font = '9px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            for (let i = -8; i <= 8; i++) {
+                if (i === 0) continue;
+                let p1 = toPixel(i, 0);
+                ctx.beginPath();
+                ctx.moveTo(p1.x, margin);
+                ctx.lineTo(p1.x, canvas.height - margin);
+                ctx.stroke();
+                ctx.fillText(i, p1.x, canvas.height - margin + 12);
+
+                let p2 = toPixel(0, i);
+                ctx.beginPath();
+                ctx.moveTo(margin, p2.y);
+                ctx.lineTo(canvas.width - margin, p2.y);
+                ctx.stroke();
+                ctx.fillText(i, margin - 15, p2.y);
+            }
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 1.5;
+            let center = toPixel(0, 0);
+
+            ctx.beginPath();
+            ctx.moveTo(margin, center.y);
+            ctx.lineTo(canvas.width - margin, center.y);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(center.x, margin);
+            ctx.lineTo(center.x, canvas.height - margin);
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.fillText('x', canvas.width - margin + 15, center.y);
+            ctx.fillText('y', center.x, margin - 12);
+        }
+
+        function drawAll() {
+            if (activeTab === 'surd') {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const simplified = simplifySurd(surdN);
+                const sqVal = simplified.a * simplified.a; // perfect square factor
+                const restVal = simplified.b; // leftover
+
+                const side = simplified.a;
+
+                // Center grid coordinates
+                const cx = canvas.width / 2;
+                const cy = canvas.height / 2;
+
+                const boxSize = 40;
+
+                // 1. Draw Perfect Square factor Grid: side x side
+                if (side > 1) {
+                    ctx.fillStyle = 'rgba(168, 85, 247, 0.15)';
+                    ctx.strokeStyle = '#a855f7';
+                    ctx.lineWidth = 2;
+
+                    const gridW = side * boxSize;
+                    const gridH = side * boxSize;
+
+                    const gx = cx - gridW - 20;
+                    const gy = cy - gridH / 2;
+
+                    ctx.fillRect(gx, gy, gridW, gridH);
+                    ctx.strokeRect(gx, gy, gridW, gridH);
+
+                    // Inner grid lines
+                    ctx.strokeStyle = 'rgba(168, 85, 247, 0.3)';
+                    ctx.lineWidth = 1;
+                    for (let r = 1; r < side; r++) {
+                        ctx.beginPath();
+                        ctx.moveTo(gx, gy + r * boxSize);
+                        ctx.lineTo(gx + gridW, gy + r * boxSize);
+                        ctx.stroke();
+
+                        ctx.beginPath();
+                        ctx.moveTo(gx + r * boxSize, gy);
+                        ctx.lineTo(gx + r * boxSize, gy + gridH);
+                        ctx.stroke();
+                    }
+
+                    // Label the dimensions
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '10px JetBrains Mono';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${side}`, gx + gridW / 2, gy - 8);
+                    ctx.textAlign = 'right';
+                    ctx.fillText(`${side}`, gx - 8, gy + gridH / 2);
+
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = '#a855f7';
+                    ctx.font = 'bold 12px Outfit';
+                    ctx.fillText(`Square Area: ${sqVal}`, gx + gridW / 2, gy + gridH / 2);
+                } else {
+                    // No square factor
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                    ctx.font = 'italic 12px Outfit';
+                    ctx.textAlign = 'center';
+                    ctx.fillText("No perfect square factors > 1", cx - 80, cy);
+                }
+
+                // 2. Draw Leftover factor Rest Grid: Rest boxes
+                if (restVal > 0) {
+                    ctx.fillStyle = 'rgba(255, 176, 0, 0.12)';
+                    ctx.strokeStyle = '#ffb000';
+                    ctx.lineWidth = 2;
+
+                    // Arrange restVal squares in a grid.
+                    // For example, if restVal = 3, we can draw 3 squares in a row
+                    const rx = cx + 20;
+                    const ry = cy - boxSize / 2;
+
+                    const gridW = restVal * boxSize;
+
+                    ctx.fillRect(rx, ry, gridW, boxSize);
+                    ctx.strokeRect(rx, ry, gridW, boxSize);
+
+                    // Inner divider lines
+                    ctx.strokeStyle = 'rgba(255, 176, 0, 0.3)';
+                    ctx.lineWidth = 1;
+                    for (let c = 1; c < restVal; c++) {
+                        ctx.beginPath();
+                        ctx.moveTo(rx + c * boxSize, ry);
+                        ctx.lineTo(rx + c * boxSize, ry + boxSize);
+                        ctx.stroke();
+                    }
+
+                    ctx.fillStyle = '#ffb000';
+                    ctx.font = 'bold 12px Outfit';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`Rest: ${restVal}`, rx + gridW / 2, ry + boxSize / 2 + 4);
+                }
+
+                // Overall equation mapping
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 14px Outfit';
+                ctx.textAlign = 'center';
+                ctx.fillText(`&radic;${surdN} = &radic;(${sqVal} &times; ${restVal}) = ${side}&radic;${restVal}`.replace(/&radic;/g, '√').replace(/&times;/g, '×'), cx, cy + 90);
+
+            } else {
+                drawGrid();
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(35, 35, canvas.width - 70, canvas.height - 70);
+                ctx.clip();
+
+                ctx.strokeStyle = 'var(--color-rose)';
+                ctx.lineWidth = 2.5;
+
+                ctx.beginPath();
+                let first = true;
+                
+                for (let px = 35; px <= canvas.width - 35; px += 2) {
+                    let gx = toGraph(px, 0).x;
+                    let gy = null;
+
+                    if (curveType === 'exponential') {
+                        // y = a * b^x
+                        gy = indexA * Math.pow(indexB, gx);
+                    } else {
+                        // y = a * x^(1/n)
+                        // x must be >= 0 for fractional roots in standard real math
+                        if (gx >= 0) {
+                            gy = indexA * Math.pow(gx, 1 / indexB);
+                        }
+                    }
+
+                    if (gy !== null && gy >= -8.5 && gy <= 8.5) {
+                        let p = toPixel(gx, gy);
+                        if (first) {
+                            ctx.moveTo(p.x, p.y);
+                            first = false;
+                        } else {
+                            ctx.lineTo(p.x, p.y);
+                        }
+                    }
+                }
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        function updateSolver() {
+            if (activeTab === 'surd') {
+                lblN.textContent = surdN;
+                const simplified = simplifySurd(surdN);
+                const sq = simplified.a * simplified.a;
+                const rest = simplified.b;
+
+                if (simplified.a > 1) {
+                    eqDisplay.innerHTML = `&radic;${surdN} = ${simplified.a}&radic;${rest}`;
+                } else {
+                    eqDisplay.innerHTML = `&radic;${surdN} = &radic;${surdN} <span style="font-size:0.8rem; color:var(--text-muted); font-weight:normal;">(Simplest Form)</span>`;
+                }
+
+                // Step-by-step solver
+                let html = `
+                    <div><strong>1. Find perfect square factors of ${surdN}:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 10px;">
+                        Factors: ${getFactorsString(surdN)}<br>
+                        Largest perfect square factor is <strong>${sq}</strong>.
+                    </div>
+                    <div><strong>2. Rewrite radicand as product:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 10px;">
+                        &radic;${surdN} = &radic;(${sq} &times; ${rest})
+                    </div>
+                    <div><strong>3. Distribute square root across product factors:</strong></div>
+                    <div style="margin-left: 10px; margin-bottom: 10px;">
+                        &radic;${surdN} = &radic;${sq} &times; &radic;${rest}
+                    </div>
+                    <div><strong>4. Simplify the perfect square root factor:</strong></div>
+                    <div style="margin-left: 10px; font-weight:700; color:var(--color-rose);">
+                        &radic;${surdN} = ${simplified.a}&radic;${rest}
+                    </div>
+                `;
+                solveSteps.innerHTML = html;
+
+            } else {
+                lblIndex1.textContent = indexA.toFixed(1);
+                lblIndex2.textContent = indexB.toFixed(1);
+
+                if (curveType === 'exponential') {
+                    eqDisplay.innerHTML = `y = ${indexA.toFixed(1)} &bull; (${indexB.toFixed(1)})<sup>x</sup>`;
+
+                    let html = `
+                        <div><strong>Exponential Curve: y = a &bull; b<sup>x</sup></strong></div>
+                        <div style="margin-left: 10px; margin-bottom: 10px; line-height: 1.6;">
+                            Multiplier a = <strong>${indexA.toFixed(1)}</strong> (y-intercept at x = 0)<br>
+                            Base b = <strong>${indexB.toFixed(1)}</strong> (growth rate factor)
+                        </div>
+                        <div><strong>Evaluated coordinate pairs:</strong></div>
+                        <div style="margin-left: 10px; font-family:'JetBrains Mono'; font-size:0.8rem;">
+                            &bull; x = -1 &implies; y = ${(indexA / indexB).toFixed(3)}<br>
+                            &bull; x = 0 &implies; y = ${indexA.toFixed(3)}<br>
+                            &bull; x = 1 &implies; y = ${(indexA * indexB).toFixed(3)}<br>
+                            &bull; x = 2 &implies; y = ${(indexA * indexB * indexB).toFixed(3)}
+                        </div>
+                    `;
+                    solveSteps.innerHTML = html;
+                } else {
+                    eqDisplay.innerHTML = `y = ${indexA.toFixed(1)} &bull; x<sup>1/${indexB.toFixed(0)}</sup> = ${indexA.toFixed(1)} &bull; <sup>${indexB.toFixed(0)}</sup>&radic;x`;
+
+                    let html = `
+                        <div><strong>Radical Curve: y = a &bull; <sup>n</sup>&radic;x</strong></div>
+                        <div style="margin-left: 10px; margin-bottom: 10px; line-height: 1.6;">
+                            Multiplier a = <strong>${indexA.toFixed(1)}</strong><br>
+                            Root Index n = <strong>${indexB.toFixed(0)}</strong>
+                        </div>
+                        <div><strong>Evaluated coordinate pairs:</strong></div>
+                        <div style="margin-left: 10px; font-family:'JetBrains Mono'; font-size:0.8rem;">
+                            &bull; x = 0 &implies; y = 0.000<br>
+                            &bull; x = 1 &implies; y = ${indexA.toFixed(3)}<br>
+                            &bull; x = 4 &implies; y = ${(indexA * Math.pow(4, 1/indexB)).toFixed(3)}<br>
+                            &bull; x = 8 &implies; y = ${(indexA * Math.pow(8, 1/indexB)).toFixed(3)}
+                        </div>
+                    `;
+                    solveSteps.innerHTML = html;
+                }
+            }
+        }
+
+        function getFactorsString(num) {
+            let factors = [];
+            for (let i = 1; i <= num; i++) {
+                if (num % i === 0) factors.push(i);
+            }
+            return factors.join(', ');
+        }
+
+        function updateAll() {
+            updateSolver();
+            drawAll();
+        }
+
+        slideN.addEventListener('input', (e) => {
+            surdN = parseInt(e.target.value);
+            updateAll();
+        });
+
+        slideIndex1.addEventListener('input', (e) => {
+            indexA = parseFloat(e.target.value);
+            updateAll();
+        });
+
+        slideIndex2.addEventListener('input', (e) => {
+            indexB = parseFloat(e.target.value);
+            updateAll();
+        });
+
+        // Quiz State & Data
+        const quizQuestions = [
+            {
+                question: "Which of the following exponents represents the square root radical &radic;x?",
+                options: [
+                    "x⁰.⁵ (or x¹/²)",
+                    "x²",
+                    "x⁻¹",
+                    "x⁻⁰.⁵"
+                ],
+                correct: 0,
+                explanation: "By the fractional exponent law, x^(a/b) = b-root of x^a. Therefore, x^(1/2) is equivalent to the square root of x."
+            },
+            {
+                question: "Simplify the surd radical expression &radic;45.",
+                options: [
+                    "9&radic;5",
+                    "3&radic;5",
+                    "5&radic;3",
+                    "15&radic;3"
+                ],
+                correct: 1,
+                explanation: "Factor 45: 45 = 9 &times; 5. Since 9 is a perfect square, &radic;45 = &radic;9 &times; &radic;5 = 3&radic;5."
+            },
+            {
+                question: "Apply the quotient index law to simplify: x⁸ / x³.",
+                options: [
+                    "x¹¹",
+                    "x⁵",
+                    "x⁸/³",
+                    "x²⁴"
+                ],
+                correct: 1,
+                explanation: "According to the quotient law of indices, x^a / x^b = x^(a - b). Therefore, x^8 / x^3 = x^(8 - 3) = x^5."
+            },
+            {
+                question: "What is the simplified value of the fractional exponent expression: 27²/³?",
+                options: [
+                    "9",
+                    "3",
+                    "18",
+                    "27"
+                ],
+                correct: 0,
+                explanation: "27^(2/3) = (cube root of 27) squared. The cube root of 27 is 3. 3 squared is 9."
+            },
+            {
+                question: "Simplify the following expression: (2x³y²)⁴.",
+                options: [
+                    "8x¹²y⁸",
+                    "16x⁷y⁶",
+                    "16x¹²y⁸",
+                    "2x¹²y⁸"
+                ],
+                correct: 2,
+                explanation: "Distribute the power of 4: 2⁴ &bull; (x³)⁴ &bull; (y²)⁴ = 16 &bull; x^(3&times;4) &bull; y^(2&times;4) = 16x¹²y⁸."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-rose); box-shadow:0 4px 15px var(--color-rose-glow);">
+                        Restart Quiz Evaluation
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function() {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvases, 300);
+            });
+            updateAll();
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

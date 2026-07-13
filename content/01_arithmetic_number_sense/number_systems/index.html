@@ -1,0 +1,552 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Systems Hierarchy - Arithmetic & Numbers</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "01_arithmetic_number_sense",
+            logo: {"main":"Number","accent":"Lab","sub":"Number Systems Hierarchy"},
+            navigation: [
+    {
+        "label": "Sets",
+        "desc": "Sets interactive section",
+        "href": "#sets"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Classification-specific colors */
+            --color-natural: #a3e635;   /* Lime Green */
+            --color-whole: #34d399;     /* Emerald Green */
+            --color-integer: #059669;   /* Forest Green */
+            --color-rational: #ffb000;  /* Amber */
+            --color-irrational: #a855f7;/* Purple */
+            --color-real: #f43f5e;      /* Rose */
+        }
+
+        /* Custom input area */
+        .custom-input-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .custom-input {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .custom-input:focus {
+            border-color: var(--color-primary);
+        }
+
+        .btn-classify {
+            background: var(--color-primary);
+            color: var(--bg-color);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-classify:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--color-primary-glow);
+        }
+
+        /* Venn Diagram list styles */
+        .hierarchy-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 0.5rem;
+        }
+
+        .hierarchy-item {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.01);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hierarchy-item.highlight {
+            border-color: var(--color-primary);
+            background: rgba(56, 189, 248, 0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Syllabus Navigation -->
+    <aside></aside>
+
+    <!-- Main Workspace Content -->
+    <main>
+        <header>
+            <h1>Number Systems Hierarchy</h1>
+            <p>Master standard number classifications. Analyze how integers, rational numbers, and real numbers nest inside each other in a mathematical set hierarchy.</p>
+        </header>
+
+        <section id="sets">
+            <div class="workspace-grid">
+                <!-- Left Panel: Interactive nested chart canvas -->
+                <div class="panel">
+                    <!-- Presets -->
+                    <div class="presets-grid" id="presetGrid">
+                        <button class="btn-preset active" data-val="7">7 (Natural)</button>
+                        <button class="btn-preset" data-val="0">0 (Whole)</button>
+                        <button class="btn-preset" data-val="-5">-5 (Integer)</button>
+                        <button class="btn-preset" data-val="3/4">3/4 (Rational)</button>
+                        <button class="btn-preset" data-val="sqrt(2)">&radic;2 (Irrational)</button>
+                        <button class="btn-preset" data-val="pi">&pi; (Irrational)</button>
+                    </div>
+
+                    <!-- Custom Input -->
+                    <div class="custom-input-row">
+                        <input type="text" class="custom-input" id="customInput" placeholder="Enter a number (e.g. -12, 1/3, sqrt(5), pi)...">
+                        <button class="btn-classify" id="btnClassify">Classify</button>
+                    </div>
+
+                    <!-- Diagram Canvas -->
+                    <div class="canvas-container" style="height: 380px;" id="canvasHolderSets">
+                        <canvas id="setsCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Set properties & categories list -->
+                <div class="panel">
+                    <div class="math-card" style="border-color: rgba(56, 189, 248, 0.15);">
+                        <h3 id="selectedValTitle">Classification for 7</h3>
+                        <div class="hierarchy-list" id="classificationList">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <div class="math-card">
+                        <h3>Set Descriptions</h3>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:0.5rem;">
+                            *   <strong style="color:var(--color-natural);">Natural (ℕ):</strong> Counting numbers starting at 1.
+                        </p>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:0.5rem;">
+                            *   <strong style="color:var(--color-whole);">Whole (𝕎):</strong> Natural numbers plus zero (0).
+                        </p>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:0.5rem;">
+                            *   <strong style="color:var(--color-integer);">Integers (ℤ):</strong> Whole numbers plus negative integers.
+                        </p>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:0.5rem;">
+                            *   <strong style="color:var(--color-rational);">Rationals (ℚ):</strong> Fractional ratios (terminating/repeating decimals).
+                        </p>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:0.5rem;">
+                            *   <strong style="color:var(--color-irrational);">Irrationals (ℙ):</strong> Non-repeating infinite decimals (like $\pi$ or $\sqrt{2}$).
+                        </p>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+                            *   <strong style="color:var(--color-real);">Reals (ℝ):</strong> The complete coordinate scale (Rationals + Irrationals).
+                        </p>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>Natural, Whole, and Integer sets sit nested inside each other. If a number is Natural, it is automatically Whole, Integer, and Rational!</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Diagram & Animation Scripts -->
+    <script>
+        const canvas = document.getElementById('setsCanvas');
+        const holder = document.getElementById('canvasHolderSets');
+        const ctx = canvas.getContext('2d');
+
+        // Hex colors for HTML5 Canvas rendering (since canvas context doesn't support CSS variables directly)
+        const colors = {
+            natural: '#a3e635',   // Lime Green
+            whole: '#34d399',
+            integer: '#059669',   // Forest Green
+            rational: '#ffb000',  // Amber
+            irrational: '#a855f7',// Purple
+            real: '#f43f5e',      // Rose
+            primary: '#ffb000'
+        };
+
+        // Helper to get stroke/text colors for both active and inactive states (rainbow it)
+        function getStyles(colorHex, isActive) {
+            return {
+                stroke: isActive ? colorHex : colorHex + '44', // ~27% opacity for inactive colored borders
+                text: isActive ? colorHex : colorHex + '99',   // ~60% opacity for inactive colored labels
+                width: isActive ? 3.5 : 1.5
+            };
+        }
+
+        const presetGrid = document.getElementById('presetGrid');
+        const customInput = document.getElementById('customInput');
+        const btnClassify = document.getElementById('btnClassify');
+
+        const selectedValTitle = document.getElementById('selectedValTitle');
+        const classificationList = document.getElementById('classificationList');
+
+        let currentValue = "7";
+
+        // Particle dropping variables
+        let dropParticle = null;
+
+        function resizeCanvas() {
+            const rect = holder.getBoundingClientRect();
+            canvas.width = rect.width * (window.devicePixelRatio || 1);
+            canvas.height = rect.height * (window.devicePixelRatio || 1);
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = rect.height + 'px';
+            ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+            draw();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        // Classify number logic
+        function classify(valStr) {
+            const cleaned = valStr.trim().toLowerCase();
+            const result = {
+                isNatural: false,
+                isWhole: false,
+                isInteger: false,
+                isRational: false,
+                isIrrational: false,
+                isReal: true,
+                cleanName: valStr
+            };
+
+            // Basic parsing
+            if (cleaned === 'pi' || cleaned === 'π') {
+                result.isIrrational = true;
+                result.cleanName = "π";
+            }
+            else if (cleaned.startsWith('sqrt') || cleaned.includes('√')) {
+                result.isIrrational = true;
+                if (cleaned.startsWith('sqrt')) {
+                    const match = cleaned.match(/\d+/);
+                    const rootVal = match ? parseInt(match[0]) : 2;
+                    result.cleanName = `√${rootVal}`;
+                    const sq = Math.sqrt(rootVal);
+                    if (Math.floor(sq) === sq) {
+                        result.isIrrational = false;
+                        const finalVal = sq;
+                        result.isNatural = finalVal > 0;
+                        result.isWhole = finalVal >= 0;
+                        result.isInteger = true;
+                        result.isRational = true;
+                    }
+                } else {
+                    result.cleanName = valStr;
+                }
+            }
+            else if (cleaned.includes('/')) {
+                const parts = cleaned.split('/');
+                const num = parseInt(parts[0]);
+                const den = parseInt(parts[1]);
+                result.isRational = true;
+                result.cleanName = `${num}/${den}`;
+                
+                if (den !== 0 && num % den === 0) {
+                    const finalVal = num / den;
+                    result.isNatural = finalVal > 0;
+                    result.isWhole = finalVal >= 0;
+                    result.isInteger = true;
+                }
+            }
+            else {
+                const val = parseFloat(cleaned);
+                if (isNaN(val)) {
+                    // Fallback to real
+                    result.isRational = true;
+                    result.cleanName = valStr;
+                } else {
+                    result.cleanName = val;
+                    if (Number.isInteger(val)) {
+                        result.isInteger = true;
+                        result.isRational = true;
+                        if (val >= 0) {
+                            result.isWhole = true;
+                            if (val > 0) {
+                                result.isNatural = true;
+                            }
+                        }
+                    } else {
+                        // Decimal fraction
+                        result.isRational = true;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        function draw() {
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            ctx.clearRect(0, 0, w, h);
+
+            const classifications = classify(currentValue);
+
+            // Coordinates for Nested Sets (Left Box = Rational nest, Right Box = Irrational nest)
+            // Combined inside Reals boundary
+            const pad = 20;
+            const rx = pad;
+            const ry = h * 0.15;
+            const rw = w - 2 * pad;
+            const rh = h * 0.8;
+
+            const realStyles = getStyles(colors.real, classifications.isReal);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.01)";
+            ctx.fillRect(rx, ry, rw, rh);
+            ctx.strokeStyle = realStyles.stroke;
+            ctx.lineWidth = realStyles.width;
+            ctx.strokeRect(rx, ry, rw, rh);
+            
+            ctx.fillStyle = realStyles.text;
+            ctx.font = "bold 13px 'Outfit'";
+            ctx.fillText("Real Numbers (ℝ)", rx + 12, ry + 20);
+
+            // Split Reals box: Rational Nest on the left (60% width), Irrational Nest on the right (35% width)
+            const splitW = rw * 0.6;
+            const rationalX = rx + 12;
+            const rationalY = ry + 32;
+            const rationalW = splitW;
+            const rationalH = rh - 44;
+
+            const irrationalX = rx + splitW + 24;
+            const irrationalY = ry + 32;
+            const irrationalW = rw - splitW - 36;
+            const irrationalH = rh - 44;
+
+            const rationalStyles = getStyles(colors.rational, classifications.isRational);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.01)";
+            ctx.fillRect(rationalX, rationalY, rationalW, rationalH);
+            ctx.strokeStyle = rationalStyles.stroke;
+            ctx.lineWidth = rationalStyles.width;
+            ctx.strokeRect(rationalX, rationalY, rationalW, rationalH);
+            ctx.fillStyle = rationalStyles.text;
+            ctx.fillText("Rational (ℚ)", rationalX + 10, rationalY + 18);
+
+            const irrationalStyles = getStyles(colors.irrational, classifications.isIrrational);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.01)";
+            ctx.fillRect(irrationalX, irrationalY, irrationalW, irrationalH);
+            ctx.strokeStyle = irrationalStyles.stroke;
+            ctx.lineWidth = irrationalStyles.width;
+            ctx.strokeRect(irrationalX, irrationalY, irrationalW, irrationalH);
+            ctx.fillStyle = irrationalStyles.text;
+            ctx.fillText("Irrational (ℙ)", irrationalX + 10, irrationalY + 18);
+
+            // Inside Rationals: Integers (ℤ)
+            const integerX = rationalX + 10;
+            const integerY = rationalY + 28;
+            const integerW = rationalW - 20;
+            const integerH = rationalH - 38;
+
+            const integerStyles = getStyles(colors.integer, classifications.isInteger);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.01)";
+            ctx.fillRect(integerX, integerY, integerW, integerH);
+            ctx.strokeStyle = integerStyles.stroke;
+            ctx.lineWidth = integerStyles.width;
+            ctx.strokeRect(integerX, integerY, integerW, integerH);
+            ctx.fillStyle = integerStyles.text;
+            ctx.fillText("Integers (ℤ)", integerX + 10, integerY + 18);
+
+            // Inside Integers: Whole (𝕎)
+            const wholeX = integerX + 10;
+            const wholeY = integerY + 28;
+            const wholeW = integerW - 20;
+            const wholeH = integerH - 38;
+
+            const wholeStyles = getStyles(colors.whole, classifications.isWhole);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.01)";
+            ctx.fillRect(wholeX, wholeY, wholeW, wholeH);
+            ctx.strokeStyle = wholeStyles.stroke;
+            ctx.lineWidth = wholeStyles.width;
+            ctx.strokeRect(wholeX, wholeY, wholeW, wholeH);
+            ctx.fillStyle = wholeStyles.text;
+            ctx.fillText("Whole (𝕎)", wholeX + 10, wholeY + 18);
+
+            // Inside Whole: Natural (ℕ)
+            const naturalX = wholeX + 10;
+            const naturalY = wholeY + 28;
+            const naturalW = wholeW - 20;
+            const naturalH = wholeH - 38;
+
+            const naturalStyles = getStyles(colors.natural, classifications.isNatural);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.01)";
+            ctx.fillRect(naturalX, naturalY, naturalW, naturalH);
+            ctx.strokeStyle = naturalStyles.stroke;
+            ctx.lineWidth = naturalStyles.width;
+            ctx.strokeRect(naturalX, naturalY, naturalW, naturalH);
+            ctx.fillStyle = naturalStyles.text;
+            ctx.fillText("Natural (ℕ)", naturalX + 10, naturalY + 18);
+
+            if (dropParticle) {
+                // Animate dropping
+                dropParticle.y += dropParticle.speedY;
+
+                // Stop boundary check based on correct set position
+                let stopY = h - 60; // baseline bottom
+                if (classifications.isNatural) stopY = naturalY + naturalH/2 + 5;
+                else if (classifications.isWhole) stopY = wholeY + wholeH - 25;
+                else if (classifications.isInteger) stopY = integerY + integerH - 25;
+                else if (classifications.isRational) stopY = rationalY + rationalH - 25;
+                else if (classifications.isIrrational) stopY = irrationalY + irrationalH/2 + 5;
+
+                if (dropParticle.y >= stopY) {
+                    dropParticle.y = stopY;
+                    dropParticle.speedY = 0; // stop
+                }
+
+                // Determine active classification color dynamically
+                let activeColor = colors.real;
+                if (classifications.isNatural) activeColor = colors.natural;
+                else if (classifications.isWhole) activeColor = colors.whole;
+                else if (classifications.isInteger) activeColor = colors.integer;
+                else if (classifications.isRational) activeColor = colors.rational;
+                else if (classifications.isIrrational) activeColor = colors.irrational;
+
+                ctx.fillStyle = "#ffffff";
+                ctx.shadowColor = activeColor;
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(dropParticle.x, dropParticle.y, 16, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                ctx.strokeStyle = activeColor;
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                // Number inside bubble
+                ctx.fillStyle = "#08090d";
+                ctx.font = "bold 11px 'JetBrains Mono'";
+                ctx.textAlign = "center";
+                ctx.fillText(classifications.cleanName, dropParticle.x, dropParticle.y + 4);
+            }
+        }
+
+        function triggerDropAnimation() {
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const classifications = classify(currentValue);
+
+            // X destination (left side for rationals, right side for irrationals)
+            let targetX = w * 0.35;
+            if (classifications.isIrrational) {
+                targetX = w * 0.8;
+            }
+
+            dropParticle = {
+                x: targetX,
+                y: 10,
+                speedY: 4
+            };
+        }
+
+        function updateListDetails() {
+            const classifications = classify(currentValue);
+            selectedValTitle.innerText = `Classification for ${classifications.cleanName}`;
+
+            let html = '';
+            
+            function addListItem(name, symbol, color, matches) {
+                const highlightClass = matches ? 'highlight' : '';
+                const styleStr = matches ? `style="border-color:${color}; color:${color}; font-weight:bold;"` : '';
+                html += `
+                    <div class="hierarchy-item ${highlightClass}" ${styleStr}>
+                        <span>${name} (${symbol})</span>
+                        <span>${matches ? 'Yes' : 'No'}</span>
+                    </div>
+                `;
+            }
+
+            addListItem("Natural Numbers", "ℕ", "var(--color-natural)", classifications.isNatural);
+            addListItem("Whole Numbers", "𝕎", "var(--color-whole)", classifications.isWhole);
+            addListItem("Integers", "ℤ", "var(--color-integer)", classifications.isInteger);
+            addListItem("Rational Numbers", "ℚ", "var(--color-rational)", classifications.isRational);
+            addListItem("Irrational Numbers", "ℙ", "var(--color-irrational)", classifications.isIrrational);
+            addListItem("Real Numbers", "ℝ", "var(--color-real)", classifications.isReal);
+
+            classificationList.innerHTML = html;
+        }
+
+        function loadNumber(valStr) {
+            currentValue = valStr;
+            updateListDetails();
+            triggerDropAnimation();
+        }
+
+        // Bind presets
+        presetGrid.addEventListener('click', (e) => {
+            if (e.target.classList.contains('btn-preset')) {
+                document.querySelectorAll('#presetGrid .btn-preset').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+
+                const val = e.target.getAttribute('data-val');
+                loadNumber(val);
+            }
+        });
+
+        // Bind custom input
+        btnClassify.addEventListener('click', () => {
+            const val = customInput.value;
+            if (val.trim()) {
+                document.querySelectorAll('#presetGrid .btn-preset').forEach(b => b.classList.remove('active'));
+                loadNumber(val);
+            }
+        });
+
+        customInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const val = customInput.value;
+                if (val.trim()) {
+                    document.querySelectorAll('#presetGrid .btn-preset').forEach(b => b.classList.remove('active'));
+                    loadNumber(val);
+                }
+            }
+        });
+
+        // Loop animation
+        function tick() {
+            draw();
+            requestAnimationFrame(tick);
+        }
+
+        // Start
+        setTimeout(() => {
+            resizeCanvas();
+            loadNumber("7");
+            tick();
+        }, 150);
+
+    </script>
+</body>
+</html>

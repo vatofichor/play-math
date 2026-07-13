@@ -1,0 +1,683 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volume & Capacity Measurement - Geometry & Measurement</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <script>
+        window.PAGE_CONFIG = {
+            domain: "03_geometry_measurement",
+            logo: { main: "Volume", accent: "Lab", sub: "Volume Measurement" },
+            navigation: [
+                { label: "Unit Cube Packing", desc: "Interactive packing simulation", href: "#sectionPacking" }
+            ]
+        };
+    </script>
+    <script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Emerald Theme for Geometry */
+            --color-primary: #10b981;
+            --color-primary-glow: rgba(16, 185, 129, 0.35);
+            
+            --color-outline: #ffb000; /* Gold */
+            --color-outline-glow: rgba(255, 176, 0, 0.35);
+            --color-shape-fill: rgba(16, 185, 129, 0.12);
+            --color-liquid: #3b82f6; /* Blue for water/capacity */
+            --color-liquid-glow: rgba(59, 130, 246, 0.35);
+        }
+
+        /* Override active menu styling to use Emerald */
+        .syllabus-item.active a {
+            background: var(--color-primary) !important;
+            box-shadow: 0 4px 20px var(--color-primary-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .syllabus-item.active a .syllabus-title,
+        .syllabus-item.active a .syllabus-desc {
+            color: var(--bg-color) !important;
+        }
+
+        .chart-holder {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.28);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 1rem;
+            position: relative;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .presets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin-bottom: 1.25rem;
+        }
+
+        .btn-preset {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            text-align: center;
+        }
+
+        .btn-preset:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--text-muted);
+        }
+
+        .btn-preset.active {
+            background: var(--color-primary);
+            color: var(--bg-color);
+            border-color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        .btn-preset-blue.active {
+            background: var(--color-liquid) !important;
+            color: white !important;
+            border-color: var(--color-liquid) !important;
+        }
+
+        .controls-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 1.25rem;
+        }
+
+        .control-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .control-header span.number {
+            color: var(--text-color);
+            font-weight: 700;
+        }
+
+        .digital-box {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            text-align: center;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 1.25rem;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.4), 0 0 10px rgba(16, 185, 129, 0.15);
+        }
+
+        .digital-box-blue {
+            color: var(--color-liquid) !important;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.4), 0 0 10px rgba(59, 130, 246, 0.15) !important;
+        }
+
+        /* Packing grid helper buttons */
+        .pack-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-pack {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            font-size: 0.78rem;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .btn-pack:hover {
+            border-color: var(--color-primary);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        /* Quiz styles */
+        .quiz-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-question-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-primary);
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .quiz-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .quiz-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .btn-option {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            padding: 12px;
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            text-align: left;
+        }
+
+        .btn-option:hover:not(:disabled) {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: var(--color-primary);
+        }
+
+        .btn-option.correct {
+            background: rgba(16, 185, 129, 0.25) !important;
+            border-color: #10b981 !important;
+            color: #ffffff;
+        }
+
+        .btn-option.incorrect {
+            background: rgba(244, 63, 94, 0.25) !important;
+            border-color: #f43f5e !important;
+            color: #ffffff;
+        }
+
+        .quiz-score-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 1.25rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .score-pill {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            color: var(--color-primary);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer (Managed by shared.js) -->
+    <aside></aside>
+
+    <!-- Main Workspace Content -->
+    <main>
+        <!-- SECTION 1: UNIT CUBE PACKING -->
+        <section id="sectionPacking">
+            <header>
+                <h1>Unit Cube Packing</h1>
+                <p>Volume is the amount of 3D space inside a solid. We measure it by counting how many **unit cubes ($1\times1\times1$)** are needed to completely fill it. Adjust dimensions and pack cubes in!</p>
+            </header>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Canvas and Packing controls -->
+                <div class="panel">
+                    <div class="controls-container">
+                        <div class="control-row">
+                            <div class="control-header">
+                                <span>Length (l):</span>
+                                <span class="number" id="lblPackL">4 units</span>
+                            </div>
+                            <input type="range" id="sliderPackL" min="1" max="5" value="4" step="1" oninput="updatePackingDimensions()">
+                        </div>
+                        <div class="control-row">
+                            <div class="control-header">
+                                <span>Width (w):</span>
+                                <span class="number" id="lblPackW">3 units</span>
+                            </div>
+                            <input type="range" id="sliderPackW" min="1" max="5" value="3" step="1" oninput="updatePackingDimensions()">
+                        </div>
+                        <div class="control-row" style="margin-bottom:0.5rem;">
+                            <div class="control-header">
+                                <span>Height (h):</span>
+                                <span class="number" id="lblPackH">3 units</span>
+                            </div>
+                            <input type="range" id="sliderPackH" min="1" max="4" value="3" step="1" oninput="updatePackingDimensions()">
+                        </div>
+                    </div>
+
+                    <div class="pack-controls">
+                        <button class="btn-pack" onclick="addPackCube()">+1 Cube</button>
+                        <button class="btn-pack" onclick="addPackRow()">+1 Row</button>
+                        <button class="btn-pack" onclick="addPackLayer()">+1 Layer</button>
+                        <button class="btn-pack" onclick="packAllCubes()" style="border-color:var(--color-primary); color:var(--color-primary);">Pack All</button>
+                        <button class="btn-pack" onclick="clearPackGrid()" style="border-color:#f43f5e; color:#f43f5e;">Clear</button>
+                    </div>
+
+                    <div class="chart-holder" id="canvasHolderPacking" style="height:320px;">
+                        <canvas id="packingCanvas"></canvas>
+                        <!-- Drag label -->
+                        <div style="position:absolute; bottom:10px; right:15px; font-size:0.72rem; color:var(--text-muted); pointer-events:none; font-family:'Outfit'; font-weight:500;">
+                            Drag to rotate grid
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Reading readout and stats -->
+                <div class="panel">
+                    <div class="digital-box" id="packingReadout">
+                        Cubes: 0 / 48
+                    </div>
+
+                    <div class="math-card" style="border-color: var(--color-primary-glow);">
+                        <h3>Packing Analysis</h3>
+                        <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px; font-family:'Outfit'; font-size:0.9rem;">
+                            <div style="display:flex; justify-content:space-between;">
+                                <span style="color:var(--text-muted);">Cubes in 1 Row (Length):</span>
+                                <span style="font-weight:700;" id="packRowText">4 cubes</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between;">
+                                <span style="color:var(--text-muted);">Rows in 1 Layer (L × W):</span>
+                                <span style="font-weight:700;" id="packLayerText">4 × 3 = 12 cubes</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between;">
+                                <span style="color:var(--text-muted);">Total Layers (Height):</span>
+                                <span style="font-weight:700;" id="packLayersText">3 layers</span>
+                            </div>
+                            <div style="border-top:1px solid rgba(255,255,255,0.06); padding-top:8px; display:flex; justify-content:space-between; font-weight:700; color:var(--color-primary);">
+                                <span>Volume (L × W × H):</span>
+                                <span id="packVolText">48 units³</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>Pack cubes one-by-one or by layers to see how counting cubes leads directly to the volume formula!</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+
+
+        // 3D CORE GRAPHICS UTILS
+        let yaw = -0.55;
+        let pitch = -0.45;
+
+        function rotatePoint(x, y, z, yawVal, pitchVal) {
+            const cosY = Math.cos(yawVal);
+            const sinY = Math.sin(yawVal);
+            let x1 = x * cosY - z * sinY;
+            let z1 = x * sinY + z * cosY;
+
+            const cosX = Math.cos(pitchVal);
+            const sinX = Math.sin(pitchVal);
+            let y2 = y * cosX - z1 * sinX;
+            let z2 = y * sinX + z1 * cosX;
+
+            return {x: x1, y: y2, z: z2};
+        }
+
+        function projectPoint(p, cx, cy, zoom) {
+            return {
+                x: cx + p.x * zoom,
+                y: cy - p.y * zoom,
+                depth: p.z
+            };
+        }
+
+        const packingCanvas = document.getElementById('packingCanvas');
+        const packingHolder = document.getElementById('canvasHolderPacking');
+        const packingCtx = packingCanvas.getContext('2d');
+
+        let packL = 4;
+        let packW = 3;
+        let packH = 3;
+        let packedCubes = []; // List of active coordinates {x, y, z}
+
+        function updatePackingDimensions() {
+            packL = parseInt(document.getElementById('sliderPackL').value);
+            packW = parseInt(document.getElementById('sliderPackW').value);
+            packH = parseInt(document.getElementById('sliderPackH').value);
+
+            document.getElementById('lblPackL').innerText = `${packL} units`;
+            document.getElementById('lblPackW').innerText = `${packW} units`;
+            document.getElementById('lblPackH').innerText = `${packH} units`;
+
+            packedCubes = packedCubes.filter(c => c.x < packL && c.z < packW && c.y < packH);
+
+            updatePackingReadout();
+            drawPackingGrid();
+        }
+
+        function updatePackingReadout() {
+            const maxCubes = packL * packW * packH;
+            const count = packedCubes.length;
+
+            document.getElementById('packingReadout').innerText = `Cubes Packed: ${count} / ${maxCubes}`;
+            document.getElementById('packRowText').innerText = `${packL} cubes`;
+            document.getElementById('packLayerText').innerText = `${packL} × ${packW} = ${packL * packW} cubes`;
+            document.getElementById('packLayersText').innerText = `${packH} layers`;
+            document.getElementById('packVolText').innerText = `${maxCubes} units³`;
+        }
+
+        function addPackCube() {
+            const maxCubes = packL * packW * packH;
+            if (packedCubes.length >= maxCubes) return;
+
+            // Find first empty slot in row-by-row, column-by-column, layer-by-layer order
+            for (let y = 0; y < packH; y++) {
+                for (let z = 0; z < packW; z++) {
+                    for (let x = 0; x < packL; x++) {
+                        const exists = packedCubes.some(c => c.x === x && c.y === y && c.z === z);
+                        if (!exists) {
+                            packedCubes.push({x, y, z});
+                            updatePackingReadout();
+                            drawPackingGrid();
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        function addPackRow() {
+            for (let y = 0; y < packH; y++) {
+                for (let z = 0; z < packW; z++) {
+                    let rowCount = 0;
+                    for (let x = 0; x < packL; x++) {
+                        if (packedCubes.some(c => c.x === x && c.y === y && c.z === z)) rowCount++;
+                    }
+
+                    if (rowCount < packL) {
+                        // Fill this row completely
+                        for (let x = 0; x < packL; x++) {
+                            if (!packedCubes.some(c => c.x === x && c.y === y && c.z === z)) {
+                                packedCubes.push({x, y, z});
+                            }
+                        }
+                        updatePackingReadout();
+                        drawPackingGrid();
+                        return;
+                    }
+                }
+            }
+        }
+
+        function addPackLayer() {
+            for (let y = 0; y < packH; y++) {
+                let layerCount = 0;
+                for (let z = 0; z < packW; z++) {
+                    for (let x = 0; x < packL; x++) {
+                        if (packedCubes.some(c => c.x === x && c.y === y && c.z === z)) layerCount++;
+                    }
+                }
+
+                if (layerCount < packL * packW) {
+                    // Fill this entire horizontal slice
+                    for (let z = 0; z < packW; z++) {
+                        for (let x = 0; x < packL; x++) {
+                            if (!packedCubes.some(c => c.x === x && c.y === y && c.z === z)) {
+                                packedCubes.push({x, y, z});
+                            }
+                        }
+                    }
+                    updatePackingReadout();
+                    drawPackingGrid();
+                    return;
+                }
+            }
+        }
+
+        function packAllCubes() {
+            packedCubes = [];
+            for (let y = 0; y < packH; y++) {
+                for (let z = 0; z < packW; z++) {
+                    for (let x = 0; x < packL; x++) {
+                        packedCubes.push({x, y, z});
+                    }
+                }
+            }
+            updatePackingReadout();
+            drawPackingGrid();
+        }
+
+        function clearPackGrid() {
+            packedCubes = [];
+            updatePackingReadout();
+            drawPackingGrid();
+        }
+
+        function resizePackingCanvas() {
+            const rect = packingHolder.getBoundingClientRect();
+            packingCanvas.width = rect.width * (window.devicePixelRatio || 1);
+            packingCanvas.height = rect.height * (window.devicePixelRatio || 1);
+            packingCanvas.style.width = rect.width + 'px';
+            packingCanvas.style.height = rect.height + 'px';
+            packingCtx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+            drawPackingGrid();
+        }
+
+        function drawPackingGrid() {
+            const w = packingCanvas.width / (window.devicePixelRatio || 1);
+            const h = packingCanvas.height / (window.devicePixelRatio || 1);
+            packingCtx.clearRect(0, 0, w, h);
+
+            const cx = w / 2;
+            const cy = h / 2 + 20;
+            const zoom = Math.min(w, h) / 10 * 1.5;
+
+            const size = 0.96; // size of individual packed block
+            const bX = packL / 2;
+            const bY = packH / 2;
+            const bZ = packW / 2;
+
+            const boxVertices = [
+                {x:-bX, y:-bY, z:-bZ}, {x:bX, y:-bY, z:-bZ}, {x:bX, y:bY, z:-bZ}, {x:-bX, y:bY, z:-bZ},
+                {x:-bX, y:-bY, z:bZ},  {x:bX, y:-bY, z:bZ},  {x:bX, y:bY, z:bZ},  {x:-bX, y:bY, z:bZ}
+            ];
+
+            const projBox = boxVertices.map(v => {
+                const rot = rotatePoint(v.x, v.y, v.z, yaw, pitch);
+                return projectPoint(rot, cx, cy, zoom);
+            });
+
+            packingCtx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+            packingCtx.lineWidth = 1.5;
+            const boxEdges = [
+                [0,1], [1,2], [2,3], [3,0],
+                [4,5], [5,6], [6,7], [7,4],
+                [0,4], [1,5], [2,6], [3,7]
+            ];
+            boxEdges.forEach(e => {
+                packingCtx.beginPath();
+                packingCtx.moveTo(projBox[e[0]].x, projBox[e[0]].y);
+                packingCtx.lineTo(projBox[e[1]].x, projBox[e[1]].y);
+                packingCtx.stroke();
+            });
+
+            // Center of each block:
+            // x_cen = x - (packL-1)/2, y_cen = y - (packH-1)/2, z_cen = z - (packW-1)/2
+            const sortedCubes = packedCubes.map(c => {
+                const xc = c.x - (packL - 1) / 2;
+                const yc = c.y - (packH - 1) / 2;
+                const zc = c.z - (packW - 1) / 2;
+                const rot = rotatePoint(xc, yc, zc, yaw, pitch);
+                return {
+                    x: c.x, y: c.y, z: c.z,
+                    xc, yc, zc,
+                    depth: rot.z
+                };
+            }).sort((a, b) => b.depth - a.depth); // draw back blocks first
+
+            sortedCubes.forEach(cube => {
+                drawUnitCubeMesh(cube.xc, cube.yc, cube.zc, size * 0.48, cx, cy, zoom);
+            });
+        }
+
+        function drawUnitCubeMesh(xc, yc, zc, r, cx, cy, zoom) {
+            const v = [
+                {x: xc - r, y: yc - r, z: zc - r}, {x: xc + r, y: yc - r, z: zc - r},
+                {x: xc + r, y: yc + r, z: zc - r}, {x: xc - r, y: yc + r, z: zc - r},
+                {x: xc - r, y: yc - r, z: zc + r}, {x: xc + r, y: yc - r, z: zc + r},
+                {x: xc + r, y: yc + r, z: zc + r}, {x: xc - r, y: yc + r, z: zc + r}
+            ];
+
+            const proj = v.map(pt => {
+                const rot = rotatePoint(pt.x, pt.y, pt.z, yaw, pitch);
+                return projectPoint(rot, cx, cy, zoom);
+            });
+
+            const faces = [
+                [0, 1, 2, 3], // back
+                [4, 5, 6, 7], // front
+                [0, 1, 5, 4], // bottom
+                [2, 3, 7, 6], // top
+                [0, 3, 7, 4], // left
+                [1, 2, 6, 5]  // right
+            ];
+
+            // Shading intensities based on direction
+            const faceColors = [
+                "rgba(16, 185, 129, 0.45)", // back
+                "rgba(16, 185, 129, 0.75)", // front
+                "rgba(16, 185, 129, 0.35)", // bottom
+                "rgba(16, 185, 129, 0.82)", // top (brightest)
+                "rgba(16, 185, 129, 0.50)", // left
+                "rgba(16, 185, 129, 0.65)"  // right
+            ];
+
+            faces.forEach((f, idx) => {
+                // simple face depth sort not needed since block is convex and small, but let's draw faces
+                packingCtx.beginPath();
+                packingCtx.moveTo(proj[f[0]].x, proj[f[0]].y);
+                for (let i = 1; i < f.length; i++) packingCtx.lineTo(proj[f[i]].x, proj[f[i]].y);
+                packingCtx.closePath();
+                packingCtx.fillStyle = faceColors[idx];
+                packingCtx.fill();
+                packingCtx.strokeStyle = "rgba(16, 185, 129, 0.9)";
+                packingCtx.lineWidth = 0.8;
+                packingCtx.stroke();
+            });
+        }
+
+        // Drag to rotate unit cube packing canvas
+        let isDraggingPack = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+
+        packingCanvas.addEventListener('mousedown', (e) => {
+            isDraggingPack = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+        window.addEventListener('mouseup', () => { isDraggingPack = false; });
+        packingCanvas.addEventListener('mousemove', (e) => {
+            if (!isDraggingPack) return;
+            const dx = e.clientX - lastMouseX;
+            const dy = e.clientY - lastMouseY;
+            yaw += dx * 0.007;
+            pitch += dy * 0.007;
+            pitch = Math.max(-Math.PI/2 + 0.1, Math.min(Math.PI/2 - 0.1, pitch));
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+            drawPackingGrid();
+        });
+
+        // Touch support
+        packingCanvas.addEventListener('touchstart', (e) => {
+            isDraggingPack = true;
+            lastMouseX = e.touches[0].clientX;
+            lastMouseY = e.touches[0].clientY;
+        });
+        packingCanvas.addEventListener('touchmove', (e) => {
+            if (!isDraggingPack) return;
+            const dx = e.touches[0].clientX - lastMouseX;
+            const dy = e.touches[0].clientY - lastMouseY;
+            yaw += dx * 0.007;
+            pitch += dy * 0.007;
+            pitch = Math.max(-Math.PI/2 + 0.1, Math.min(Math.PI/2 - 0.1, pitch));
+            lastMouseX = e.touches[0].clientX;
+            lastMouseY = e.touches[0].clientY;
+            drawPackingGrid();
+        });
+        packingCanvas.addEventListener('touchend', () => { isDraggingPack = false; });
+
+
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updatePackingDimensions();
+
+            setTimeout(() => {
+                resizePackingCanvas();
+            }, 100);
+        });
+
+        window.addEventListener('resize', () => {
+            resizePackingCanvas();
+        });
+    </script>
+</body>
+</html>

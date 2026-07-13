@@ -1,0 +1,1029 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asymptotes & Rational Functions - Algebraic Structures</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "02_algebra",
+            logo: {"main":"Algebra","accent":"Lab","sub":"Asymptotes & Rational Functions"},
+            navigation: [
+    {
+        "label": "Deflection Field Sandbox",
+        "desc": "Deflection Field Sandbox interactive section",
+        "href": "#magnet"
+    },
+    {
+        "label": "Asymptotes, Domain & Range",
+        "desc": "Asymptotes, Domain & Range interactive section",
+        "href": "#anatomy"
+    },
+    {
+        "label": "Rational Functions Quiz",
+        "desc": "Rational Functions Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Rose Theme override */
+            --color-rose: #f43f5e;
+            --color-rose-glow: rgba(244, 63, 94, 0.35);
+            --color-accent: #f43f5e;
+            --color-accent-glow: rgba(244, 63, 94, 0.35);
+
+            --color-peg: #38bdf8; /* Cyan for interactive pegs */
+            --color-asymptote: #ffb000; /* Amber for asymptotes */
+        }
+
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-accent) !important;
+            box-shadow: 0 4px 20px var(--color-accent-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-title {
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-desc {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-rose);
+            background: rgba(244, 63, 94, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            text-shadow: 0 0 5px var(--color-rose-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .equation-box {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.35rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-rose);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-rose-glow);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-preset {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-preset:hover, .btn-preset.active {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .presets-grid {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        /* Launcher Control Button */
+        .btn-launch {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--color-cyan);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-launch:hover {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: var(--color-cyan);
+            box-shadow: 0 0 10px var(--color-cyan-glow);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Asymptotes & Rational Functions
+            </h1>
+            <p>Explore boundary singularities and hyperbola branches. Shift coordinate asymptotes, launch particles into the singularity field, and calculate numerical limits.</p>
+        </header>
+
+        <!-- SECTION 1: ASYMPTOTE WALLS -->
+        <section id="magnet">
+            <div class="section-header">
+                <span class="section-tag">Magnet Barriers</span>
+                <h2>Deflection Field Sandbox</h2>
+            </div>
+            <p class="section-intro">
+                A rational function of form $y = a/(x-h) + k$ has two asymptotic "walls" where values approach infinity. Drag the blue pegs on the axes directly to shift the asymptotes, or adjust the parameters using sliders.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Canvas Grid -->
+                <div class="panel">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                        <div class="presets-grid" style="margin-bottom:0;">
+                            <button class="btn-preset active" onclick="loadPreset(1, -2, 2)">Preset 1: y = 1/(x+2) + 2</button>
+                            <button class="btn-preset" onclick="loadPreset(-2.5, 0, 0)">Preset 2: y = -2.5/x</button>
+                            <button class="btn-preset" onclick="loadPreset(3, 3, -1)">Preset 3: y = 3/(x-3) - 1</button>
+                        </div>
+                        <button class="btn-launch" id="btnLaunchParticles">Reset Flow</button>
+                    </div>
+
+                    <div class="canvas-container" style="height: 400px; background: #06070a;">
+                        <canvas id="rationalCanvas"></canvas>
+                    </div>
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                        Drag the blue square pegs on the X and Y axes to alter horizontal/vertical asymptotes.
+                    </div>
+                </div>
+
+                <!-- Right Panel: Parametric Controls & Calculations -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Active Rational Equation</h3>
+                        <div class="equation-box" id="eqDisplay" style="color: var(--color-rose);">
+                            y = 1.00 / (x + 2.0) + 2.0
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Scale Multiplier (a)</span>
+                                <span class="number" id="lblValA">1.00</span>
+                            </div>
+                            <input type="range" id="slideA" min="-4" max="4" value="1" step="0.25">
+                        </div>
+
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Horizontal Shift (h) [V-Asymptote]</span>
+                                <span class="number" id="lblValH">-2.00</span>
+                            </div>
+                            <input type="range" id="slideH" min="-8" max="8" value="-2" step="0.5">
+                        </div>
+
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Vertical Shift (k) [H-Asymptote]</span>
+                                <span class="number" id="lblValK">2.00</span>
+                            </div>
+                            <input type="range" id="slideK" min="-8" max="8" value="2" step="0.5">
+                        </div>
+                    </div>
+
+                    <div class="formula-steps">
+                        <div><strong>Active Limit Values:</strong></div>
+                        <div id="limitsExplanation" style="margin-top: 8px; font-size:0.82rem; font-family:'JetBrains Mono'; line-height:1.6; color:var(--text-muted);">
+                            x &rarr; &plusmn;&infin;, y &rarr; 2.00<br>
+                            x &rarr; -2.00⁺, y &rarr; +&infin;<br>
+                            x &rarr; -2.00⁻, y &rarr; -&infin;
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: ANATOMY SPECS -->
+        <section id="anatomy">
+            <div class="section-header">
+                <span class="section-tag">Anatomy Specs</span>
+                <h2>Asymptotes, Domain & Range</h2>
+            </div>
+            <p class="section-intro">
+                A rational function exhibits singular discontinuities where the denominator approaches zero, leading to division by zero.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Table of Domain constraints -->
+                <div class="panel">
+                    <h3>Symmetry and Breaks</h3>
+                    <br>
+                    <div class="formula-steps">
+                        <div>
+                            <strong style="color:var(--color-rose); display: block; margin-bottom: 0.4rem;">Vertical Asymptote:</strong>
+                            <div style="color:var(--text-muted);" id="lblDescVAsy">
+                                Occurs at **x = -2.00**. The denominator becomes zero, rendering the function completely **undefined** at this coordinate.
+                            </div>
+                        </div>
+
+                        <div>
+                            <strong style="color:var(--color-rose); display: block; margin-bottom: 0.4rem;">Horizontal Asymptote:</strong>
+                            <div style="color:var(--text-muted);" id="lblDescHAsy">
+                                Occurs at **y = 2.00**. As x increases towards infinity, the fractional term values diminish towards zero, leaving y near the vertical shift parameter.
+                            </div>
+                        </div>
+
+                        <div>
+                            <strong style="color:var(--color-rose); display: block; margin-bottom: 0.4rem;">Domain & Range bounds:</strong>
+                            <div style="color:var(--text-muted);" id="lblDescDomainRange">
+                                Domain: All real numbers **x &ne; -2.00**<br>
+                                Range: All real numbers **y &ne; 2.00**
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Coordinate Intercepts -->
+                <div class="panel">
+                    <h3>Intercept Calculations</h3>
+                    <br>
+                    <div class="formula-steps">
+                        <div>
+                            <strong style="color:var(--color-asymptote); display: block; margin-bottom: 0.4rem;">Y-Intercept (x = 0):</strong>
+                            <div style="color:var(--text-muted);" id="lblDescYInt">
+                                y = a/(-h) + k = 1.00 / (2.0) + 2.0 = **2.50**<br>
+                                Coordinate: **(0, 2.50)**
+                            </div>
+                        </div>
+
+                        <div>
+                            <strong style="color:var(--color-asymptote); display: block; margin-bottom: 0.4rem;">X-Intercept (y = 0):</strong>
+                            <div style="color:var(--text-muted);" id="lblDescXInt">
+                                0 = a/(x-h) + k &rarr; x = h - a/k = -2 - 1/2 = **-2.50**<br>
+                                Coordinate: **(-2.50, 0)**
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Self Evaluation</span>
+                <h2>Rational Functions Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Review your core understanding of limits, asymptotes, and coordinate shifts.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Quiz Question -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">What values are excluded from the domain of y = 3 / (x + 4) - 2?</h3>
+
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong>Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation goes here.</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Vocabulary Review -->
+                <div class="panel">
+                    <h3>Focus Area Vocabulary</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom:0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-rose); box-shadow:0 0 6px var(--color-rose-glow);"></span>
+                                Asymptote: <strong>A boundary line that a curve approaches infinitely but never reaches.</strong>
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-asymptote); box-shadow:0 0 6px var(--color-asymptote-glow);"></span>
+                                Singularity: <strong>Point where denominator becomes zero and function shoots to infinity.</strong>
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-peg); box-shadow:0 0 6px rgba(56, 189, 248, 0.35);"></span>
+                                Hyperbola Branches: <strong>The two disconnected symmetrical curved branches forming the graph.</strong>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const rationalCanvas = document.getElementById('rationalCanvas');
+        const rationalCtx = rationalCanvas.getContext('2d');
+
+        const slideA = document.getElementById('slideA');
+        const slideH = document.getElementById('slideH');
+        const slideK = document.getElementById('slideK');
+
+        const lblValA = document.getElementById('lblValA');
+        const lblValH = document.getElementById('lblValH');
+        const lblValK = document.getElementById('lblValK');
+
+        const eqDisplay = document.getElementById('eqDisplay');
+        const limitsExplanation = document.getElementById('limitsExplanation');
+
+        const lblDescVAsy = document.getElementById('lblDescVAsy');
+        const lblDescHAsy = document.getElementById('lblDescHAsy');
+        const lblDescDomainRange = document.getElementById('lblDescDomainRange');
+        const lblDescYInt = document.getElementById('lblDescYInt');
+        const lblDescXInt = document.getElementById('lblDescXInt');
+
+        let valA = 1.0;
+        let valH = -2.0;
+        let valK = 2.0;
+
+        // Interactive Peg coordinate bounds (on axes)
+        // Peg H is located at (h, 0), Peg K is located at (0, k)
+        let activePeg = null; // 'H' or 'K'
+
+        // Particle particle physics flow
+        let particles = [];
+        const numParticles = 30;
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < numParticles; i++) {
+                // Symmetrical spread of starting values
+                const side = Math.random() < 0.5 ? -1 : 1;
+                // Distribute x values away from asymptote
+                const offset = 0.5 + Math.random() * 9.5;
+                particles.push({
+                    x: valH + side * offset,
+                    side: side,
+                    speed: 0.05 + Math.random() * 0.05
+                });
+            }
+        }
+
+        function updateParticles() {
+            particles.forEach(p => {
+                // Move towards asymptote (deflection) or away from it
+                // We model a flow from outer bounds into the vertical asymptote, then recycling,
+                // and from asymptote flowing outwards.
+                p.x += p.side * p.speed;
+
+                if (Math.abs(p.x - valH) < 0.1 || Math.abs(p.x) > 10) {
+                    // Recycle particle
+                    const side = Math.random() < 0.5 ? -1 : 1;
+                    const offset = 4.0 + Math.random() * 6.0;
+                    p.x = valH - side * offset; // Start far away and flow in
+                    p.side = side;
+                }
+            });
+        }
+
+        function resizeCanvasElement(canvasElement) {
+            const container = canvasElement.parentElement;
+            canvasElement.width = container.clientWidth;
+            canvasElement.height = container.clientHeight;
+        }
+
+        // Coordinate space mapping [-10, 10] to screen pixels
+        function mapToScreen(x, y, w, h) {
+            const size = Math.min(w, h) - 60;
+            const midX = w / 2;
+            const midY = h / 2;
+            const px = midX + (x / 10) * (size / 2);
+            const py = midY - (y / 10) * (size / 2); // Inverted Y
+            return { x: px, y: py };
+        }
+
+        function mapToMath(px, py, w, h) {
+            const size = Math.min(w, h) - 60;
+            const midX = w / 2;
+            const midY = h / 2;
+            const x = ((px - midX) / (size / 2)) * 10;
+            const y = -((py - midY) / (size / 2)) * 10;
+            return { x: x, y: y };
+        }
+
+        function evaluateRational(x) {
+            if (x === valH) return NaN;
+            return valA / (x - valH) + valK;
+        }
+
+        // RATIONAL CANVAS DRAWING
+        function drawRationalSim() {
+            resizeCanvasElement(rationalCanvas);
+            const w = rationalCanvas.width;
+            const h = rationalCanvas.height;
+            rationalCtx.clearRect(0, 0, w, h);
+
+            const midX = w / 2;
+            const midY = h / 2;
+            const size = Math.min(w, h) - 60;
+            const gridR = size / 2;
+
+            // 1. Draw Grid lines
+            rationalCtx.strokeStyle = 'rgba(255,255,255,0.03)';
+            rationalCtx.lineWidth = 1;
+            for (let val = -10; val <= 10; val++) {
+                const pos = mapToScreen(val, val, w, h);
+                rationalCtx.beginPath();
+                rationalCtx.moveTo(pos.x, midY - gridR);
+                rationalCtx.lineTo(pos.x, midY + gridR);
+                rationalCtx.moveTo(midX - gridR, pos.y);
+                rationalCtx.lineTo(midX + gridR, pos.y);
+                rationalCtx.stroke();
+            }
+
+            // 2. Draw major axes
+            rationalCtx.strokeStyle = 'rgba(255,255,255,0.12)';
+            rationalCtx.lineWidth = 2;
+            rationalCtx.beginPath();
+            rationalCtx.moveTo(midX - gridR - 10, midY);
+            rationalCtx.lineTo(midX + gridR + 10, midY);
+            rationalCtx.moveTo(midX, midY - gridR - 10);
+            rationalCtx.lineTo(midX, midY + gridR + 10);
+            rationalCtx.stroke();
+
+            // Axis labels ticks
+            rationalCtx.fillStyle = 'rgba(255,255,255,0.35)';
+            rationalCtx.font = '14px JetBrains Mono';
+            rationalCtx.textAlign = 'center';
+            for (let val = -10; val <= 10; val += 2) {
+                if (val === 0) continue;
+                const pos = mapToScreen(val, val, w, h);
+                rationalCtx.fillText(val.toString(), pos.x, midY + 18);
+                rationalCtx.fillText(val.toString(), midX + 18, pos.y + 4);
+            }
+
+            // 3. Draw Asymptote walls (Glowing dashed lines)
+            rationalCtx.save();
+            rationalCtx.strokeStyle = 'var(--color-asymptote)';
+            rationalCtx.lineWidth = 2;
+            rationalCtx.setLineDash([5, 5]);
+            rationalCtx.shadowBlur = 6;
+            rationalCtx.shadowColor = 'var(--color-asymptote)';
+
+            // Vertical asymptote x = h
+            const posH = mapToScreen(valH, 0, w, h);
+            rationalCtx.beginPath();
+            rationalCtx.moveTo(posH.x, midY - gridR);
+            rationalCtx.lineTo(posH.x, midY + gridR);
+            rationalCtx.stroke();
+
+            // Horizontal asymptote y = k
+            const posK = mapToScreen(0, valK, w, h);
+            rationalCtx.beginPath();
+            rationalCtx.moveTo(midX - gridR, posK.y);
+            rationalCtx.lineTo(midX + gridR, posK.y);
+            rationalCtx.stroke();
+            rationalCtx.restore();
+
+            // 4. Draw Hyperbola branches (Glowing Rose)
+            rationalCtx.strokeStyle = 'var(--color-rose)';
+            rationalCtx.lineWidth = 3;
+            rationalCtx.shadowBlur = 10;
+            rationalCtx.shadowColor = 'var(--color-rose)';
+
+            // Left branch (x from -10 to h-0.05)
+            rationalCtx.beginPath();
+            let first = true;
+            for (let mx = -10; mx <= valH - 0.05; mx += 0.05) {
+                const my = evaluateRational(mx);
+                const pos = mapToScreen(mx, my, w, h);
+                if (pos.y >= midY - gridR && pos.y <= midY + gridR) {
+                    if (first) {
+                        rationalCtx.moveTo(pos.x, pos.y);
+                        first = false;
+                    } else {
+                        rationalCtx.lineTo(pos.x, pos.y);
+                    }
+                } else {
+                    first = true;
+                }
+            }
+            rationalCtx.stroke();
+
+            // Right branch (x from h+0.05 to 10)
+            rationalCtx.beginPath();
+            first = true;
+            for (let mx = valH + 0.05; mx <= 10; mx += 0.05) {
+                const my = evaluateRational(mx);
+                const pos = mapToScreen(mx, my, w, h);
+                if (pos.y >= midY - gridR && pos.y <= midY + gridR) {
+                    if (first) {
+                        rationalCtx.moveTo(pos.x, pos.y);
+                        first = false;
+                    } else {
+                        rationalCtx.lineTo(pos.x, pos.y);
+                    }
+                } else {
+                    first = true;
+                }
+            }
+            rationalCtx.stroke();
+            rationalCtx.shadowBlur = 0;
+
+            // 5. Draw active flow particles
+            rationalCtx.fillStyle = 'rgba(56, 189, 248, 0.7)';
+            rationalCtx.shadowBlur = 4;
+            rationalCtx.shadowColor = 'var(--color-peg)';
+            particles.forEach(p => {
+                const my = evaluateRational(p.x);
+                if (!isNaN(my)) {
+                    const pos = mapToScreen(p.x, my, w, h);
+                    if (pos.x >= midX - gridR && pos.x <= midX + gridR &&
+                        pos.y >= midY - gridR && pos.y <= midY + gridR) {
+                        rationalCtx.beginPath();
+                        rationalCtx.arc(pos.x, pos.y, 3.5, 0, Math.PI * 2);
+                        rationalCtx.fill();
+                    }
+                }
+            });
+            rationalCtx.shadowBlur = 0;
+
+            // 6. Draw interactive Axis Pegs
+            // Peg H on x-axis: (h, 0)
+            rationalCtx.fillStyle = 'var(--color-peg)';
+            rationalCtx.strokeStyle = '#ffffff';
+            rationalCtx.lineWidth = 1.5;
+            const screenPegH = mapToScreen(valH, 0, w, h);
+            rationalCtx.beginPath();
+            rationalCtx.rect(screenPegH.x - 5, screenPegH.y - 5, 10, 10);
+            rationalCtx.fill();
+            rationalCtx.stroke();
+
+            // Label H
+            rationalCtx.fillStyle = '#ffffff';
+            rationalCtx.font = 'bold 14px JetBrains Mono';
+            rationalCtx.textAlign = 'center';
+            rationalCtx.fillText(`V-Asy Peg (${valH.toFixed(1)})`, screenPegH.x, screenPegH.y - 14);
+
+            // Peg K on y-axis: (0, k)
+            const screenPegK = mapToScreen(0, valK, w, h);
+            rationalCtx.beginPath();
+            rationalCtx.rect(screenPegK.x - 5, screenPegK.y - 5, 10, 10);
+            rationalCtx.fill();
+            rationalCtx.stroke();
+
+            // Label K
+            rationalCtx.font = 'bold 14px JetBrains Mono';
+            rationalCtx.fillText(`H-Asy Peg (${valK.toFixed(1)})`, screenPegK.x + 48, screenPegK.y - 14);
+        }
+
+        // UI & CALCULATIONS BINDINGS
+        function updateRationalUI() {
+            lblValA.textContent = valA.toFixed(2);
+            lblValH.textContent = valH.toFixed(2);
+            lblValK.textContent = valK.toFixed(2);
+
+            slideA.value = valA;
+            slideH.value = valH;
+            slideK.value = valK;
+
+            // Equation builder
+            const signH = valH >= 0 ? '-' : '+';
+            const absH = Math.abs(valH).toFixed(1);
+            const signK = valK >= 0 ? '+' : '-';
+            const absK = Math.abs(valK).toFixed(1);
+            eqDisplay.textContent = `y = ${valA.toFixed(2)} / (x ${signH} ${absH}) ${valK !== 0 ? `${signK} ${absK}` : ''}`;
+
+            // Limits description box
+            limitsExplanation.innerHTML = `
+                x &rarr; &plusmn;&infin;, y &rarr; ${valK.toFixed(2)}<br>
+                x &rarr; ${valH.toFixed(2)}⁺, y &rarr; ${valA >= 0 ? '+&infin;' : '-&infin;'}<br>
+                x &rarr; ${valH.toFixed(2)}⁻, y &rarr; ${valA >= 0 ? '-&infin;' : '+&infin;'}
+            `;
+
+            // Anatomy description updates
+            lblDescVAsy.innerHTML = `Occurs at <strong style="color:var(--color-asymptote);">x = ${valH.toFixed(2)}</strong>. The denominator becomes zero, rendering the function completely **undefined** at this point.`;
+            lblDescHAsy.innerHTML = `Occurs at <strong style="color:var(--color-asymptote);">y = ${valK.toFixed(2)}</strong>. As x increases towards infinity, the fractional term value approaches zero, leaving y at the vertical shift parameter.`;
+            lblDescDomainRange.innerHTML = `
+                Domain: All real numbers <strong style="color:var(--color-rose);">x &ne; ${valH.toFixed(2)}</strong><br>
+                Range: All real numbers <strong style="color:var(--color-rose);">y &ne; ${valK.toFixed(2)}</strong>
+            `;
+
+            // Intercepts
+            let yIntStr = 'None (Complex)';
+            if (valH !== 0) {
+                const yVal = valA / (-valH) + valK;
+                yIntStr = `y = ${valA.toFixed(2)}/(${-valH.toFixed(2)}) + ${valK.toFixed(2)} = **${yVal.toFixed(2)}**<br>Coordinate: **(0, ${yVal.toFixed(2)})**`;
+            } else {
+                yIntStr = `No Y-intercept exists because the vertical asymptote matches the Y-axis (x = 0).`;
+            }
+            lblDescYInt.innerHTML = yIntStr;
+
+            let xIntStr = 'None';
+            if (valK !== 0) {
+                const xVal = valH - valA / valK;
+                xIntStr = `0 = a/(x-h) + k &rarr; x = h - a/k = ${valH.toFixed(2)} - ${valA.toFixed(2)}/${valK.toFixed(2)} = **${xVal.toFixed(2)}**<br>Coordinate: **(${xVal.toFixed(2)}, 0)**`;
+            } else {
+                xIntStr = `No X-intercept exists because the horizontal asymptote matches the X-axis (y = 0).`;
+            }
+            lblDescXInt.innerHTML = xIntStr;
+
+            // Synch active presets selection
+            const buttons = document.querySelectorAll('.btn-preset');
+            buttons.forEach(btn => btn.classList.remove('active'));
+        }
+
+        function loadPreset(a, h, k) {
+            valA = a;
+            valH = h;
+            valK = k;
+            updateRationalUI();
+            initParticles();
+            const buttons = document.querySelectorAll('.btn-preset');
+            if (a === 1 && h === -2 && k === 2) buttons[0].classList.add('active');
+            if (a === -2.5 && h === 0 && k === 0) buttons[1].classList.add('active');
+            if (a === 3 && h === 3 && k === -1) buttons[2].classList.add('active');
+        }
+
+        // EVENT HANDLERS
+        slideA.addEventListener('input', (e) => {
+            valA = parseFloat(e.target.value);
+            updateRationalUI();
+        });
+        slideH.addEventListener('input', (e) => {
+            valH = parseFloat(e.target.value);
+            updateRationalUI();
+        });
+        slideK.addEventListener('input', (e) => {
+            valK = parseFloat(e.target.value);
+            updateRationalUI();
+        });
+
+        document.getElementById('btnLaunchParticles').addEventListener('click', () => {
+            initParticles();
+        });
+
+        // Peg dragging logic
+        rationalCanvas.addEventListener('mousedown', (e) => {
+            const rect = rationalCanvas.getBoundingClientRect();
+            const px = e.clientX - rect.left;
+            const py = e.clientY - rect.top;
+            const w = rationalCanvas.width;
+            const h = rationalCanvas.height;
+
+            const posH = mapToScreen(valH, 0, w, h);
+            if (Math.hypot(px - posH.x, py - posH.y) <= 12) {
+                activePeg = 'H';
+                return;
+            }
+
+            const posK = mapToScreen(0, valK, w, h);
+            if (Math.hypot(px - posK.x, py - posK.y) <= 12) {
+                activePeg = 'K';
+                return;
+            }
+        });
+
+        rationalCanvas.addEventListener('mousemove', (e) => {
+            if (!activePeg) return;
+            const rect = rationalCanvas.getBoundingClientRect();
+            const px = e.clientX - rect.left;
+            const py = e.clientY - rect.top;
+            const w = rationalCanvas.width;
+            const h = rationalCanvas.height;
+            const math = mapToMath(px, py, w, h);
+
+            if (activePeg === 'H') {
+                // drag horizontal asymptote bound to nearest 0.5
+                valH = Math.max(-8, Math.min(8, Math.round(math.x * 2) / 2));
+            } else if (activePeg === 'K') {
+                // drag vertical asymptote bound to nearest 0.5
+                valK = Math.max(-8, Math.min(8, Math.round(math.y * 2) / 2));
+            }
+
+            updateRationalUI();
+        });
+
+        window.addEventListener('mouseup', () => {
+            activePeg = null;
+        });
+
+        // Main game-loop for rendering flows
+        function runSimulationTick() {
+            updateParticles();
+            drawRationalSim();
+            requestAnimationFrame(runSimulationTick);
+        }
+
+        // CONCEPTUAL QUIZ SYSTEM
+        const quizQuestions = [
+            {
+                question: "What values are excluded from the domain of the rational function y = 3 / (x + 4) - 2?",
+                options: ["x = 2", "x = -4", "x = 4", "x = -2"],
+                correct: 1,
+                explanation: "The denominator of a fraction cannot be zero. Setting the denominator x + 4 = 0 yields x = -4, which is excluded from the domain as it creates a vertical asymptote."
+            },
+            {
+                question: "For the rational function y = a / (x - h) + k, what is the horizontal asymptote equation?",
+                options: ["y = a", "y = h", "y = k", "y = 0"],
+                correct: 2,
+                explanation: "As x approaches positive or negative infinity, the fractional term a / (x - h) approaches 0. Thus, y approaches the value of k, making y = k the horizontal asymptote."
+            },
+            {
+                question: "If the scale factor a in y = a / x is NEGATIVE, in which quadrants of the plane does the hyperbola lie?",
+                options: ["Quadrants I and III", "Quadrants II and IV", "Quadrants I and II", "Quadrants III and IV"],
+                correct: 1,
+                explanation: "For y = a / x with a < 0, plugging positive x values yields negative y values (Quadrant IV), and negative x values yield positive y values (Quadrant II)."
+            },
+            {
+                question: "What is the vertical asymptote of the rational function y = 5 / (2x - 6) + 1?",
+                options: ["x = 6", "x = 3", "x = -3", "x = 2"],
+                correct: 1,
+                explanation: "The vertical asymptote occurs where the denominator is zero. Solving 2x - 6 = 0 yields 2x = 6, which simplifies to x = 3."
+            },
+            {
+                question: "As x approaches h from the right (x &rarr; h⁺) for the function y = 1 / (x - h), what does y approach?",
+                options: ["0", "k", "Positive infinity (+&infin;)", "Negative infinity (-&infin;)"],
+                correct: 2,
+                explanation: "As x approaches h from the right, the difference (x - h) remains positive and decreases towards 0. 1 divided by an extremely small positive number results in positive infinity (+infinity)."
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let quizScore = 0;
+        let answered = false;
+
+        function loadQuestion() {
+            answered = false;
+            const q = quizQuestions[currentQuestionIdx];
+
+            document.getElementById('quizProgressText').textContent = `Question ${currentQuestionIdx + 1} of ${quizQuestions.length}`;
+            document.getElementById('quizScoreText').textContent = `Score: ${quizScore}/${currentQuestionIdx}`;
+            document.getElementById('quizQuestionTitle').textContent = q.question;
+            document.getElementById('quizFeedbackArea').style.display = 'none';
+
+            const container = document.getElementById('quizOptionsContainer');
+            container.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'quiz-option';
+                optDiv.innerHTML = `<span>${opt}</span>`;
+                optDiv.onclick = () => selectOption(idx, optDiv);
+                container.appendChild(optDiv);
+            });
+        }
+
+        function selectOption(selectedIdx, optionElement) {
+            if (answered) return;
+            answered = true;
+
+            const q = quizQuestions[currentQuestionIdx];
+            const options = document.querySelectorAll('.quiz-option');
+
+            options.forEach((opt, idx) => {
+                if (idx === q.correct) {
+                    opt.classList.add('correct');
+                } else if (idx === selectedIdx) {
+                    opt.classList.add('incorrect');
+                }
+            });
+
+            if (selectedIdx === q.correct) {
+                quizScore++;
+                document.getElementById('quizFeedbackArea').querySelector('strong').textContent = 'Correct Answer!';
+                document.getElementById('quizFeedbackArea').querySelector('strong').style.color = '#10b981';
+            } else {
+                document.getElementById('quizFeedbackArea').querySelector('strong').textContent = 'Incorrect Answer';
+                document.getElementById('quizFeedbackArea').querySelector('strong').style.color = '#f43f5e';
+            }
+
+            document.getElementById('quizExplanationText').textContent = q.explanation;
+            document.getElementById('quizFeedbackArea').style.display = 'block';
+            document.getElementById('quizScoreText').textContent = `Score: ${quizScore}/${currentQuestionIdx + 1}`;
+        }
+
+        document.getElementById('quizNextBtn').addEventListener('click', () => {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                const area = document.getElementById('quizContainer');
+                area.innerHTML = `
+                    <div class="quiz-score-overlay" style="text-align: center; padding: 2rem;">
+                        <h2 style="font-size: 2rem; margin-bottom: 1rem; font-family:'Outfit'; font-weight:700;">Quiz Completed!</h2>
+                        <p style="font-size: 1.1rem; margin-bottom: 2rem; color:var(--text-muted);">
+                            You scored <strong class="number" style="color:var(--color-rose);">${quizScore} out of ${quizQuestions.length}</strong> correct answers.
+                        </p>
+                        <button class="btn" onclick="resetQuiz()" style="width:auto; display:inline-flex;">Restart Quiz</button>
+                    </div>
+                `;
+            }
+        });
+
+        function resetQuiz() {
+            currentQuestionIdx = 0;
+            quizScore = 0;
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = `
+                <div id="quizQuestionArea">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                        <span id="quizProgressText">Question 1 of 5</span>
+                        <span id="quizScoreText">Score: 0/0</span>
+                    </div>
+                    <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;"></h3>
+                    <div id="quizOptionsContainer"></div>
+                </div>
+                <div class="quiz-feedback" id="quizFeedbackArea">
+                    <strong>Correct Answer!</strong>
+                    <p id="quizExplanationText"></p>
+                    <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                        Next Question
+                    </button>
+                </div>
+            `;
+            document.getElementById('quizNextBtn').addEventListener('click', () => {
+                currentQuestionIdx++;
+                if (currentQuestionIdx < quizQuestions.length) {
+                    loadQuestion();
+                } else {
+                    const area = document.getElementById('quizContainer');
+                    area.innerHTML = `
+                        <div class="quiz-score-overlay" style="text-align: center; padding: 2rem;">
+                            <h2 style="font-size: 2rem; margin-bottom: 1rem; font-family:'Outfit'; font-weight:700;">Quiz Completed!</h2>
+                            <p style="font-size: 1.1rem; margin-bottom: 2rem; color:var(--text-muted);">
+                                You scored <strong class="number" style="color:var(--color-rose);">${quizScore} out of ${quizQuestions.length}</strong> correct answers.
+                            </p>
+                            <button class="btn" onclick="resetQuiz()" style="width:auto; display:inline-flex;">Restart Quiz</button>
+                        </div>
+                    `;
+                }
+            });
+            loadQuestion();
+        }
+
+        // INIT & RESIZE BINDINGS
+        window.addEventListener('resize', () => {
+            setTimeout(() => {
+                drawRationalSim();
+            }, 300);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateRationalUI();
+            initParticles();
+            loadQuestion();
+            runSimulationTick();
+        });
+    </script>
+</body>
+
+</html>

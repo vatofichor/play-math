@@ -1,0 +1,278 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decimal Place Value - Arithmetic & Numbers</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "01_arithmetic_number_sense",
+            logo: {"main":"Number","accent":"Lab","sub":"Decimal Place Value"},
+            navigation: [
+    {
+        "label": "Decimal Place Value Chart",
+        "desc": "Decimal Place Value Chart interactive section",
+        "href": "#section1"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Decimals Accent Colors */
+            --color-primary: #38bdf8; /* Cyan */
+            --color-primary-glow: rgba(56, 189, 248, 0.35);
+            --color-decimal: #f43f5e; /* Rose for decimal indicator */
+        }
+
+        /* Place Value Chart */
+        .place-value-chart {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin: 2rem 0;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 16px;
+            padding: 1.5rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            gap: 4px;
+        }
+
+        .pv-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            min-width: 50px;
+        }
+
+        .pv-column.dot {
+            flex: 0;
+            min-width: 15px;
+            justify-content: flex-end;
+            padding-bottom: 2.2rem;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--color-decimal);
+        }
+
+        .pv-name {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+            margin-bottom: 12px;
+            font-weight: 600;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pv-digit-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            width: 44px;
+            height: 54px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pv-digit-box:hover {
+            border-color: var(--color-primary);
+            background: rgba(56, 189, 248, 0.04);
+        }
+
+        .pv-digit-box.active {
+            border-color: var(--color-primary);
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--color-primary);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+        }
+
+        .pv-digit-box.is-decimal {
+            color: var(--color-decimal);
+            border-color: rgba(244, 63, 94, 0.15);
+        }
+        .pv-digit-box.is-decimal.active {
+            color: var(--color-decimal);
+            border-color: var(--color-decimal);
+            background: rgba(244, 63, 94, 0.1);
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.15);
+        }
+
+        .pv-arrow-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.15s ease;
+        }
+
+        .pv-arrow-btn:hover {
+            color: var(--text-color);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Syllabus Navigation -->
+    <aside></aside>
+
+    <!-- Main Workspace Content -->
+    <main>
+        <!-- SECTION 1: PLACE VALUE CHART -->
+        <section id="section1">
+            <header>
+                <h1>Decimal Place Value Chart</h1>
+                <p>Explore the weight of digits surrounding the decimal point. Each column is ten times smaller than the column to its left ($1 \rightarrow 0.1 \rightarrow 0.01 \rightarrow 0.001$).</p>
+            </header>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Interactive Chart -->
+                <div class="panel">
+                    <div class="place-value-chart" id="pvChart">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span style="font-size:0.95rem; color:var(--text-muted);">Selected Place Weight:</span>
+                        <span class="number" style="font-size:1.3rem; font-weight:700; margin-left:8px; color:var(--color-primary);" id="selectedWeightText">1/10</span>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Description card -->
+                <div class="panel">
+                    <div class="math-card" style="border-color: rgba(56, 189, 248, 0.15);">
+                        <h3 id="infoColName">Tenths Column</h3>
+                        <div id="infoColMath" class="number" style="font-weight:700; color:var(--color-primary); font-size:1.15rem; margin-bottom:8px;">
+                            Weight: 0.1 (1/10)
+                        </div>
+                        <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;" id="infoColDesc">
+                            Click on any digit block in the chart to explore its mathematical place name, relative scale, and fractional decomposition.
+                        </p>
+                    </div>
+
+                    <div class="math-card">
+                        <h3>Base-10 Multiplier Rule</h3>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:0.5rem;">
+                            Moving **LEFT** multiplies the digit's value by $10$.
+                        </p>
+                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+                            Moving **RIGHT** divides the digit's value by $10$ (or multiplies by $0.1$).
+                        </p>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>The decimal point separates the whole number portion (left) from the fractional decimal portion (right).</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    </main>
+
+    <!-- UI Logic & Canvas Script -->
+    <script>
+
+
+        const pvChart = document.getElementById('pvChart');
+        const selectedWeightText = document.getElementById('selectedWeightText');
+        const infoColName = document.getElementById('infoColName');
+        const infoColMath = document.getElementById('infoColMath');
+        const infoColDesc = document.getElementById('infoColDesc');
+
+        // Column configs: Hundreds, Tens, Ones, DecPoint, Tenths, Hundredths, Thousandths
+        const colConfigs = [
+            { id: 'hunds', name: 'Hundreds', weightVal: 100, weightStr: '100', digit: 3, isDec: false, desc: 'Represents groups of one hundred. Adding one here increases the total value by 100.' },
+            { id: 'tens', name: 'Tens', weightVal: 10, weightStr: '10', digit: 4, isDec: false, desc: 'Represents groups of ten. Ten units in this column compose one hundred.' },
+            { id: 'ones', name: 'Ones', weightVal: 1, weightStr: '1', digit: 5, isDec: false, desc: 'Represents single whole units. This is the baseline place value before decimal fractions.' },
+            { id: 'decpoint', name: 'Decimal Point', weightVal: null, weightStr: '.', digit: '.', isDec: null, desc: 'Separates the whole number place values from the fractional decimal values.' },
+            { id: 'tenths', name: 'Tenths', weightVal: 0.1, weightStr: '1/10', digit: 6, isDec: true, desc: 'Represents one part out of ten equal divisions of a whole. 10 tenths equal 1 whole unit.' },
+            { id: 'hundths', name: 'Hundredths', weightVal: 0.01, weightStr: '1/100', digit: 7, isDec: true, desc: 'Represents one part out of one hundred equal divisions of a whole. 10 hundredths equal 1 tenth.' },
+            { id: 'thouths', name: 'Thousandths', weightVal: 0.001, weightStr: '1/1000', digit: 8, isDec: true, desc: 'Represents one part out of one thousand equal divisions of a whole. 10 thousandths equal 1 hundredth.' }
+        ];
+
+        let activeColIdx = 4; // Tenths default active
+
+        function renderPVChart() {
+            let html = '';
+            colConfigs.forEach((col, idx) => {
+                if (col.id === 'decpoint') {
+                    html += `<div class="pv-column dot">.</div>`;
+                } else {
+                    const activeClass = idx === activeColIdx ? 'active' : '';
+                    const colColorClass = col.isDec ? 'is-decimal' : '';
+                    html += `
+                        <div class="pv-column">
+                            <span class="pv-name">${col.name}</span>
+                            <button class="pv-arrow-btn" onclick="changeDigit(${idx}, 1)">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+                            </button>
+                            <div class="pv-digit-box ${activeClass} ${colColorClass}" onclick="selectColumn(${idx})">${col.digit}</div>
+                            <button class="pv-arrow-btn" onclick="changeDigit(${idx}, -1)">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+                            </button>
+                        </div>
+                    `;
+                }
+            });
+            pvChart.innerHTML = html;
+            updateColDetails();
+        }
+
+        window.selectColumn = function(idx) {
+            activeColIdx = idx;
+            renderPVChart();
+        };
+
+        window.changeDigit = function(idx, dir) {
+            let val = colConfigs[idx].digit;
+            val += dir;
+            if (val > 9) val = 0;
+            if (val < 0) val = 9;
+            colConfigs[idx].digit = val;
+            activeColIdx = idx;
+            renderPVChart();
+        };
+
+        function updateColDetails() {
+            const col = colConfigs[activeColIdx];
+            selectedWeightText.innerText = col.weightStr;
+            infoColName.innerText = col.name + " Column";
+            infoColMath.innerHTML = `Weight multiplier: <span style="font-family:'JetBrains Mono'">${col.weightStr} (${col.weightVal})</span>`;
+            
+            const contrib = (col.digit * col.weightVal).toFixed(activeColIdx >= 4 ? activeColIdx - 3 : 0);
+            infoColDesc.innerHTML = `
+                ${col.desc}<br><br>
+                Currently, this column holds digit <span style="font-weight:bold; color:var(--color-primary);">${col.digit}</span>, 
+                which contributes <span style="font-weight:bold; color:var(--color-primary); font-family:'JetBrains Mono';">${contrib}</span> to the total decimal number value.
+            `;
+        }
+
+        renderPVChart();
+
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,1138 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fractional Equations - Algebraic Structures</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "02_algebra",
+            logo: {"main":"Algebra","accent":"Lab","sub":"Fractional Equations"},
+            navigation: [
+    {
+        "label": "What is a Fractional Equation?",
+        "desc": "What is a Fractional Equation? interactive section",
+        "href": "#overview"
+    },
+    {
+        "label": "Least Common Denominator Balance",
+        "desc": "Least Common Denominator Balance interactive section",
+        "href": "#addsub"
+    },
+    {
+        "label": "The Butterfly Method Solver",
+        "desc": "The Butterfly Method Solver interactive section",
+        "href": "#butterfly"
+    },
+    {
+        "label": "Conceptual Quiz",
+        "desc": "Conceptual Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Algebra Domain / Rose Theme override */
+            --color-rose: #f43f5e;
+            --color-rose-glow: rgba(244, 63, 94, 0.35);
+            --color-accent: #f43f5e;
+            --color-accent-glow: rgba(244, 63, 94, 0.35);
+
+            --color-num1: #ffb000;
+            /* Amber for numerator 1 */
+            --color-num2: #6366f1;
+            /* Indigo for numerator 2 */
+            --color-den: #10b981;
+            /* Emerald for denominator */
+            --color-const: #a855f7;
+            /* Purple for constant */
+        }
+
+        /* Highlight active menu item */
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-rose) !important;
+            box-shadow: 0 4px 20px var(--color-rose-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-title {
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-desc {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-rose);
+            background: rgba(244, 63, 94, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            text-shadow: 0 0 5px var(--color-rose-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        /* Math Display styling */
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        /* Control Sliders */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-rose);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-rose-glow);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        /* Quiz styles */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .alert-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: rgba(244, 63, 94, 0.1);
+            color: #f43f5e;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            margin-top: 0.5rem;
+        }
+
+        .fraction-equation-inline {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+        }
+
+        .fraction-vertical {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 4px;
+            vertical-align: middle;
+        }
+
+        .fraction-vertical .num {
+            border-bottom: 1.5px solid var(--text-color);
+            padding-bottom: 2px;
+            text-align: center;
+        }
+
+        .fraction-vertical .den {
+            padding-top: 2px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1
+                style="background: linear-gradient(135deg, #ffffff 30%, var(--color-rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Fractional Equations</h1>
+            <p>Solve equations containing variables in the numerators or denominators. Learn to clear rational fractions
+                using Least Common Denominators (LCD) and master cross-multiplication checks.</p>
+        </header>
+
+        <!-- SECTION 1: OVERVIEW -->
+        <section id="overview">
+            <div class="section-header">
+                <span class="section-tag">Algebra Concepts</span>
+                <h2>What is a Fractional Equation?</h2>
+            </div>
+            <p class="section-intro">
+                A **fractional equation** (or rational equation) is an equation containing one or more rational
+                expressions. The critical difference from linear equations is that the unknown variable can appear in
+                the denominator.
+            </p>
+
+            <div class="workspace-grid">
+                <div class="panel">
+                    <h3>Core Solving Strategies</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom: 0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot"></span>
+                                <strong>Clear Denominators (LCD)</strong>: Multiply both sides of the equation by the
+                                Least Common Denominator (LCD) of all rational terms to obtain a polynomial equation.
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot"></span>
+                                <strong>Cross-Multiplication (Butterfly Method)</strong>: If the equation has the form
+                                A/B = C/D, multiply diagonally to get A · D = B · C.
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot"
+                                    style="background-color: var(--color-rose); box-shadow:0 0 6px var(--color-rose);"></span>
+                                <strong>Check for Extraneous Solutions</strong>: Any solved value that makes a
+                                denominator in the *original* equation zero (0) must be discarded as invalid.
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>Example Verification</h3>
+                    <br>
+                    <div class="fraction-equation-inline">
+                        <div class="fraction-vertical">
+                            <div class="num">6</div>
+                            <div class="den">x</div>
+                        </div> +
+                        <div class="fraction-vertical">
+                            <div class="num">4</div>
+                            <div class="den">x</div>
+                        </div> = 5
+                    </div>
+                    <br><br>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5;">
+                        Multiplying both sides by x clears the denominators:<br>
+                        x · (6/x + 4/x) = 5 · x ⇒ 6 + 4 = 5x<br>
+                        10 = 5x ⇒ x = 2<br><br>
+                        Since x = 2 does not make the original denominator x zero, it is a valid solution!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: ADDITION & SUBTRACTION SOLVER -->
+        <section id="addsub" style="display: none;">
+            <div class="section-header">
+                <span class="section-tag">Scale Simulator</span>
+                <h2>Least Common Denominator Balance</h2>
+            </div>
+            <p class="section-intro">
+                Clear denominators by multiplying both sides by the LCD. Slide values to change numerators a, b and
+                constant c, then toggle the multiplier to balance the scale.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Balance Scale Canvas -->
+                <div class="panel">
+                    <div class="canvas-container" style="height: 320px;">
+                        <canvas id="balanceCanvas"></canvas>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 1rem;">
+                        <button class="btn" id="btnClearDen"
+                            style="background: var(--color-rose); box-shadow: 0 4px 15px var(--color-rose-glow);">
+                            Multiply by LCD (Clear Fractions)
+                        </button>
+                        <button class="btn" id="btnResetScale"
+                            style="background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); box-shadow:none;">
+                            Reset Scale
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Controls & Equations steps -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Equation Display</h3>
+                        <div class="equation-box" id="addsubEqText" style="font-size: 1.3rem;">
+                            6/x + 4/x = 5
+                        </div>
+                    </div>
+
+                    <!-- Sliders -->
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Numerator <span class="math-symbol"
+                                        style="color:var(--color-num1);">a</span></span>
+                                <span class="number" id="lblA">6</span>
+                            </div>
+                            <input type="range" id="slideA" min="1" max="15" step="1" value="6">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Numerator <span class="math-symbol"
+                                        style="color:var(--color-num2);">b</span></span>
+                                <span class="number" id="lblB">4</span>
+                            </div>
+                            <input type="range" id="slideB" min="1" max="15" step="1" value="4">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Constant <span class="math-symbol"
+                                        style="color:var(--color-const);">c</span></span>
+                                <span class="number" id="lblC">5</span>
+                            </div>
+                            <input type="range" id="slideC" min="1" max="10" step="1" value="5">
+                        </div>
+                    </div>
+
+                    <div class="formula-steps" id="addsubSteps">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: THE BUTTERFLY METHOD -->
+        <section id="butterfly" style="display: none;">
+            <div class="section-header">
+                <span class="section-tag">Cross Multiplier</span>
+                <h2>The Butterfly Method Solver</h2>
+            </div>
+            <p class="section-intro">
+                Diagonally cross-multiply fractions a/(x-p) = b/(x-q) to eliminate fractions. Adjust constants using
+                sliders below.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Butterfly visualizer canvas -->
+                <div class="panel">
+                    <div class="canvas-container" style="height: 320px;">
+                        <canvas id="butterflyCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders & Solver Steps -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Equation Display</h3>
+                        <div class="equation-box" id="butterflyEqText" style="font-size: 1.15rem;">
+                            3/(x-1) = 2/(x-2)
+                        </div>
+                    </div>
+
+                    <!-- Sliders -->
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Numerator <span class="math-symbol"
+                                        style="color:var(--color-num1);">a</span></span>
+                                <span class="number" id="lblBA">3</span>
+                            </div>
+                            <input type="range" id="slideBA" min="-10" max="10" step="1" value="3">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Numerator <span class="math-symbol"
+                                        style="color:var(--color-num2);">b</span></span>
+                                <span class="number" id="lblBB">2</span>
+                            </div>
+                            <input type="range" id="slideBB" min="-10" max="10" step="1" value="2">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Shift <span class="math-symbol" style="color:var(--color-den);">p</span></span>
+                                <span class="number" id="lblBP">1</span>
+                            </div>
+                            <input type="range" id="slideBP" min="-6" max="6" step="1" value="1">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Shift <span class="math-symbol" style="color:var(--color-const);">q</span></span>
+                                <span class="number" id="lblBQ">2</span>
+                            </div>
+                            <input type="range" id="slideBQ" min="-6" max="6" step="1" value="2">
+                        </div>
+                    </div>
+
+                    <div class="formula-steps" id="butterflySteps">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: CONCEPTUAL QUIZ -->
+        <section id="quiz" style="display: none;">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Conceptual Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Solve the rational fractional equations challenges below to test your algebraic solving and verification
+                skills.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Quiz board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div
+                            style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 4</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Solve the equation:
+                            5/x = 10/(x+2)</h3>
+
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Cross-multiply: 5(x+2) = 10x => 5x + 10 = 10x => 10 = 5x => x = 2.
+                            This solution does not make denominators zero, so it is valid.</p>
+                        <button class="btn" id="quizNextBtn"
+                            style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: focus list -->
+                <div class="panel">
+                    <h3>Focus Topics</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom: 0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background-color: var(--color-num1);"></span>LCD Identification</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background-color: var(--color-den);"></span>Extraneous Solutions</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background-color: var(--color-const);"></span>Diagonal Multiplication</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const bCanvas = document.getElementById('balanceCanvas');
+        const bCtx = bCanvas.getContext('2d');
+        const bfCanvas = document.getElementById('butterflyCanvas');
+        const bfCtx = bfCanvas.getContext('2d');
+
+        // Sidebar tabs toggling
+        const secOverview = document.getElementById('overview');
+        const secAddSub = document.getElementById('addsub');
+        const secButterfly = document.getElementById('butterfly');
+        const secQuiz = document.getElementById('quiz');
+
+        function handleHashRoute() {
+            const hash = window.location.hash || '#overview';
+
+            const sectionMap = {
+                '#overview': secOverview,
+                '#addsub': secAddSub,
+                '#butterfly': secButterfly,
+                '#quiz': secQuiz
+            };
+
+            const activeSection = sectionMap[hash] || secOverview;
+            [secOverview, secAddSub, secButterfly, secQuiz].forEach(s => {
+                if (s) s.style.display = (s === activeSection) ? 'block' : 'none';
+            });
+
+            document.querySelectorAll('.syllabus-item').forEach(m => m.classList.remove('active'));
+            const activeLink = document.querySelector(`.syllabus-item a[href="${hash}"]`);
+            if (activeLink) {
+                activeLink.parentElement.classList.add('active');
+            }
+
+            setTimeout(resizeCanvases, 50);
+        }
+
+        window.addEventListener('hashchange', handleHashRoute);
+        window.addEventListener('load', handleHashRoute);
+
+        // Sliders & inputs: LCD section
+        const slideA = document.getElementById('slideA');
+        const slideB = document.getElementById('slideB');
+        const slideC = document.getElementById('slideC');
+        const lblA = document.getElementById('lblA');
+        const lblB = document.getElementById('lblB');
+        const lblC = document.getElementById('lblC');
+        const btnClearDen = document.getElementById('btnClearDen');
+        const btnResetScale = document.getElementById('btnResetScale');
+        const addsubEqText = document.getElementById('addsubEqText');
+        const addsubSteps = document.getElementById('addsubSteps');
+
+        // Sliders & inputs: Butterfly section
+        const slideBA = document.getElementById('slideBA');
+        const slideBB = document.getElementById('slideBB');
+        const slideBP = document.getElementById('slideBP');
+        const slideBQ = document.getElementById('slideBQ');
+        const lblBA = document.getElementById('lblBA');
+        const lblBB = document.getElementById('lblBB');
+        const lblBP = document.getElementById('lblBP');
+        const lblBQ = document.getElementById('lblBQ');
+        const butterflyEqText = document.getElementById('butterflyEqText');
+        const butterflySteps = document.getElementById('butterflySteps');
+
+        // Values state
+        let aVal = 6;
+        let bVal = 4;
+        let cVal = 5;
+
+        let baVal = 3;
+        let bbVal = 2;
+        let bpVal = 1;
+        let bqVal = 2;
+
+        let fractionCleared = false;
+        let scaleAngle = 0; // Rotational tilt of the scale
+
+        function resizeCanvases() {
+            [bCanvas, bfCanvas].forEach(c => {
+                if (c.offsetParent !== null) { // only resize visible canvas
+                    const container = c.parentElement;
+                    c.width = container.clientWidth;
+                    c.height = container.clientHeight;
+                }
+            });
+            drawBalanceScale();
+            drawButterfly();
+        }
+
+        function drawBalanceScale() {
+            if (bCanvas.offsetParent === null) return;
+            bCtx.clearRect(0, 0, bCanvas.width, bCanvas.height);
+
+            const cx = bCanvas.width / 2;
+            const cy = bCanvas.height - 40;
+            const beamLength = bCanvas.width * 0.6;
+            const beamY = 120;
+
+            const targetX = (aVal + bVal) / cVal;
+            const leftWeight = aVal + bVal;
+
+            // Assume x = 2 for visual balance purposes when fractions are not cleared
+            // When cleared, both weights become equal to (a+b)
+            const rightWeight = fractionCleared ? leftWeight : cVal * 2;
+
+            // Determine balance tilt
+            const diff = leftWeight - rightWeight;
+            const targetAngle = fractionCleared ? 0 : Math.max(-0.25, Math.min(0.25, diff * 0.03));
+            scaleAngle = scaleAngle * 0.8 + targetAngle * 0.2; // smooth interpolation
+
+            // 1. Draw Stand Base
+            bCtx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            bCtx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            bCtx.lineWidth = 2;
+            bCtx.beginPath();
+            bCtx.moveTo(cx - 30, cy);
+            bCtx.lineTo(cx + 30, cy);
+            bCtx.lineTo(cx + 10, cy - 20);
+            bCtx.lineTo(cx - 10, cy - 20);
+            bCtx.closePath();
+            bCtx.fill();
+            bCtx.stroke();
+
+            // Vertical Pillar
+            bCtx.beginPath();
+            bCtx.moveTo(cx, cy - 20);
+            bCtx.lineTo(cx, beamY);
+            bCtx.stroke();
+
+            // 2. Draw Beam (Rotated)
+            bCtx.save();
+            bCtx.translate(cx, beamY);
+            bCtx.rotate(scaleAngle);
+
+            bCtx.strokeStyle = '#f43f5e';
+            bCtx.lineWidth = 3;
+            bCtx.beginPath();
+            bCtx.moveTo(-beamLength / 2, 0);
+            bCtx.lineTo(beamLength / 2, 0);
+            bCtx.stroke();
+
+            // Support joints
+            bCtx.fillStyle = '#ffb000';
+            bCtx.beginPath();
+            bCtx.arc(0, 0, 4, 0, 2 * Math.PI);
+            bCtx.fill();
+
+            const lx = -beamLength / 2;
+            const rx = beamLength / 2;
+            bCtx.restore();
+
+            // Project rotated endpoints
+            const plx = cx - (beamLength / 2) * Math.cos(scaleAngle);
+            const ply = beamY - (beamLength / 2) * Math.sin(scaleAngle);
+            const prx = cx + (beamLength / 2) * Math.cos(scaleAngle);
+            const pry = beamY + (beamLength / 2) * Math.sin(scaleAngle);
+
+            // Left Pan string and plate
+            bCtx.strokeStyle = 'rgba(255,255,255,0.15)';
+            bCtx.lineWidth = 1;
+            bCtx.beginPath();
+            bCtx.moveTo(plx, ply);
+            bCtx.lineTo(plx - 20, ply + 70);
+            bCtx.moveTo(plx, ply);
+            bCtx.lineTo(plx + 20, ply + 70);
+            bCtx.stroke();
+
+            bCtx.strokeStyle = 'rgba(255,255,255,0.3)';
+            bCtx.lineWidth = 2.5;
+            bCtx.beginPath();
+            bCtx.moveTo(plx - 30, ply + 70);
+            bCtx.lineTo(plx + 30, ply + 70);
+            bCtx.stroke();
+
+            // Right Pan string and plate
+            bCtx.strokeStyle = 'rgba(255,255,255,0.15)';
+            bCtx.lineWidth = 1;
+            bCtx.beginPath();
+            bCtx.moveTo(prx, pry);
+            bCtx.lineTo(prx - 20, pry + 70);
+            bCtx.moveTo(prx, pry);
+            bCtx.lineTo(prx + 20, pry + 70);
+            bCtx.stroke();
+
+            bCtx.strokeStyle = 'rgba(255,255,255,0.3)';
+            bCtx.lineWidth = 2.5;
+            bCtx.beginPath();
+            bCtx.moveTo(prx - 30, pry + 70);
+            bCtx.lineTo(prx + 30, pry + 70);
+            bCtx.stroke();
+
+            bCtx.fillStyle = '#ffb000';
+            bCtx.font = '10px JetBrains Mono';
+            bCtx.textAlign = 'center';
+
+            if (!fractionCleared) {
+                // Fraction 1: a/x
+                bCtx.fillRect(plx - 22, ply + 45, 18, 24);
+                bCtx.fillStyle = '#08090d';
+                bCtx.fillText(`${aVal}`, plx - 13, ply + 53);
+                bCtx.fillRect(plx - 20, ply + 57, 14, 1.5);
+                bCtx.fillText("x", plx - 13, ply + 66);
+
+                // Fraction 2: b/x
+                bCtx.fillStyle = '#6366f1';
+                bCtx.fillRect(plx + 4, ply + 45, 18, 24);
+                bCtx.fillStyle = '#08090d';
+                bCtx.fillText(`${bVal}`, plx + 13, ply + 53);
+                bCtx.fillRect(plx + 6, ply + 57, 14, 1.5);
+                bCtx.fillText("x", plx + 13, ply + 66);
+            } else {
+                // Cleared to integer weight (a+b)
+                bCtx.fillStyle = 'rgba(244, 63, 94, 0.85)';
+                bCtx.fillRect(plx - 15, ply + 40, 30, 30);
+                bCtx.fillStyle = '#ffffff';
+                bCtx.fillText(`${aVal + bVal}`, plx, ply + 58);
+            }
+
+            bCtx.fillStyle = '#a855f7';
+            if (!fractionCleared) {
+                // c constant
+                bCtx.fillRect(prx - 12, ply + 50, 24, 20);
+                bCtx.fillStyle = '#ffffff';
+                bCtx.fillText(`${cVal}`, prx, ply + 64);
+            } else {
+                // c * x
+                bCtx.fillStyle = '#a855f7';
+                bCtx.fillRect(prx - 15, ply + 40, 30, 30);
+                bCtx.fillStyle = '#ffffff';
+                bCtx.fillText(`${cVal}x`, prx, ply + 58);
+            }
+        }
+
+        function drawButterfly() {
+            if (bfCanvas.offsetParent === null) return;
+            bfCtx.clearRect(0, 0, bfCanvas.width, bfCanvas.height);
+
+            const w = bfCanvas.width;
+            const h = bfCanvas.height;
+            const cy = h / 2;
+
+            const lx = w * 0.3;
+            const rx = w * 0.7;
+
+            bfCtx.strokeStyle = 'rgba(244, 63, 94, 0.18)';
+            bfCtx.lineWidth = 6;
+
+            // Loop left-top to right-bottom wing
+            bfCtx.beginPath();
+            bfCtx.ellipse(w / 2, cy, w * 0.25, h * 0.2, Math.PI / 6, 0, 2 * Math.PI);
+            bfCtx.stroke();
+
+            // Loop right-top to left-bottom wing
+            bfCtx.strokeStyle = 'rgba(99, 102, 241, 0.18)';
+            bfCtx.beginPath();
+            bfCtx.ellipse(w / 2, cy, w * 0.25, h * 0.2, -Math.PI / 6, 0, 2 * Math.PI);
+            bfCtx.stroke();
+
+
+            bfCtx.lineWidth = 1.5;
+            bfCtx.setLineDash([4, 4]);
+
+            // Top-left a to bottom-right (x-q)
+            bfCtx.strokeStyle = '#f43f5e';
+            bfCtx.beginPath();
+            bfCtx.moveTo(lx, cy - 40);
+            bfCtx.lineTo(rx, cy + 40);
+            bfCtx.stroke();
+
+            // Top-right b to bottom-left (x-p)
+            bfCtx.strokeStyle = '#6366f1';
+            bfCtx.beginPath();
+            bfCtx.moveTo(rx, cy - 40);
+            bfCtx.lineTo(lx, cy + 40);
+            bfCtx.stroke();
+
+            bfCtx.setLineDash([]);
+
+            bfCtx.fillStyle = '#ffffff';
+            bfCtx.font = '22px Outfit';
+            bfCtx.textAlign = 'center';
+            bfCtx.textBaseline = 'middle';
+
+            // Left Numerator
+            bfCtx.fillStyle = '#ffb000';
+            bfCtx.fillText(`${baVal}`, lx, cy - 45);
+
+            // Left Denominator
+            bfCtx.fillStyle = '#10b981';
+            const signP = bpVal >= 0 ? '-' : '+';
+            bfCtx.fillText(`x ${signP} ${Math.abs(bpVal)}`, lx, cy + 45);
+
+            // Right Numerator
+            bfCtx.fillStyle = '#6366f1';
+            bfCtx.fillText(`${bbVal}`, rx, cy - 45);
+
+            // Right Denominator
+            bfCtx.fillStyle = '#a855f7';
+            const signQ = bqVal >= 0 ? '-' : '+';
+            bfCtx.fillText(`x ${signQ} ${Math.abs(bqVal)}`, rx, cy + 45);
+
+
+            bfCtx.strokeStyle = 'rgba(255,255,255,0.4)';
+            bfCtx.lineWidth = 2;
+
+            bfCtx.beginPath();
+            bfCtx.moveTo(lx - 40, cy);
+            bfCtx.lineTo(lx + 40, cy);
+            bfCtx.moveTo(rx - 40, cy);
+            bfCtx.lineTo(rx + 40, cy);
+            bfCtx.stroke();
+
+            // Equal sign
+            bfCtx.fillStyle = '#ffffff';
+            bfCtx.font = '24px Outfit';
+            bfCtx.fillText('=', w / 2, cy);
+        }
+
+        function updateAddSub() {
+            lblA.textContent = aVal;
+            lblB.textContent = bVal;
+            lblC.textContent = cVal;
+
+            addsubEqText.innerHTML = `
+                <div class="fraction-equation-inline">
+                    <div class="fraction-vertical"><div class="num">${aVal}</div><div class="den">x</div></div> + 
+                    <div class="fraction-vertical"><div class="num">${bVal}</div><div class="den">x</div></div> = ${cVal}
+                </div>
+            `;
+
+            const sumAB = aVal + bVal;
+            const solX = sumAB / cVal;
+
+            let html = `
+                <div><strong>1. Least Common Denominator:</strong></div>
+                <div style="margin-left: 10px; color: var(--text-muted);">
+                    All denominators are x. The LCD is x (restriction: x ≠ 0).
+                </div>
+                <br>
+                <div><strong>2. Multiply both sides by LCD:</strong></div>
+                <div style="margin-left: 10px;">
+                    ${fractionCleared ? `<span style="color:#10b981;">Fractions cleared!</span><br>` : ''}
+                    x &middot; [ ${aVal}/x + ${bVal}/x ] = ${cVal} &middot; x <br>
+                    ${aVal} + ${bVal} = ${cVal}x <br>
+                    ${sumAB} = ${cVal}x
+                </div>
+                <br>
+                <div><strong>3. Solve for x:</strong></div>
+                <div style="margin-left: 10px; color: var(--color-rose); font-weight: 700;">
+                    x = ${sumAB} / ${cVal} = ${solX.toFixed(3)}
+                </div>
+            `;
+            addsubSteps.innerHTML = html;
+            drawBalanceScale();
+        }
+
+        btnClearDen.addEventListener('click', () => {
+            fractionCleared = true;
+            updateAddSub();
+        });
+
+        btnResetScale.addEventListener('click', () => {
+            fractionCleared = false;
+            updateAddSub();
+        });
+
+        slideA.addEventListener('input', (e) => { aVal = parseInt(e.target.value); updateAddSub(); });
+        slideB.addEventListener('input', (e) => { bVal = parseInt(e.target.value); updateAddSub(); });
+        slideC.addEventListener('input', (e) => { cVal = parseInt(e.target.value); updateAddSub(); });
+
+        function updateButterfly() {
+            lblBA.textContent = baVal;
+            lblBB.textContent = bbVal;
+            lblBP.textContent = bpVal;
+            lblBQ.textContent = bqVal;
+
+            const signP = bpVal >= 0 ? '-' : '+';
+            const signQ = bqVal >= 0 ? '-' : '+';
+            const absP = Math.abs(bpVal);
+            const absQ = Math.abs(bqVal);
+
+            butterflyEqText.innerHTML = `
+                <div class="fraction-equation-inline">
+                    <div class="fraction-vertical"><div class="num">${baVal}</div><div class="den">x ${signP} ${absP}</div></div> = 
+                    <div class="fraction-vertical"><div class="num">${bbVal}</div><div class="den">x ${signQ} ${absQ}</div></div>
+                </div>
+            `;
+
+            // math details
+            // a(x - q) = b(x - p)
+            // ax - aq = bx - bp
+            // (a-b)x = aq - bp
+            const num = baVal * bqVal - bbVal * bpVal;
+            const den = baVal - bbVal;
+
+            let html = `
+                <div><strong>1. Cross-Multiply Diagonals:</strong></div>
+                <div style="margin-left: 10px;">
+                    ${baVal}(x ${signQ} ${absQ}) = ${bbVal}(x ${signP} ${absP})
+                </div>
+                <br>
+                <div><strong>2. Distribute and expand:</strong></div>
+                <div style="margin-left: 10px;">
+                    ${baVal}x - ${(baVal * bqVal)} = ${bbVal}x - ${(bbVal * bpVal)}
+                </div>
+                <br>
+                <div><strong>3. Group x terms:</strong></div>
+            `;
+
+            if (den === 0) {
+                if (num === 0) {
+                    html += `
+                        <div style="margin-left: 10px; color: #ffb000; font-weight: 700;">
+                            Identical expressions. Infinite solutions (except restrictions x &ne; ${bpVal}).
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div style="margin-left: 10px; color: #f43f5e; font-weight: 700;">
+                            ${baVal}x - ${bbVal}x = 0x. No Solution exists!
+                        </div>
+                    `;
+                }
+            } else {
+                const solX = num / den;
+                const isExtraneous = (solX === bpVal || solX === bqVal);
+
+                html += `
+                    <div style="margin-left: 10px;">
+                        (${baVal} - ${bbVal})x = ${(baVal * bqVal)} - ${(bbVal * bpVal)} <br>
+                        ${den}x = ${num}
+                    </div>
+                    <br>
+                    <div><strong>4. Result:</strong></div>
+                    <div style="margin-left: 10px; color: var(--color-rose); font-weight: 700;">
+                        x = ${solX.toFixed(3)}
+                        ${isExtraneous ? `<div class="alert-pill">Extraneous Solution! Denominator becomes zero.</div>` : ''}
+                    </div>
+                `;
+            }
+
+            butterflySteps.innerHTML = html;
+            drawButterfly();
+        }
+
+        slideBA.addEventListener('input', (e) => { baVal = parseInt(e.target.value); updateButterfly(); });
+        slideBB.addEventListener('input', (e) => { bbVal = parseInt(e.target.value); updateButterfly(); });
+        slideBP.addEventListener('input', (e) => { bpVal = parseInt(e.target.value); updateButterfly(); });
+        slideBQ.addEventListener('input', (e) => { bqVal = parseInt(e.target.value); updateButterfly(); });
+
+        // Quiz State & Data
+        const quizQuestions = [
+            {
+                question: "Solve the equation: 4/x + 3/x = 14",
+                options: ["x = 0.5", "x = 2.0", "x = 1.0", "x = 7.0"],
+                correct: 0,
+                explanation: "Multiply by x: 4 + 3 = 14x => 7 = 14x => x = 7/14 = 0.5. Since 0.5 is non-zero, it is a valid solution."
+            },
+            {
+                question: "If the solved value x makes a denominator in the original fractional equation zero, what is it called?",
+                options: ["Extraneous Solution", "Imaginary solution", "Asymptotic root", "Infinite limit"],
+                correct: 0,
+                explanation: "An algebraic solution that is created during solving (like clearing fractions) but does not satisfy the original equation because it causes division by zero is called an extraneous solution."
+            },
+            {
+                question: "Solve the butterfly equation: 2/(x - 3) = 1/(x - 4)",
+                options: ["x = 5", "x = 3", "x = -1", "x = -5"],
+                correct: 0,
+                explanation: "Cross-multiply: 2(x - 4) = 1(x - 3) => 2x - 8 = x - 3 => x = 5. Checking denominators: 5-3 = 2 and 5-4 = 1 (both non-zero). Root is valid."
+            },
+            {
+                question: "For the equation 3/(x - 2) = 6/(2x - 4), how many valid solutions exist?",
+                options: ["Zero", "One", "Two", "Infinite"],
+                correct: 0,
+                explanation: "Multiply the first fraction's numerator and denominator by 2 to get 6/(2x-4) = 6/(2x-4). They are identical, but the restriction is x != 2. Cross-multiplying gives 6x - 12 = 6x - 12 => 0 = 0. However, x cannot be 2, so there are no valid specific unique roots."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-rose); box-shadow:0 4px 15px var(--color-rose-glow);">
+                        Restart Fractional Quiz
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function () {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        // Frame updates loop
+        function drawLoop() {
+            if (secAddSub.style.display !== 'none') {
+                drawBalanceScale();
+            }
+            requestAnimationFrame(drawLoop);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvases, 300);
+            });
+
+            updateAddSub();
+            updateButterfly();
+            loadQuestion();
+            drawLoop();
+        });
+    </script>
+</body>
+
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

@@ -1,0 +1,1719 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadratic Equations & Parabolas - Algebraic Structures</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "02_algebra",
+            logo: {"main":"Algebra","accent":"Lab","sub":"Quadratic Equations & Parabolas"},
+            navigation: [
+    {
+        "label": "Parabola Graph Sandbox",
+        "desc": "Parabola Graph Sandbox interactive section",
+        "href": "#sandbox"
+    },
+    {
+        "label": "Zeros & The Discriminant",
+        "desc": "Zeros & The Discriminant interactive section",
+        "href": "#discriminant"
+    },
+    {
+        "label": "Trajectory Projectile Launch",
+        "desc": "Trajectory Projectile Launch interactive section",
+        "href": "#physics"
+    },
+    {
+        "label": "Conceptual Quiz",
+        "desc": "Conceptual Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Algebra Domain / Rose Theme override */
+            --color-rose: #f43f5e;
+            --color-rose-glow: rgba(244, 63, 94, 0.35);
+            --color-accent: #f43f5e;
+            --color-accent-glow: rgba(244, 63, 94, 0.35);
+
+            --color-a: #ffb000; /* Amber for quadratic coefficient */
+            --color-b: #6366f1; /* Indigo for linear coefficient */
+            --color-c: #10b981; /* Emerald for constant/intercept */
+            --color-h: #a855f7; /* Purple for horizontal shift */
+            --color-k: #ec4899; /* Pink for vertical shift */
+        }
+
+        /* Highlight classes on sidebar active menu */
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-rose) !important;
+            box-shadow: 0 4px 20px var(--color-rose-glow) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-rose);
+            background: rgba(244, 63, 94, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            text-shadow: 0 0 5px var(--color-rose-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        /* Forms Tab Control */
+        .form-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+        }
+
+        .form-tab {
+            flex: 1;
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
+            padding: 0.6rem;
+            border-radius: 8px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .form-tab.active {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--color-rose);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        /* Math Display styling */
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        /* Control Sliders */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        /* Color-coded slider tracks and thumbs */
+        .slider-row.coeff-a input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-a);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-a);
+        }
+        .slider-row.coeff-b input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-b);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-b);
+        }
+        .slider-row.coeff-c input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-c);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-c);
+        }
+        .slider-row.coeff-h input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-h);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-h);
+        }
+        .slider-row.coeff-k input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-k);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-k);
+        }
+
+        /* Toggles layout */
+        .toggles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 1rem;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-container input {
+            cursor: pointer;
+        }
+
+        /* Discriminant Dashboard details */
+        .discrim-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .discrim-pill.positive {
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        .discrim-pill.zero {
+            color: #ffb000;
+            background: rgba(255, 176, 0, 0.1);
+            border: 1px solid rgba(255, 176, 0, 0.2);
+        }
+        .discrim-pill.negative {
+            color: #a855f7;
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .math-symbol {
+            font-style: italic;
+        }
+
+        /* Trajectory Game Layout overrides */
+        .level-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .level-btn {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .level-btn.active {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .game-status-banner {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .game-status-banner.success {
+            display: flex;
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .game-status-banner.fail {
+            display: flex;
+            background: rgba(244, 63, 94, 0.1);
+            color: #f43f5e;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Quiz layout custom rules */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .quiz-score-overlay {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Quadratic Equations & Parabolas</h1>
+            <p>Explore the geometry of quadratic functions. Connect algebraic symbols directly to geometric curves, find zeroes, and calculate complex roots.</p>
+        </header>
+
+        <!-- SECTION 1: SANDBOX -->
+        <section id="sandbox">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Parabola Graph Sandbox</h2>
+            </div>
+            <p class="section-intro">
+                Toggle between Standard and Vertex forms. Drag sliders to translate, reflect, stretch, and compress the parabola. Hover your cursor over the graph to examine the geometric properties of a parabola!
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: The Graph Plotter Canvas -->
+                <div class="panel">
+                    <div class="form-tabs">
+                        <button class="form-tab active" id="tabStandard">Standard Form: y = ax² + bx + c</button>
+                        <button class="form-tab" id="tabVertex">Vertex Form: y = a(x-h)² + k</button>
+                    </div>
+
+                    <div class="canvas-container" style="height: 400px; cursor: crosshair;">
+                        <canvas id="graphCanvas"></canvas>
+                    </div>
+
+                    <div class="toggles-grid">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="chkAxis" checked>
+                            <span>Show Axis of Symmetry</span>
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="chkFocus">
+                            <span>Show Focus & Directrix</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders and Live Equation -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Equation Display</h3>
+                        <div class="equation-box" id="eqDisplay">
+                            y = 1.00x² + 0.00x + 0.00
+                        </div>
+                    </div>
+
+                    <!-- Sliders for Standard Form -->
+                    <div class="slider-group" id="slidersStandard">
+                        <div class="slider-row coeff-a">
+                            <div class="slider-label">
+                                <span>Coefficient <span class="math-symbol" style="color:var(--color-a);">a</span> (Shape & Direction)</span>
+                                <span class="number" id="lblA">1.00</span>
+                            </div>
+                            <input type="range" id="slideA" min="-2" max="2" step="0.05" value="1">
+                        </div>
+                        <div class="slider-row coeff-b">
+                            <div class="slider-label">
+                                <span>Coefficient <span class="math-symbol" style="color:var(--color-b);">b</span> (Horizontal Tilt)</span>
+                                <span class="number" id="lblB">0.00</span>
+                            </div>
+                            <input type="range" id="slideB" min="-6" max="6" step="0.1" value="0">
+                        </div>
+                        <div class="slider-row coeff-c">
+                            <div class="slider-label">
+                                <span>Coefficient <span class="math-symbol" style="color:var(--color-c);">c</span> (Y-Intercept)</span>
+                                <span class="number" id="lblC">0.00</span>
+                            </div>
+                            <input type="range" id="slideC" min="-8" max="8" step="0.1" value="0">
+                        </div>
+                    </div>
+
+                    <!-- Sliders for Vertex Form -->
+                    <div class="slider-group" id="slidersVertex" style="display: none;">
+                        <div class="slider-row coeff-a">
+                            <div class="slider-label">
+                                <span>Scale <span class="math-symbol" style="color:var(--color-a);">a</span> (Shape & Direction)</span>
+                                <span class="number" id="lblVA">1.00</span>
+                            </div>
+                            <input type="range" id="slideVA" min="-2" max="2" step="0.05" value="1">
+                        </div>
+                        <div class="slider-row coeff-h">
+                            <div class="slider-label">
+                                <span>Horizontal Shift <span class="math-symbol" style="color:var(--color-h);">h</span> (Vertex X)</span>
+                                <span class="number" id="lblVH">0.00</span>
+                            </div>
+                            <input type="range" id="slideVH" min="-8" max="8" step="0.1" value="0">
+                        </div>
+                        <div class="slider-row coeff-k">
+                            <div class="slider-label">
+                                <span>Vertical Shift <span class="math-symbol" style="color:var(--color-k);">k</span> (Vertex Y)</span>
+                                <span class="number" id="lblVK">0.00</span>
+                            </div>
+                            <input type="range" id="slideVK" min="-8" max="8" step="0.1" value="0">
+                        </div>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24" style="fill:var(--text-muted); width: 16px; height: 16px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>A parabola is defined as all points equidistant from the <strong>Focus</strong> and the <strong>Directrix</strong>. Try turning on the Focus & Directrix checkbox and hovering your cursor over the graph to see this geometry in real time.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: DISCRIMINANT -->
+        <section id="discriminant">
+            <div class="section-header">
+                <span class="section-tag">Mathematical Solver</span>
+                <h2>Zeros & The Discriminant</h2>
+            </div>
+            <p class="section-intro">
+                Solving the equation y = 0 means finding the x-intercepts (roots). The <strong>discriminant</strong> (D = b² - 4ac) dictates how many intersections exist. Observe the formula evaluated in real-time below.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Calculation Steps -->
+                <div class="panel">
+                    <h3>Solving: <span class="number" id="eqSolveText">1.00x² + 0.00x + 0.00 = 0</span></h3>
+                    <br>
+                    <div class="formula-steps">
+                        <div>
+                            <strong style="display: block; margin-bottom: 0.4rem;">1. Identify coefficients:</strong>
+                            <div style="margin-left: 10px; color: var(--text-muted);">
+                                a = <span id="coeffTextA" style="color:var(--color-a)">1.00</span>, 
+                                b = <span id="coeffTextB" style="color:var(--color-b)">0.00</span>, 
+                                c = <span id="coeffTextC" style="color:var(--color-c)">0.00</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <strong style="display: block; margin-bottom: 0.4rem;">2. Calculate the Discriminant (D):</strong>
+                            <div style="margin-left: 10px; color: var(--text-muted);">
+                                D = b² - 4ac<br>
+                                D = (<span id="calcB">0.00</span>)² - 4(&times; <span id="calcA">1.00</span> &times; <span id="calcC">0.00</span>)<br>
+                                D = <span id="calcVal">0.00</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <strong style="display: block; margin-bottom: 0.4rem;">3. Evaluate Roots using Quadratic Formula:</strong>
+                            <div style="margin-left: 10px; color: var(--text-muted);">
+                                x = [-b &plusmn; &radic;D] / [2a]<br>
+                                x = [- (<span id="rootB">0.00</span>) &plusmn; &radic;(<span id="rootD">0.00</span>)] / [2 &times; <span id="rootA">1.00</span>]<br>
+                                <div id="stepSolution" style="font-weight: 700; color: var(--color-rose); margin-top: 8px;">
+                                    x = 0.00
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Status Pills & Root Details -->
+                <div class="panel">
+                    <h3>Root Characterization</h3>
+                    <br>
+                    <div>
+                        <span id="discrimPill" class="discrim-pill zero">One Real Root (D = 0)</span>
+                    </div>
+                    
+                    <div class="math-card" style="margin-top: 1rem;">
+                        <h3>Vertex Coordinates</h3>
+                        <p class="number" style="font-size: 1.25rem; font-weight: 700; color: var(--color-h);" id="vertexCoordText">
+                            (0.00, 0.00)
+                        </p>
+                    </div>
+
+                    <div class="math-card">
+                        <h3>Calculated Zeros</h3>
+                        <p class="number" style="font-size: 1.25rem; font-weight: 700; color: var(--color-c);" id="zerosCoordText">
+                            x₁ = 0.00
+                        </p>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24" style="fill:var(--text-muted); width: 16px; height: 16px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>When the discriminant <span class="math-symbol">D &lt; 0</span>, the quadratic equation has no real roots because it never crosses the x-axis. Its zeros are complex conjugate pairs containing the imaginary unit <span class="math-symbol">i</span> (where <span class="math-symbol">i² = -1</span>).</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: PROJECTILE PHYSICS -->
+        <section id="physics">
+            <div class="section-header">
+                <span class="section-tag">Interactive Physics Game</span>
+                <h2>Trajectory Projectile Launch</h2>
+            </div>
+            <p class="section-intro">
+                Parabolas describe the paths of objects flying under the influence of gravity. Select a challenge level, adjust the launch angle and initial speed to shape the trajectory equation, and hit launch to hit the target basket!
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Physics Launch Canvas -->
+                <div class="panel">
+                    <div class="level-tabs">
+                        <button class="level-btn active" data-level="1">Level 1: Ground target (x = 5, y = 0)</button>
+                        <button class="level-btn" data-level="2">Level 2: Elevated target (x = 6, y = 4)</button>
+                        <button class="level-btn" data-level="3">Level 3: Wall Obstacle (x = 0, y = 4.5)</button>
+                    </div>
+
+                    <div class="canvas-container" style="height: 380px;">
+                        <canvas id="physicsCanvas"></canvas>
+                    </div>
+
+                    <div id="gameStatus" class="game-status-banner">
+                        Success! Target Cleared.
+                    </div>
+                </div>
+
+                <!-- Right Panel: Physics Settings & Launcher -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Trajectory Function</h3>
+                        <div class="equation-box" id="physicsEqDisplay" style="font-size: 1.25rem;">
+                            y = -0.10x² + 0.50x + 0.00
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row coeff-b">
+                            <div class="slider-label">
+                                <span>Launch Angle (&theta;)</span>
+                                <span class="number" id="lblAngle">45&deg;</span>
+                            </div>
+                            <input type="range" id="slideAngle" min="15" max="85" value="45" step="1">
+                        </div>
+                        <div class="slider-row coeff-a">
+                            <div class="slider-label">
+                                <span>Launch Speed (v₀)</span>
+                                <span class="number" id="lblSpeed">12.0</span>
+                            </div>
+                            <input type="range" id="slideSpeed" min="6" max="20" value="12" step="0.2">
+                        </div>
+                    </div>
+
+                    <button class="btn" id="btnLaunch" style="background: var(--color-rose); box-shadow: 0 4px 15px var(--color-rose-glow);">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        Launch Projectile
+                    </button>
+
+                    <div class="panel-hint" style="margin-top: 1rem;">
+                        <svg viewBox="0 0 24 24" style="fill:var(--text-muted); width: 16px; height: 16px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>Gravity is pulling the projectile down, giving the vertical position a negative quadratic term <span class="math-symbol">a &lt; 0</span>. Adjust both the launch velocity and launch angle to target the basket.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Self Evaluation</span>
+                <h2>Conceptual Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Test your understanding of vertices, coefficients, translations, and discriminants. Solve the questions below to test your mastery of quadratic equations.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Active Question -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">For the parabola y = 2(x - 3)² + 5, what are the coordinates of the vertex?</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong>Correct Answer!</strong>
+                        <p id="quizExplanationText">Indeed, in vertex form y = a(x - h)² + k, the vertex coordinates are (h, k). Since the equation is y = 2(x - 3)² + 5, h = 3 and k = 5, yielding vertex (3, 5).</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Review / Stats -->
+                <div class="panel" id="quizStatsPanel">
+                    <h3>Conceptual Focus Areas</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom: 0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background-color: var(--color-a); box-shadow: 0 0 6px var(--color-a);"></span>Vertex Identification</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background-color: var(--color-b); box-shadow: 0 0 6px var(--color-b);"></span>Discriminant Classification</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background-color: var(--color-c); box-shadow: 0 0 6px var(--color-c);"></span>Horizontal & Vertical Shifts</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background-color: var(--color-h); box-shadow: 0 0 6px var(--color-h);"></span>Complex Conjugate Roots</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Tab selectors
+        const tabStandard = document.getElementById('tabStandard');
+        const tabVertex = document.getElementById('tabVertex');
+        
+        // Standard Form slider controls
+        const slidersStandard = document.getElementById('slidersStandard');
+        const slideA = document.getElementById('slideA');
+        const slideB = document.getElementById('slideB');
+        const slideC = document.getElementById('slideC');
+        const lblA = document.getElementById('lblA');
+        const lblB = document.getElementById('lblB');
+        const lblC = document.getElementById('lblC');
+        
+        // Vertex Form slider controls
+        const slidersVertex = document.getElementById('slidersVertex');
+        const slideVA = document.getElementById('slideVA');
+        const slideVH = document.getElementById('slideVH');
+        const slideVK = document.getElementById('slideVK');
+        const lblVA = document.getElementById('lblVA');
+        const lblVH = document.getElementById('lblVH');
+        const lblVK = document.getElementById('lblVK');
+        
+        // Settings Toggles
+        const chkAxis = document.getElementById('chkAxis');
+        const chkFocus = document.getElementById('chkFocus');
+        const eqDisplay = document.getElementById('eqDisplay');
+        
+        // Discriminant Elements
+        const eqSolveText = document.getElementById('eqSolveText');
+        const coeffTextA = document.getElementById('coeffTextA');
+        const coeffTextB = document.getElementById('coeffTextB');
+        const coeffTextC = document.getElementById('coeffTextC');
+        const calcA = document.getElementById('calcA');
+        const calcB = document.getElementById('calcB');
+        const calcC = document.getElementById('calcC');
+        const calcVal = document.getElementById('calcVal');
+        const rootA = document.getElementById('rootA');
+        const rootB = document.getElementById('rootB');
+        const rootD = document.getElementById('rootD');
+        const stepSolution = document.getElementById('stepSolution');
+        const discrimPill = document.getElementById('discrimPill');
+        const vertexCoordText = document.getElementById('vertexCoordText');
+        const zerosCoordText = document.getElementById('zerosCoordText');
+        
+        // Physics Elements
+        const pCanvas = document.getElementById('physicsCanvas');
+        const pCtx = pCanvas.getContext('2d');
+        const physicsEqDisplay = document.getElementById('physicsEqDisplay');
+        const slideAngle = document.getElementById('slideAngle');
+        const slideSpeed = document.getElementById('slideSpeed');
+        const lblAngle = document.getElementById('lblAngle');
+        const lblSpeed = document.getElementById('lblSpeed');
+        const btnLaunch = document.getElementById('btnLaunch');
+        const gameStatus = document.getElementById('gameStatus');
+        
+        // Game State Variables
+        let activeLevel = 1;
+        let isLaunching = false;
+        let launchProgress = 0; // x-distance travel along flight path
+        let animationFrameId = null;
+        let particles = [];
+        
+        // Sandbox Math parameters state
+        let formMode = 'standard'; // 'standard' or 'vertex'
+        let aVal = 1.0;
+        let bVal = 0.0;
+        let cVal = 0.0;
+        let hVal = 0.0;
+        let kVal = 0.0;
+        
+        // Hover coordinate tracking
+        let mouseXMath = null;
+        let isMouseOver = false;
+
+        function initCanvasSize(canvasElement) {
+            const container = canvasElement.parentElement;
+            canvasElement.width = container.clientWidth;
+            canvasElement.height = container.clientHeight;
+        }
+
+        // Project Cartesian Coordinate systems mapping
+        function getCoordsHelper(canvasElement) {
+            const w = canvasElement.width;
+            const h = canvasElement.height;
+            const centerX = w / 2;
+            const centerY = h / 2;
+            const scaleX = w / 20; // 20 units wide (-10 to 10)
+            const scaleY = h / 20; // 20 units high (-10 to 10)
+            return { centerX, centerY, scaleX, scaleY };
+        }
+
+        function toPixel(canvasElement, xMath, yMath) {
+            const { centerX, centerY, scaleX, scaleY } = getCoordsHelper(canvasElement);
+            return {
+                x: centerX + xMath * scaleX,
+                y: centerY - yMath * scaleY
+            };
+        }
+
+        function toMath(canvasElement, xPixel, yPixel) {
+            const { centerX, centerY, scaleX, scaleY } = getCoordsHelper(canvasElement);
+            return {
+                x: (xPixel - centerX) / scaleX,
+                y: (centerY - yPixel) / scaleY
+            };
+        }
+
+        function drawGrid(canvasElement, context) {
+            const w = canvasElement.width;
+            const h = canvasElement.height;
+            const { centerX, centerY, scaleX, scaleY } = getCoordsHelper(canvasElement);
+            
+            context.clearRect(0, 0, w, h);
+            
+            context.lineWidth = 1;
+            context.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            context.fillStyle = 'rgba(255, 255, 255, 0.35)';
+            context.font = '10px JetBrains Mono';
+            
+            for (let i = -10; i <= 10; i++) {
+                if (i === 0) continue;
+                
+                // Vertical grid lines
+                const pX = toPixel(canvasElement, i, 0);
+                context.beginPath();
+                context.moveTo(pX.x, 0);
+                context.lineTo(pX.x, h);
+                context.stroke();
+                
+                // Horizontal grid lines
+                const pY = toPixel(canvasElement, 0, i);
+                context.beginPath();
+                context.moveTo(0, pY.y);
+                context.lineTo(w, pY.y);
+                context.stroke();
+
+                // Grid labels
+                if (i % 2 === 0) {
+                    context.fillText(i, pX.x - 6, centerY + 14);
+                    context.fillText(i, centerX - 16, pY.y + 4);
+                }
+            }
+            
+            // Core X & Y axes lines
+            context.lineWidth = 1.5;
+            context.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            
+            context.beginPath();
+            context.moveTo(0, centerY);
+            context.lineTo(w, centerY);
+            context.stroke();
+            
+            context.beginPath();
+            context.moveTo(centerX, 0);
+            context.lineTo(centerX, h);
+            context.stroke();
+            
+            context.fillText("y", centerX + 8, 12);
+            context.fillText("x", w - 12, centerY - 8);
+            context.fillText("0", centerX - 12, centerY + 14);
+        }
+
+        // Redraw logic for the main Sandbox Plotter
+        function drawSandboxPlotter() {
+            initCanvasSize(canvas);
+            drawGrid(canvas, ctx);
+            
+            const w = canvas.width;
+            const h = canvas.height;
+            
+            ctx.beginPath();
+            ctx.lineWidth = 3.5;
+            ctx.strokeStyle = '#f43f5e';
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = 'rgba(244, 63, 94, 0.5)';
+            
+            let first = true;
+            for (let i = 0; i <= w; i += 2) {
+                const mathPt = toMath(canvas, i, 0);
+                const x = mathPt.x;
+                const y = aVal * x * x + bVal * x + cVal;
+                const pixPt = toPixel(canvas, x, y);
+                
+                if (first) {
+                    ctx.moveTo(pixPt.x, pixPt.y);
+                    first = false;
+                } else {
+                    ctx.lineTo(pixPt.x, pixPt.y);
+                }
+            }
+            ctx.stroke();
+            ctx.shadowBlur = 0; // reset glow
+
+            if (chkAxis.checked) {
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = 'rgba(168, 85, 247, 0.4)'; // Purple
+                ctx.setLineDash([5, 5]);
+                
+                const symX = -bVal / (2 * aVal);
+                const startPt = toPixel(canvas, symX, 10);
+                const endPt = toPixel(canvas, symX, -10);
+                
+                ctx.beginPath();
+                ctx.moveTo(startPt.x, startPt.y);
+                ctx.lineTo(endPt.x, endPt.y);
+                ctx.stroke();
+                ctx.setLineDash([]); // clear dash
+                
+                // Label Axis
+                ctx.fillStyle = '#a855f7';
+                ctx.font = '11px JetBrains Mono';
+                ctx.fillText(`x = ${symX.toFixed(2)}`, startPt.x + 8, 30);
+            }
+
+            if (chkFocus.checked) {
+                const focusY = kVal + 1 / (4 * aVal);
+                const directrixY = kVal - 1 / (4 * aVal);
+                
+                // Focus marker
+                const fPixel = toPixel(canvas, hVal, focusY);
+                ctx.fillStyle = '#ffb000'; // Amber
+                ctx.beginPath();
+                ctx.arc(fPixel.x, fPixel.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.font = '11px Outfit';
+                ctx.fillText(`Focus F(${hVal.toFixed(2)}, ${focusY.toFixed(2)})`, fPixel.x + 8, fPixel.y - 6);
+                
+
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = '#ec4899'; // Pink
+                ctx.setLineDash([4, 4]);
+                
+                const dStart = toPixel(canvas, -10, directrixY);
+                const dEnd = toPixel(canvas, 10, directrixY);
+                
+                ctx.beginPath();
+                ctx.moveTo(dStart.x, dStart.y);
+                ctx.lineTo(dEnd.x, dEnd.y);
+                ctx.stroke();
+                ctx.setLineDash([]); // clear dash
+                
+                ctx.fillStyle = '#ec4899';
+                ctx.fillText(`Directrix y = ${directrixY.toFixed(2)}`, 16, dStart.y - 6);
+                
+                // Hover dynamic point verification
+                if (isMouseOver && mouseXMath !== null) {
+                    const hoverY = aVal * mouseXMath * mouseXMath + bVal * mouseXMath + cVal;
+                    const pPixel = toPixel(canvas, mouseXMath, hoverY);
+                    
+                    ctx.fillStyle = '#10b981'; // Emerald
+                    ctx.beginPath();
+                    ctx.arc(pPixel.x, pPixel.y, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#e2e8f0';
+                    ctx.font = '11px Outfit';
+                    ctx.fillText(`P(${mouseXMath.toFixed(2)}, ${hoverY.toFixed(2)})`, pPixel.x + 10, pPixel.y - 10);
+                    
+                    // Line from P to Focus F
+                    ctx.strokeStyle = '#ffb000';
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.moveTo(pPixel.x, pPixel.y);
+                    ctx.lineTo(fPixel.x, fPixel.y);
+                    ctx.stroke();
+                    
+                    // Line from P perpendicular to Directrix line
+                    const dProjPixel = toPixel(canvas, mouseXMath, directrixY);
+                    ctx.strokeStyle = '#ec4899';
+                    ctx.beginPath();
+                    ctx.moveTo(pPixel.x, pPixel.y);
+                    ctx.lineTo(dProjPixel.x, dProjPixel.y);
+                    ctx.stroke();
+                    
+                    // Compute Distances (Verify geometry)
+                    const distFocus = Math.sqrt((mouseXMath - hVal) ** 2 + (hoverY - focusY) ** 2);
+                    const distDirectrix = Math.abs(hoverY - directrixY);
+                    
+                    // Display readout boxes
+                    ctx.fillStyle = 'rgba(15, 18, 30, 0.95)';
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.roundRect(16, h - 80, 240, 60, 8);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    ctx.fillStyle = '#e2e8f0';
+                    ctx.font = '11px JetBrains Mono';
+                    ctx.fillText(`Dist(P, Focus)     = ${distFocus.toFixed(3)}`, 26, h - 60);
+                    ctx.fillText(`Dist(P, Directrix) = ${distDirectrix.toFixed(3)}`, 26, h - 42);
+                    ctx.fillStyle = '#10b981';
+                    ctx.fillText(`Equal! Definition Verified.`, 26, h - 25);
+                }
+            }
+
+            const vPixel = toPixel(canvas, hVal, kVal);
+            ctx.fillStyle = '#a855f7'; // Purple
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(vPixel.x, vPixel.y, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 11px Outfit';
+            ctx.fillText(`V(${hVal.toFixed(2)}, ${kVal.toFixed(2)})`, vPixel.x + 8, vPixel.y + 14);
+
+            if (cVal >= -10 && cVal <= 10) {
+                const yPixel = toPixel(canvas, 0, cVal);
+                ctx.fillStyle = '#10b981'; // Emerald
+                ctx.beginPath();
+                ctx.arc(yPixel.x, yPixel.y, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#e2e8f0';
+                ctx.font = '10px Outfit';
+                ctx.fillText(`(0, ${cVal.toFixed(1)})`, yPixel.x - 40, yPixel.y - 4);
+            }
+
+            const D = bVal * bVal - 4 * aVal * cVal;
+            if (D >= 0) {
+                const r1 = (-bVal + Math.sqrt(D)) / (2 * aVal);
+                const r2 = (-bVal - Math.sqrt(D)) / (2 * aVal);
+                
+                [r1, r2].forEach(r => {
+                    if (r >= -10 && r <= 10) {
+                        const rPixel = toPixel(canvas, r, 0);
+                        ctx.fillStyle = '#f43f5e'; // Rose
+                        ctx.beginPath();
+                        ctx.arc(rPixel.x, rPixel.y, 5, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = '10px JetBrains Mono';
+                        ctx.fillText(r.toFixed(2), rPixel.x - 12, rPixel.y - 10);
+                    }
+                });
+            }
+        }
+
+        // Sync parameters: Standard -> Vertex
+        function syncStandardToVertex() {
+            hVal = -bVal / (2 * aVal);
+            kVal = cVal - (bVal * bVal) / (4 * aVal);
+            
+            slideVA.value = aVal;
+            slideVH.value = hVal;
+            slideVK.value = kVal;
+            
+            lblVA.textContent = aVal.toFixed(2);
+            lblVH.textContent = hVal.toFixed(2);
+            lblVK.textContent = kVal.toFixed(2);
+        }
+
+        // Sync parameters: Vertex -> Standard
+        function syncVertexToStandard() {
+            aVal = parseFloat(slideVA.value);
+            hVal = parseFloat(slideVH.value);
+            kVal = parseFloat(slideVK.value);
+            
+            bVal = -2 * aVal * hVal;
+            cVal = aVal * hVal * hVal + kVal;
+            
+            slideA.value = aVal;
+            slideB.value = bVal;
+            slideC.value = cVal;
+            
+            lblA.textContent = aVal.toFixed(2);
+            lblB.textContent = bVal.toFixed(2);
+            lblC.textContent = cVal.toFixed(2);
+        }
+
+        function updateEquationViews() {
+            // Main Sandbox Formula View
+            const signB = bVal >= 0 ? '+' : '-';
+            const signC = cVal >= 0 ? '+' : '-';
+            
+            const stdString = `y = ${aVal.toFixed(2)}x² ${signB} ${Math.abs(bVal).toFixed(2)}x ${signC} ${Math.abs(cVal).toFixed(2)}`;
+            
+            const hValAbs = Math.abs(hVal);
+            const signInsideH = hVal >= 0 ? '-' : '+';
+            const signK = kVal >= 0 ? '+' : '-';
+            
+            const vertString = `y = ${aVal.toFixed(2)}(x ${signInsideH} ${hValAbs.toFixed(2)})² ${signK} ${Math.abs(kVal).toFixed(2)}`;
+            
+            eqDisplay.textContent = formMode === 'standard' ? stdString : vertString;
+
+            // Solver equation text
+            eqSolveText.textContent = `${aVal.toFixed(2)}x² ${signB} ${Math.abs(bVal).toFixed(2)}x ${signC} ${Math.abs(cVal).toFixed(2)} = 0`;
+            
+            // Coefficients Step 1
+            coeffTextA.textContent = aVal.toFixed(2);
+            coeffTextB.textContent = bVal.toFixed(2);
+            coeffTextC.textContent = cVal.toFixed(2);
+            
+            // Discriminant Step 2
+            calcA.textContent = aVal.toFixed(2);
+            calcB.textContent = bVal.toFixed(2);
+            calcC.textContent = cVal.toFixed(2);
+            
+            const D = bVal * bVal - 4 * aVal * cVal;
+            calcVal.textContent = D.toFixed(4);
+            
+            // Formula Step 3
+            rootA.textContent = aVal.toFixed(2);
+            rootB.textContent = bVal.toFixed(2);
+            rootD.textContent = D >= 0 ? D.toFixed(4) : `(${D.toFixed(4)})`;
+
+            // Root evaluations
+            if (D > 0) {
+                discrimPill.className = 'discrim-pill positive';
+                discrimPill.textContent = `Two Distinct Real Zeros (D > 0)`;
+                
+                const r1 = (-bVal + Math.sqrt(D)) / (2 * aVal);
+                const r2 = (-bVal - Math.sqrt(D)) / (2 * aVal);
+                
+                stepSolution.innerHTML = `x = [ -(${bVal.toFixed(2)}) &plusmn; ${Math.sqrt(D).toFixed(2)} ] / ${ (2*aVal).toFixed(2) }<br>x₁ = ${r1.toFixed(3)}, x₂ = ${r2.toFixed(3)}`;
+                
+                zerosCoordText.innerHTML = `x₁ = ${r1.toFixed(3)}<br>x₂ = ${r2.toFixed(3)}`;
+            } else if (Math.abs(D) < 0.00001 || D === 0) {
+                discrimPill.className = 'discrim-pill zero';
+                discrimPill.textContent = `One Repeating Real Zero (D = 0)`;
+                
+                const r = -bVal / (2 * aVal);
+                stepSolution.innerHTML = `x = -(${bVal.toFixed(2)}) / ${ (2*aVal).toFixed(2) }<br>x = ${r.toFixed(3)}`;
+                zerosCoordText.innerHTML = `x = ${r.toFixed(3)} (Vertex sits on x-axis)`;
+            } else {
+                discrimPill.className = 'discrim-pill negative';
+                discrimPill.textContent = `Complex Conjugate Zeros (D < 0)`;
+                
+                const realPart = -bVal / (2 * aVal);
+                const imagPart = Math.sqrt(-D) / (2 * aVal);
+                
+                stepSolution.innerHTML = `x = [ -(${bVal.toFixed(2)}) &plusmn; &radic;(${Math.abs(D).toFixed(2)})i ] / ${ (2*aVal).toFixed(2) }<br>x = ${realPart.toFixed(3)} &plusmn; ${imagPart.toFixed(3)}i`;
+                
+                zerosCoordText.innerHTML = `x₁ = ${realPart.toFixed(3)} + ${imagPart.toFixed(3)}i<br>x₂ = ${realPart.toFixed(3)} - ${imagPart.toFixed(3)}i`;
+            }
+
+            vertexCoordText.textContent = `(${hVal.toFixed(3)}, ${kVal.toFixed(3)})`;
+        }
+
+        tabStandard.addEventListener('click', () => {
+            tabStandard.classList.add('active');
+            tabVertex.classList.remove('active');
+            slidersStandard.style.display = 'flex';
+            slidersVertex.style.display = 'none';
+            formMode = 'standard';
+            updateEquationViews();
+            drawSandboxPlotter();
+        });
+
+        tabVertex.addEventListener('click', () => {
+            tabStandard.classList.remove('active');
+            tabVertex.classList.add('active');
+            slidersStandard.style.display = 'none';
+            slidersVertex.style.display = 'flex';
+            formMode = 'vertex';
+            updateEquationViews();
+            drawSandboxPlotter();
+        });
+
+        // Event listeners for Standard Sliders
+        slideA.addEventListener('input', (e) => {
+            let val = parseFloat(e.target.value);
+            if (val === 0) val = 0.05; // prevent division by zero in focus/roots
+            aVal = val;
+            lblA.textContent = aVal.toFixed(2);
+            syncStandardToVertex();
+            updateEquationViews();
+            drawSandboxPlotter();
+        });
+        slideB.addEventListener('input', (e) => {
+            bVal = parseFloat(e.target.value);
+            lblB.textContent = bVal.toFixed(2);
+            syncStandardToVertex();
+            updateEquationViews();
+            drawSandboxPlotter();
+        });
+        slideC.addEventListener('input', (e) => {
+            cVal = parseFloat(e.target.value);
+            lblC.textContent = cVal.toFixed(2);
+            syncStandardToVertex();
+            updateEquationViews();
+            drawSandboxPlotter();
+        });
+
+        // Event listeners for Vertex Sliders
+        slideVA.addEventListener('input', (e) => {
+            let val = parseFloat(e.target.value);
+            if (val === 0) val = 0.05;
+            slideVA.value = val;
+            syncVertexToStandard();
+            updateEquationViews();
+            drawSandboxPlotter();
+        });
+        slideVH.addEventListener('input', (e) => {
+            syncVertexToStandard();
+            updateEquationViews();
+            drawSandboxPlotter();
+        });
+        slideVK.addEventListener('input', (e) => {
+            syncVertexToStandard();
+            updateEquationViews();
+            drawSandboxPlotter();
+        });
+
+        // Toggles & Resize
+        chkAxis.addEventListener('change', drawSandboxPlotter);
+        chkFocus.addEventListener('change', drawSandboxPlotter);
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mousePixelX = e.clientX - rect.left;
+            const mousePixelY = e.clientY - rect.top;
+            const mathPt = toMath(canvas, mousePixelX, mousePixelY);
+            
+            mouseXMath = mathPt.x;
+            isMouseOver = true;
+            drawSandboxPlotter();
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            isMouseOver = false;
+            drawSandboxPlotter();
+        });
+
+        window.addEventListener('resize', () => {
+            drawSandboxPlotter();
+            drawPhysicsWorld();
+        });
+
+
+        // Target configs per level
+        const levelConfig = {
+            1: { targetX: 5.5, targetY: 0, wallHeight: 0, title: "Level 1: Ground Strike" },
+            2: { targetX: 6.0, targetY: 4.0, wallHeight: 0, title: "Level 2: Elevated Target" },
+            3: { targetX: 7.0, targetY: -2.0, wallHeight: 4.5, title: "Level 3: Obstacle Wall" }
+        };
+
+        const launchX0 = -8.0;
+        const launchY0 = 0.0;
+        const gravityG = 0.75; // simulated gravity speed scalar
+
+        function getProjectileCoeffs() {
+            const angleDeg = parseFloat(slideAngle.value);
+            const speed = parseFloat(slideSpeed.value);
+            
+            const theta = angleDeg * Math.PI / 180;
+            const cos = Math.cos(theta);
+            const tan = Math.tan(theta);
+            
+            // a = -g / (2 * v0^2 * cos^2(theta))
+            const a = -gravityG / (2 * speed * speed * cos * cos);
+            
+            // y = y0 + tan(theta)*(x-x0) + a*(x-x0)^2
+            // y = a*x^2 + [tan(theta) - 2*a*x0]*x + [y0 - x0*tan(theta) + a*x0^2]
+            const b = tan - 2 * a * launchX0;
+            const c = launchY0 - launchX0 * tan + a * launchX0 * launchX0;
+            
+            return { a, b, c };
+        }
+
+        function updatePhysicsEquation() {
+            const { a, b, c } = getProjectileCoeffs();
+            const signB = b >= 0 ? '+' : '-';
+            const signC = c >= 0 ? '+' : '-';
+            
+            physicsEqDisplay.innerHTML = `y = ${a.toFixed(3)}x² ${signB} ${Math.abs(b).toFixed(3)}x ${signC} ${Math.abs(c).toFixed(3)}`;
+            
+            lblAngle.textContent = `${slideAngle.value}°`;
+            lblSpeed.textContent = parseFloat(slideSpeed.value).toFixed(1);
+        }
+
+        function drawPhysicsWorld() {
+            initCanvasSize(pCanvas);
+            drawGrid(pCanvas, pCtx);
+            
+            const { targetX, targetY, wallHeight } = levelConfig[activeLevel];
+            
+            const launchPix = toPixel(pCanvas, launchX0, launchY0);
+            pCtx.fillStyle = '#818cf8';
+            pCtx.beginPath();
+            pCtx.arc(launchPix.x, launchPix.y, 10, 0, Math.PI * 2);
+            pCtx.fill();
+            
+            pCtx.fillStyle = '#ffffff';
+            pCtx.beginPath();
+            pCtx.arc(launchPix.x, launchPix.y, 4, 0, Math.PI * 2);
+            pCtx.fill();
+
+            if (activeLevel === 3 && wallHeight > 0) {
+                const wallTop = toPixel(pCanvas, 0, wallHeight);
+                const wallBase = toPixel(pCanvas, 0, -10);
+                
+                pCtx.lineWidth = 10;
+                pCtx.strokeStyle = 'rgba(239, 68, 68, 0.45)'; // Red bricks obstacle
+                pCtx.beginPath();
+                pCtx.moveTo(wallTop.x, wallTop.y);
+                pCtx.lineTo(wallBase.x, wallBase.y);
+                pCtx.stroke();
+                
+                pCtx.lineWidth = 1.5;
+                pCtx.strokeStyle = '#ef4444';
+                pCtx.beginPath();
+                pCtx.moveTo(wallTop.x, wallTop.y);
+                pCtx.lineTo(wallBase.x, wallBase.y);
+                pCtx.stroke();
+                
+                pCtx.fillStyle = '#ef4444';
+                pCtx.font = '10px JetBrains Mono';
+                pCtx.fillText(`Obstacle H=${wallHeight}`, wallTop.x + 8, wallTop.y + 12);
+            }
+
+            const targetPix = toPixel(pCanvas, targetX, targetY);
+            pCtx.strokeStyle = '#10b981'; // Emerald target rings
+            pCtx.lineWidth = 2.5;
+            pCtx.shadowBlur = 8;
+            pCtx.shadowColor = 'rgba(16, 185, 129, 0.5)';
+            
+            pCtx.beginPath();
+            pCtx.arc(targetPix.x, targetPix.y, 15, 0, Math.PI * 2);
+            pCtx.stroke();
+            
+            pCtx.beginPath();
+            pCtx.arc(targetPix.x, targetPix.y, 5, 0, Math.PI * 2);
+            pCtx.fillStyle = '#10b981';
+            pCtx.fill();
+            
+            pCtx.shadowBlur = 0; // reset
+            pCtx.fillStyle = '#10b981';
+            pCtx.font = 'bold 10px Outfit';
+            pCtx.fillText("TARGET", targetPix.x - 18, targetPix.y - 22);
+
+            const { a, b, c } = getProjectileCoeffs();
+            
+            pCtx.lineWidth = 1.5;
+            pCtx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            pCtx.setLineDash([4, 6]);
+            pCtx.beginPath();
+            
+            let trajectoryFinished = false;
+            for (let x = launchX0; x <= 10 && !trajectoryFinished; x += 0.1) {
+                const y = a * x * x + b * x + c;
+                const pix = toPixel(pCanvas, x, y);
+                
+                if (x === launchX0) {
+                    pCtx.moveTo(pix.x, pix.y);
+                } else {
+                    pCtx.lineTo(pix.x, pix.y);
+                }
+                
+                // End preview line early if it hits ground or goes out
+                if (y < -10) trajectoryFinished = true;
+            }
+            pCtx.stroke();
+            pCtx.setLineDash([]);
+
+            if (isLaunching) {
+                const xVal = launchX0 + launchProgress;
+                const yVal = a * xVal * xVal + b * xVal + c;
+                const pPix = toPixel(pCanvas, xVal, yVal);
+                
+                pCtx.fillStyle = '#f43f5e'; // pulsing fireball
+                pCtx.shadowBlur = 15;
+                pCtx.shadowColor = '#f43f5e';
+                pCtx.beginPath();
+                pCtx.arc(pPix.x, pPix.y, 8, 0, Math.PI * 2);
+                pCtx.fill();
+                pCtx.shadowBlur = 0;
+            }
+
+            drawExplosionParticles();
+        }
+
+        // Animate physics launcher
+        function stepLaunchAnimation() {
+            const { a, b, c } = getProjectileCoeffs();
+            const { targetX, targetY, wallHeight } = levelConfig[activeLevel];
+            
+            // Advance travel step proportional to initial launch angle velocity
+            const launchSpeed = parseFloat(slideSpeed.value);
+            const theta = parseFloat(slideAngle.value) * Math.PI / 180;
+            const velocityX = launchSpeed * Math.cos(theta) * 0.008; // speed mapping factor
+            
+            launchProgress += velocityX;
+            const curX = launchX0 + launchProgress;
+            const curY = a * curX * curX + b * curX + c;
+
+            // 1. Collision detection - Ground hit
+            if (curY < -10.0 || curX > 10.0) {
+                endLaunch(false, "Missed! Flew out of grid boundaries.");
+                return;
+            }
+
+            // 2. Collision detection - Wall obstacle hit (Level 3)
+            if (activeLevel === 3 && wallHeight > 0) {
+                if (curX >= 0.0 && (curX - velocityX) < 0.0) {
+                    const crossedY = c; // y value at x = 0
+                    if (crossedY <= wallHeight) {
+                        endLaunch(false, "Oops! Hit the red obstacle wall. Pitch higher!");
+                        return;
+                    }
+                }
+            }
+
+            // 3. Collision detection - Target hit
+            const distToTarget = Math.sqrt((curX - targetX) ** 2 + (curY - targetY) ** 2);
+            if (distToTarget <= 0.6) {
+                triggerSuccessExplosion(targetX, targetY);
+                endLaunch(true, "SUCCESS! Direct target hit. Masterful quadratic fitting!");
+                return;
+            }
+
+            // Continue animation
+            drawPhysicsWorld();
+            animationFrameId = requestAnimationFrame(stepLaunchAnimation);
+        }
+
+        function triggerSuccessExplosion(tx, ty) {
+            const originPix = toPixel(pCanvas, tx, ty);
+            for (let i = 0; i < 30; i++) {
+                particles.push({
+                    x: originPix.x,
+                    y: originPix.y,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8,
+                    color: `hsl(${Math.random() * 60 + 120}, 90%, 60%)`,
+                    radius: Math.random() * 4 + 2,
+                    alpha: 1
+                });
+            }
+        }
+
+        function drawExplosionParticles() {
+            particles.forEach((p, idx) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= 0.02;
+                
+                if (p.alpha <= 0) {
+                    particles.splice(idx, 1);
+                    return;
+                }
+                
+                pCtx.save();
+                pCtx.globalAlpha = p.alpha;
+                pCtx.fillStyle = p.color;
+                pCtx.beginPath();
+                pCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                pCtx.fill();
+                pCtx.restore();
+            });
+            
+            if (particles.length > 0) {
+                requestAnimationFrame(drawPhysicsWorld);
+            }
+        }
+
+        function endLaunch(isSuccess, msg) {
+            isLaunching = false;
+            cancelAnimationFrame(animationFrameId);
+            
+            gameStatus.textContent = msg;
+            gameStatus.className = `game-status-banner ${isSuccess ? 'success' : 'fail'}`;
+            btnLaunch.disabled = false;
+            drawPhysicsWorld();
+        }
+
+        btnLaunch.addEventListener('click', () => {
+            if (isLaunching) return;
+            
+            isLaunching = true;
+            launchProgress = 0;
+            gameStatus.style.display = 'none';
+            btnLaunch.disabled = true;
+            
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            stepLaunchAnimation();
+        });
+
+        // Sliders triggers
+        slideAngle.addEventListener('input', () => {
+            updatePhysicsEquation();
+            drawPhysicsWorld();
+        });
+        
+        slideSpeed.addEventListener('input', () => {
+            updatePhysicsEquation();
+            drawPhysicsWorld();
+        });
+
+        // Level Tabs Switcher
+        document.querySelectorAll('.level-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                activeLevel = parseInt(btn.getAttribute('data-level'));
+                
+                if (activeLevel === 1) {
+                    slideAngle.value = 45;
+                    slideSpeed.value = 10;
+                } else if (activeLevel === 2) {
+                    slideAngle.value = 60;
+                    slideSpeed.value = 12;
+                } else if (activeLevel === 3) {
+                    slideAngle.value = 75;
+                    slideSpeed.value = 15;
+                }
+                
+                isLaunching = false;
+                if (animationFrameId) cancelAnimationFrame(animationFrameId);
+                gameStatus.style.display = 'none';
+                btnLaunch.disabled = false;
+                
+                updatePhysicsEquation();
+                drawPhysicsWorld();
+            });
+        });
+
+
+        const quizQuestions = [
+            {
+                question: "For the parabola equation y = 2(x - 3)² + 5, what are the coordinates of the vertex?",
+                options: [
+                    "(-3, 5)",
+                    "(3, 5)",
+                    "(3, -5)",
+                    "(2, 5)"
+                ],
+                correctIndex: 1,
+                explanation: "In vertex form y = a(x - h)² + k, the vertex is at (h, k). Since the equation is y = 2(x - 3)² + 5, h is 3 and k is 5, giving a vertex of (3, 5)."
+            },
+            {
+                question: "If the discriminant D = b² - 4ac of a quadratic equation is less than 0 (D < 0), what does this tell you about the graph of the parabola?",
+                options: [
+                    "The vertex is at the origin (0, 0).",
+                    "The parabola crosses the x-axis at two distinct points.",
+                    "The parabola never touches or crosses the x-axis, yielding zero real roots.",
+                    "The parabola opens downwards."
+                ],
+                correctIndex: 2,
+                explanation: "When D < 0, the solutions of ax² + bx + c = 0 are complex numbers with imaginary components. Geometrically, this means the parabola never intercepts the x-axis."
+            },
+            {
+                question: "How does changing the coefficient 'a' from a positive number (e.g. +1.0) to a negative number (e.g. -1.0) affect the parabola?",
+                options: [
+                    "It shifts the vertex 1 unit to the left.",
+                    "It reflects the parabola vertically, making it open downwards instead of upwards.",
+                    "It stretches the parabola horizontally.",
+                    "It changes the y-intercept."
+                ],
+                correctIndex: 1,
+                explanation: "The sign of 'a' determines the direction the parabola opens. If a > 0, it opens upwards (minimum vertex). If a < 0, it opens downwards (maximum vertex)."
+            },
+            {
+                question: "Consider standard form y = ax² + bx + c. What is the formula for the Axis of Symmetry?",
+                options: [
+                    "x = -b / (2a)",
+                    "x = b / a",
+                    "x = √D / (2a)",
+                    "x = c"
+                ],
+                correctIndex: 0,
+                explanation: "The axis of symmetry passes straight through the vertex of the parabola. The x-coordinate of the vertex in standard form is h = -b / (2a)."
+            },
+            {
+                question: "If you shift the parabola y = x² up by 3 units and right by 2 units, what is the equation of the new parabola?",
+                options: [
+                    "y = (x + 2)² + 3",
+                    "y = (x - 2)² - 3",
+                    "y = (x - 2)² + 3",
+                    "y = (x - 3)² + 2"
+                ],
+                correctIndex: 2,
+                explanation: "A shift right by 2 units changes x to (x - 2), and a shift up by 3 units adds +3. This results in the vertex form: y = (x - 2)² + 3."
+            }
+        ];
+
+        let quizCurrentIndex = 0;
+        let quizScore = 0;
+        let quizHasAnswered = false;
+
+        const quizQuestionArea = document.getElementById('quizQuestionArea');
+        let quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        let quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+        let quizProgressText = document.getElementById('quizProgressText');
+        let quizScoreText = document.getElementById('quizScoreText');
+
+        function loadQuizQuestion() {
+            quizHasAnswered = false;
+            quizFeedbackArea.style.display = 'none';
+            
+            if (quizCurrentIndex >= quizQuestions.length) {
+                showQuizResults();
+                return;
+            }
+            
+            const q = quizQuestions[quizCurrentIndex];
+            quizQuestionTitle.textContent = q.question;
+            quizProgressText.textContent = `Question ${quizCurrentIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizCurrentIndex}`;
+
+            quizOptionsContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const optBtn = document.createElement('div');
+                optBtn.className = 'quiz-option';
+                optBtn.innerHTML = `
+                    <span>${opt}</span>
+                    <span class="opt-indicator" style="font-family:'JetBrains Mono'; font-weight:700;"></span>
+                `;
+                optBtn.addEventListener('click', () => handleQuizAnswer(idx, optBtn));
+                quizOptionsContainer.appendChild(optBtn);
+            });
+        }
+
+        function handleQuizAnswer(selectedIndex, optionElement) {
+            if (quizHasAnswered) return; // limit to one choice
+            quizHasAnswered = true;
+            
+            const q = quizQuestions[quizCurrentIndex];
+            const children = quizOptionsContainer.children;
+            
+            if (selectedIndex === q.correctIndex) {
+                optionElement.classList.add('correct');
+                optionElement.querySelector('.opt-indicator').innerHTML = `✓`;
+                quizScore++;
+                quizExplanationText.innerHTML = `<strong>Correct!</strong><br>${q.explanation}`;
+            } else {
+                optionElement.classList.add('incorrect');
+                optionElement.querySelector('.opt-indicator').innerHTML = `✗`;
+                
+                // Highlight correct answer
+                children[q.correctIndex].classList.add('correct');
+                children[q.correctIndex].querySelector('.opt-indicator').innerHTML = `✓`;
+                
+                quizExplanationText.innerHTML = `<strong>Incorrect.</strong><br>${q.explanation}`;
+            }
+            
+            quizScoreText.textContent = `Score: ${quizScore}/${quizCurrentIndex + 1}`;
+            quizFeedbackArea.style.display = 'block';
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizCurrentIndex++;
+            loadQuizQuestion();
+        });
+
+        function showQuizResults() {
+            quizQuestionArea.innerHTML = `
+                <div class="quiz-score-overlay">
+                    <h3 style="font-size:1.75rem; color:var(--color-rose); margin-bottom:1rem;">Quiz Completed!</h3>
+                    <p style="font-size:1.15rem; margin-bottom:1.5rem;">Your score: <strong>${quizScore} / ${quizQuestions.length}</strong> (${((quizScore / quizQuestions.length) * 100).toFixed(0)}%)</p>
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-rose); width:auto; display:inline-flex;">Retake Quiz</button>
+                </div>
+            `;
+            quizFeedbackArea.style.display = 'none';
+        }
+
+        window.resetQuiz = function() {
+            quizCurrentIndex = 0;
+            quizScore = 0;
+            
+            // Re-inject layout templates
+            quizQuestionArea.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                    <span id="quizProgressText">Question 1 of 5</span>
+                    <span id="quizScoreText">Score: 0/0</span>
+                </div>
+                <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;"></h3>
+                <div id="quizOptionsContainer"></div>
+            `;
+            
+            // Re-assign query elements that were reset
+            quizQuestionTitle = document.getElementById('quizQuestionTitle');
+            quizOptionsContainer = document.getElementById('quizOptionsContainer');
+            quizProgressText = document.getElementById('quizProgressText');
+            quizScoreText = document.getElementById('quizScoreText');
+            
+            loadQuizQuestion();
+        };
+
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Setup base sandbox values
+            syncStandardToVertex();
+            updateEquationViews();
+            drawSandboxPlotter();
+            
+            // Setup physics values
+            updatePhysicsEquation();
+            drawPhysicsWorld();
+            
+            loadQuizQuestion();
+        });
+    </script>
+</body>
+</html>

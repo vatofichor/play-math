@@ -1,0 +1,1672 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Operations & Logarithms - Algebraic Structures</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "02_algebra",
+            logo: {"main":"Algebra","accent":"Lab","sub":"Advanced Operations & Logarithms"},
+            navigation: [
+    {
+        "label": "Advanced Exponents (x\u207f)",
+        "desc": "Advanced Exponents (x\u207f) interactive section",
+        "href": "#exponents"
+    },
+    {
+        "label": "Logarithmic Curves",
+        "desc": "Logarithmic Curves interactive section",
+        "href": "#logarithms"
+    },
+    {
+        "label": "Modulo Arithmetic (A mod N)",
+        "desc": "Modulo Arithmetic (A mod N) interactive section",
+        "href": "#modulo"
+    },
+    {
+        "label": "Conceptual Quiz",
+        "desc": "Conceptual Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Algebra Domain / Rose Theme override */
+            --color-rose: #f43f5e;
+            --color-rose-glow: rgba(244, 63, 94, 0.35);
+            --color-accent: #f43f5e;
+            --color-accent-glow: rgba(244, 63, 94, 0.35);
+
+            --color-exp: #a855f7;
+            /* Purple for Exponents */
+            --color-log: #38bdf8;
+            /* Cyan for Logarithms */
+            --color-mod: #10b981;
+            /* Emerald for Modulo */
+            --color-asymptote: #ef4444;
+            /* Red for vertical asymptote */
+        }
+
+        /* Highlight classes on sidebar active menu for Algebra Domain */
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-rose) !important;
+            box-shadow: 0 4px 20px var(--color-rose-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-title {
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-desc {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-rose);
+            background: rgba(244, 63, 94, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            text-shadow: 0 0 5px var(--color-rose-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        /* Tabs and Controls Styling */
+        .exp-preset-group {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 500px) {
+            .exp-preset-group {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .exp-preset-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 10px 6px;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .exp-preset-btn:hover {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .exp-preset-btn.active {
+            background: rgba(168, 85, 247, 0.15);
+            color: #c084fc;
+            border-color: rgba(168, 85, 247, 0.35);
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.15);
+        }
+
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        /* Controls */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-rose);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-rose-glow);
+        }
+
+        .slider-row.slider-exp input[type="range"]::-webkit-slider-thumb {
+            background: var(--color-exp);
+            box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+        }
+
+        .slider-row.slider-log input[type="range"]::-webkit-slider-thumb {
+            background: var(--color-log);
+            box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+        }
+
+        .slider-row.slider-mod input[type="range"]::-webkit-slider-thumb {
+            background: var(--color-mod);
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        /* Animation Buttons */
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-control {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-control.btn-primary {
+            background: var(--color-mod);
+            color: #000000;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-control.btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-control.btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-control.btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        /* Graph tracer tooltip style */
+        .graph-hud {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--card-border);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Quiz layout rules */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .quiz-score-overlay {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1
+                style="background: linear-gradient(135deg, #ffffff 30%, var(--color-rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Advanced Operations & Logarithms</h1>
+            <p>Explore mathematical operations that extend beyond basic arithmetic. Investigate how exponents scale into negative reciprocal dimensions and fractional roots, graph logarithmic curves, and visualize periodic modulo arithmetic on a remainder dial.</p>
+        </header>
+
+        <!-- SECTION 1: EXPONENTS SANDBOX -->
+        <section id="exponents">
+            <div class="section-header">
+                <span class="section-tag">Interactive Dimension scaling</span>
+                <h2>Advanced Exponents (xⁿ)</h2>
+            </div>
+            <p class="section-intro">
+                Exponents aren't limited to positive integers. Raising a base to the power of 0 collapses dimensions to a universal unit baseline. Negative powers invert factors into fractions, and fractional powers extract the geometric side lengths of areas and volumes.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Grid Visualization Canvas -->
+                <div class="panel">
+                    <div class="canvas-container" style="height: 380px; background: rgba(0,0,0,0.35);">
+                        <canvas id="expCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Exponent Selection & Equations -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Exponent Statement</h3>
+                        <div class="equation-box" id="expEqDisplay" style="color:var(--color-exp);">
+                            4&sup2; = 16
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row slider-exp">
+                            <div class="slider-label">
+                                <span>Base (<span class="math-symbol" style="font-weight:700;">x</span>)</span>
+                                <span class="number" id="lblExpX">4</span>
+                            </div>
+                            <input type="range" id="slideExpX" min="1" max="7" value="4" step="1">
+                        </div>
+                    </div>
+
+                    <div class="slider-label" style="margin-bottom: 6px;">
+                        <span>Exponent / Power (<span class="math-symbol" style="font-weight:700;">n</span>)</span>
+                    </div>
+                    <div class="exp-preset-group">
+                        <button class="exp-preset-btn" data-val="-2">x⁻²</button>
+                        <button class="exp-preset-btn" data-val="-1">x⁻¹</button>
+                        <button class="exp-preset-btn" data-val="0">x⁰</button>
+                        <button class="exp-preset-btn" data-val="1/3">x¹/³</button>
+                        <button class="exp-preset-btn" data-val="1/2">x¹/²</button>
+                        <button class="exp-preset-btn" data-val="1">x¹</button>
+                        <button class="exp-preset-btn active" data-val="2">x²</button>
+                        <button class="exp-preset-btn" data-val="3">x³</button>
+                    </div>
+
+                    <div class="formula-steps">
+                        <div><strong>Geometric Dimension & Behavior:</strong></div>
+                        <div id="expDimLabel" style="margin-top: 6px; font-weight:700; color:var(--color-exp);">
+                            Dimension: 2D (Square Area Grid)
+                        </div>
+                        <div id="expExplanation"
+                            style="margin-top: 8px; font-size:0.85rem; line-height:1.5; color:var(--text-muted);">
+                            Multiplying base A twice. Represents a 2D square area grid of A &times; A.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: LOGARITHMIC GRAPHER -->
+        <section id="logarithms">
+            <div class="section-header">
+                <span class="section-tag">Cartesian Grapher</span>
+                <h2>Logarithmic Curves</h2>
+            </div>
+            <p class="section-intro">
+                A logarithm answers the question: <em>"To what power must we raise the base to get this number?"</em> Graph the logarithmic function <span class="math-symbol">y = a &middot; log<sub>b</sub>(x - h) + k</span>. Watch how shifts move the vertical asymptote, and hover over the curve to trace its coordinate values.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Graph Canvas -->
+                <div class="panel">
+                    <div class="graph-hud">
+                        <span>Hover Coordinates: <span id="hudCoords" style="color:var(--color-log);">Move mouse over graph</span></span>
+                        <span>Asymptote: <span id="hudAsymptote" style="color:var(--color-asymptote); font-weight:bold;">x = 0</span></span>
+                    </div>
+                    <div class="canvas-container" style="height: 380px; background: rgba(0,0,0,0.4);">
+                        <canvas id="logCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Graph Controls -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Logarithmic Equation</h3>
+                        <div class="equation-box" id="logEqDisplay" style="color:var(--color-log); font-size:1.35rem;">
+                            y = 1.0 &middot; log₂(x - 0.0) + 0.0
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row slider-log">
+                            <div class="slider-label">
+                                <span>Base (<span class="math-symbol" style="font-weight:700;">b</span>)</span>
+                                <span class="number" id="lblLogB">2.0</span>
+                            </div>
+                            <input type="range" id="slideLogB" min="1.2" max="5.0" value="2.0" step="0.1">
+                        </div>
+                        <div class="slider-row slider-log">
+                            <div class="slider-label">
+                                <span>Amplitude / Scale (<span class="math-symbol" style="font-weight:700;">a</span>)</span>
+                                <span class="number" id="lblLogA">1.0</span>
+                            </div>
+                            <input type="range" id="slideLogA" min="-3.0" max="3.0" value="1.0" step="0.5">
+                        </div>
+                        <div class="slider-row slider-log">
+                            <div class="slider-label">
+                                <span>Horizontal Shift (<span class="math-symbol" style="font-weight:700;">h</span>)</span>
+                                <span class="number" id="lblLogH">0.0</span>
+                            </div>
+                            <input type="range" id="slideLogH" min="-4.0" max="4.0" value="0.0" step="0.5">
+                        </div>
+                        <div class="slider-row slider-log">
+                            <div class="slider-label">
+                                <span>Vertical Shift (<span class="math-symbol" style="font-weight:700;">k</span>)</span>
+                                <span class="number" id="lblLogK">0.0</span>
+                            </div>
+                            <input type="range" id="slideLogK" min="-4.0" max="4.0" value="0.0" step="0.5">
+                        </div>
+                    </div>
+
+                    <div class="formula-steps">
+                        <div><strong>Key Logarithm Concept:</strong></div>
+                        <div id="logConceptText" style="margin-top: 8px; font-size:0.85rem; line-height:1.5; color:var(--text-muted);">
+                            Logarithm base <span class="number" style="color:var(--color-log);">b</span> is only defined for numbers greater than the asymptote (<span class="math-symbol">x > h</span>). The vertical asymptote represents where the exponent approaches negative infinity (or positive infinity if amplitude is negative).
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: MODULO CLOCK -->
+        <section id="modulo">
+            <div class="section-header">
+                <span class="section-tag">Modular Congruence Clock</span>
+                <h2>Modulo Arithmetic (A mod N)</h2>
+            </div>
+            <p class="section-intro">
+                Modulo arithmetic calculates the **remainder** when one integer is divided by another. Visually, it behaves like a clock. If we count <span class="math-symbol">A</span> ticks on a clock dial that wraps around at <span class="math-symbol">N</span>, where we land is the modulo remainder!
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Clock Dial Canvas -->
+                <div class="panel">
+                    <div class="canvas-container" style="height: 380px; background: rgba(0,0,0,0.35);">
+                        <canvas id="modCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Modulo Inputs & Animation Controls -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Modulo Congruence</h3>
+                        <div class="equation-box" id="modEqDisplay" style="color:var(--color-mod);">
+                            17 &equiv; 2 (mod 5)
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row slider-mod">
+                            <div class="slider-label">
+                                <span>Dividend value (<span class="math-symbol" style="font-weight:700;">A</span>)</span>
+                                <span class="number" id="lblModA">17</span>
+                            </div>
+                            <input type="range" id="slideModA" min="0" max="50" value="17" step="1">
+                        </div>
+                        <div class="slider-row slider-mod">
+                            <div class="slider-label">
+                                <span>Modulus clock base (<span class="math-symbol" style="font-weight:700;">N</span>)</span>
+                                <span class="number" id="lblModN">5</span>
+                            </div>
+                            <input type="range" id="slideModN" min="2" max="24" value="5" step="1">
+                        </div>
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn-control btn-primary" id="btnModPlay">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" id="playIcon">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                            <span id="playBtnText">Play Animation</span>
+                        </button>
+                        <button class="btn-control btn-secondary" id="btnModReset">Reset</button>
+                    </div>
+
+                    <div class="formula-steps">
+                        <div><strong>Division HUD:</strong></div>
+                        <div style="margin-left: 10px; margin-top: 8px; font-size:0.85rem; line-height:1.6;">
+                            &bull; Dividend <span class="math-symbol">A</span>: <span class="number" id="hudModA" style="color:var(--text-color);">17</span><br>
+                            &bull; Modulus divisor <span class="math-symbol">N</span>: <span class="number" id="hudModN" style="color:var(--color-mod);">5</span><br>
+                            &bull; Clock cycles (Quotient): <span class="number" id="hudModQuotient">3 full loops</span><br>
+                            &bull; Remainder (Modulo): <strong class="number" id="hudModRemainder" style="color:var(--color-mod); font-size:1rem;">2</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Self Evaluation</span>
+                <h2>Conceptual Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Review your core algebra operations, powers, logarithms, and modulo arithmetic by completing the quiz.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Quiz Questions -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div
+                            style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">What is the mathematical definition of a negative exponent, such as 3⁻²?</h3>
+
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong>Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text goes here.</p>
+                        <button class="btn" id="quizNextBtn"
+                            style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Concept Summary -->
+                <div class="panel">
+                    <h3>Focus Benchmarks</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom:0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background:var(--color-exp); box-shadow:0 0 6px var(--color-exp);"></span>Zero & Negative power properties</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background:var(--color-exp); box-shadow:0 0 6px var(--color-exp);"></span>Fractional roots ($x^{1/d} = \sqrt[d]{x}$)</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background:var(--color-log); box-shadow:0 0 6px var(--color-log);"></span>Logarithm inverse coordinates ($b^y = x$)</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background:var(--color-asymptote); box-shadow:0 0 6px var(--color-asymptote);"></span>Logarithmic Domain & Asymptote</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background:var(--color-mod); box-shadow:0 0 6px var(--color-mod);"></span>Modular congruence remainder clock</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Exponents Sandbox
+        const expCanvas = document.getElementById('expCanvas');
+        const expCtx = expCanvas.getContext('2d');
+        const slideExpX = document.getElementById('slideExpX');
+        const lblExpX = document.getElementById('lblExpX');
+        const expPresetBtns = document.querySelectorAll('.exp-preset-btn');
+        const expEqDisplay = document.getElementById('expEqDisplay');
+        const expDimLabel = document.getElementById('expDimLabel');
+        const expExplanation = document.getElementById('expExplanation');
+
+        // Log Grapher
+        const logCanvas = document.getElementById('logCanvas');
+        const logCtx = logCanvas.getContext('2d');
+        const slideLogB = document.getElementById('slideLogB');
+        const slideLogA = document.getElementById('slideLogA');
+        const slideLogH = document.getElementById('slideLogH');
+        const slideLogK = document.getElementById('slideLogK');
+        const lblLogB = document.getElementById('lblLogB');
+        const lblLogA = document.getElementById('lblLogA');
+        const lblLogH = document.getElementById('lblLogH');
+        const lblLogK = document.getElementById('lblLogK');
+        const logEqDisplay = document.getElementById('logEqDisplay');
+        const hudCoords = document.getElementById('hudCoords');
+        const hudAsymptote = document.getElementById('hudAsymptote');
+
+        // Modulo Clock
+        const modCanvas = document.getElementById('modCanvas');
+        const modCtx = modCanvas.getContext('2d');
+        const slideModA = document.getElementById('slideModA');
+        const slideModN = document.getElementById('slideModN');
+        const lblModA = document.getElementById('lblModA');
+        const lblModN = document.getElementById('lblModN');
+        const modEqDisplay = document.getElementById('modEqDisplay');
+        const btnModPlay = document.getElementById('btnModPlay');
+        const btnModReset = document.getElementById('btnModReset');
+        const playIcon = document.getElementById('playIcon');
+        const playBtnText = document.getElementById('playBtnText');
+        const hudModA = document.getElementById('hudModA');
+        const hudModN = document.getElementById('hudModN');
+        const hudModQuotient = document.getElementById('hudModQuotient');
+        const hudModRemainder = document.getElementById('hudModRemainder');
+
+        // State variables
+        let expX = 4;
+        let expNStr = '2'; // Can be '3', '2', '1', '0', '-1', '-2', '1/2', '1/3'
+        let expVal = 2;
+
+        let logB = 2.0;
+        let logA = 1.0;
+        let logH = 0.0;
+        let logK = 0.0;
+        let mouseXMath = null;
+        let mouseYMath = null;
+
+        let modA = 17;
+        let modN = 5;
+        let modAnimStep = null; // current step of modulo animation
+        let modAnimInterval = null;
+        let isModPlaying = false;
+
+        function resizeCanvas(canvasElement) {
+            const container = canvasElement.parentElement;
+            canvasElement.width = container.clientWidth;
+            canvasElement.height = container.clientHeight;
+        }
+
+        // 1. EXPONENT SANDBOX LOGIC
+        function initExponents() {
+            slideExpX.addEventListener('input', (e) => {
+                expX = parseInt(e.target.value);
+                lblExpX.textContent = expX;
+                updateExponentDisplay();
+            });
+
+            expPresetBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    expPresetBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    expNStr = btn.getAttribute('data-val');
+                    updateExponentDisplay();
+                });
+            });
+
+            updateExponentDisplay();
+        }
+
+        function updateExponentDisplay() {
+            // Evaluate exponential value
+            let valText = '';
+            let steps = '';
+            let dimText = '';
+            let desc = '';
+
+            if (expNStr === '3') {
+                const res = expX ** 3;
+                valText = `${expX}&sup3; = ${res}`;
+                dimText = 'Dimension: 3D (Cubic Volume Grid)';
+                desc = `Multiplying base ${expX} three times (${expX} &times; ${expX} &times; ${expX}). Corresponds to a 3D isometric cube grid representation.`;
+            } else if (expNStr === '2') {
+                const res = expX ** 2;
+                valText = `${expX}&sup2; = ${res}`;
+                dimText = 'Dimension: 2D (Square Area Grid)';
+                desc = `Multiplying base ${expX} twice (${expX} &times; ${expX}). Represents a flat 2D grid area of size ${expX} &times; ${expX}.`;
+            } else if (expNStr === '1') {
+                const res = expX ** 1;
+                valText = `${expX}¹ = ${res}`;
+                dimText = 'Dimension: 1D (Linear Grid)';
+                desc = `A single copy of the base. Represents a 1D straight line of blocks of length ${expX}.`;
+            } else if (expNStr === '0') {
+                valText = `${expX}⁰ = 1`;
+                dimText = 'Dimension: 0D (Point / Baseline Unit)';
+                desc = `Any non-zero base raised to the power of 0 equals 1. In geometry, this collapses the coordinate line or grid down to a single universal reference block.`;
+            } else if (expNStr === '-1') {
+                const res = (1 / expX).toFixed(3);
+                valText = `${expX}⁻¹ = 1/${expX} &approx; ${res}`;
+                dimText = 'Dimension: Reciprocal Linear Partition';
+                desc = `A negative exponent represents division instead of multiplication. x⁻¹ flips the base into its reciprocal: 1 / x. Visually, a unit block is sliced into ${expX} equal parts.`;
+            } else if (expNStr === '-2') {
+                const res = (1 / (expX ** 2)).toFixed(4);
+                valText = `${expX}⁻² = 1/${expX}&sup2; = 1/${expX ** 2} &approx; ${res}`;
+                dimText = 'Dimension: Reciprocal Square Grid';
+                desc = `Flipped square of the base. x⁻² is the reciprocal 1 / x². Visually, a 1D unit square is subdivided into an ${expX} &times; ${expX} grid, highlighting exactly 1 tiny cell.`;
+            } else if (expNStr === '1/2') {
+                const res = Math.sqrt(expX).toFixed(3);
+                valText = `${expX}¹/² = &radic;${expX} &approx; ${res}`;
+                dimText = 'Dimension: 2D Square Edge Length';
+                desc = `A fractional exponent of 1/2 is the Square Root. It extracts the linear edge length of a 2D square. For base 4, a square of area 4 yields a side length of 2.`;
+            } else if (expNStr === '1/3') {
+                const res = Math.cbrt(expX).toFixed(3);
+                valText = `${expX}¹/³ = &sup3;&radic;${expX} &approx; ${res}`;
+                dimText = 'Dimension: 3D Cube Edge Length';
+                desc = `A fractional exponent of 1/3 is the Cube Root. It extracts the linear edge length of a 3D volume. For base 8, a cube volume of 8 yields an edge length of 2.`;
+            }
+
+            expEqDisplay.innerHTML = valText;
+            expDimLabel.innerHTML = dimText;
+            expExplanation.innerHTML = desc;
+
+            drawExponents();
+        }
+
+        function drawExponents() {
+            resizeCanvas(expCanvas);
+            const w = expCanvas.width;
+            const h = expCanvas.height;
+            expCtx.clearRect(0, 0, w, h);
+
+            const cx = w / 2;
+            const cy = h / 2;
+
+            if (expNStr === '3') {
+                // 3D Isometric grid of size expX x expX x expX
+                const blockSize = Math.min(22, 160 / expX);
+                drawIsometricGrid(expCtx, cx, cy + 40, expX, expX, expX, blockSize, 'hsl(270, 75%, 55%)');
+            } else if (expNStr === '2') {
+                // 2D Square Grid of size expX x expX
+                const size = Math.min(32, 220 / expX);
+                const gridW = expX * size;
+                const startX = cx - gridW / 2;
+                const startY = cy - gridW / 2;
+
+                expCtx.strokeStyle = 'rgba(255,255,255,0.06)';
+                for (let r = 0; r < expX; r++) {
+                    for (let c = 0; c < expX; c++) {
+                        expCtx.fillStyle = 'rgba(168, 85, 247, 0.85)';
+                        expCtx.beginPath();
+                        expCtx.roundRect(startX + c * size + 2, startY + r * size + 2, size - 4, size - 4, 4);
+                        expCtx.fill();
+                        expCtx.stroke();
+                    }
+                }
+            } else if (expNStr === '1') {
+                // 1D row of size expX
+                const size = Math.min(35, 300 / expX);
+                const gridW = expX * size;
+                const startX = cx - gridW / 2;
+                const startY = cy - size / 2;
+
+                expCtx.strokeStyle = 'rgba(255,255,255,0.08)';
+                for (let c = 0; c < expX; c++) {
+                    expCtx.fillStyle = 'rgba(168, 85, 247, 0.85)';
+                    expCtx.beginPath();
+                    expCtx.roundRect(startX + c * size + 2, startY + 2, size - 4, size - 4, 5);
+                    expCtx.fill();
+                    expCtx.stroke();
+                }
+            } else if (expNStr === '0') {
+                // Single 1x1 block
+                const size = 50;
+                expCtx.strokeStyle = '#ffffff';
+                expCtx.fillStyle = 'rgba(168, 85, 247, 0.9)';
+                expCtx.beginPath();
+                expCtx.roundRect(cx - size / 2, cy - size / 2, size, size, 8);
+                expCtx.fill();
+                expCtx.stroke();
+
+                // Text
+                expCtx.fillStyle = '#ffffff';
+                expCtx.font = 'bold 20px Outfit';
+                expCtx.textAlign = 'center';
+                expCtx.textBaseline = 'middle';
+                expCtx.fillText('1', cx, cy);
+            } else if (expNStr === '-1') {
+                // Single large box split into expX slices, highlight 1
+                const size = 180;
+                const startX = cx - size / 2;
+                const startY = cy - size / 2;
+
+                // Frame
+                expCtx.strokeStyle = 'rgba(255,255,255,0.15)';
+                expCtx.fillStyle = 'rgba(255,255,255,0.01)';
+                expCtx.beginPath();
+                expCtx.roundRect(startX, startY, size, size, 12);
+                expCtx.fill();
+                expCtx.stroke();
+
+                // Divisions
+                const sliceW = size / expX;
+                expCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+                for (let i = 0; i < expX; i++) {
+                    const xCoord = startX + i * sliceW;
+                    expCtx.beginPath();
+                    expCtx.moveTo(xCoord, startY);
+                    expCtx.lineTo(xCoord, startY + size);
+                    expCtx.stroke();
+
+                    if (i === 0) {
+                        // Highlight first slice
+                        expCtx.fillStyle = 'rgba(244, 63, 94, 0.35)';
+                        expCtx.strokeStyle = '#f43f5e';
+                        expCtx.lineWidth = 1.5;
+                        expCtx.beginPath();
+                        expCtx.roundRect(xCoord + 1, startY + 1, sliceW - 2, size - 2, [10, 0, 0, 10]);
+                        expCtx.fill();
+                        expCtx.stroke();
+
+                        // Label inside first slice
+                        expCtx.fillStyle = '#ffffff';
+                        expCtx.font = 'bold 11px JetBrains Mono';
+                        expCtx.textAlign = 'center';
+                        expCtx.fillText(`1/${expX}`, xCoord + sliceW / 2, startY + size / 2);
+                    }
+                }
+            } else if (expNStr === '-2') {
+                // Single large box split into expX x expX grid, highlight 1
+                const size = 180;
+                const startX = cx - size / 2;
+                const startY = cy - size / 2;
+
+                // Frame
+                expCtx.strokeStyle = 'rgba(255,255,255,0.15)';
+                expCtx.fillStyle = 'rgba(255,255,255,0.01)';
+                expCtx.beginPath();
+                expCtx.roundRect(startX, startY, size, size, 12);
+                expCtx.fill();
+                expCtx.stroke();
+
+                const cellW = size / expX;
+                expCtx.strokeStyle = 'rgba(255,255,255,0.08)';
+                for (let r = 0; r < expX; r++) {
+                    for (let c = 0; c < expX; c++) {
+                        const cellX = startX + c * cellW;
+                        const cellY = startY + r * cellW;
+                        expCtx.strokeRect(cellX, cellY, cellW, cellW);
+
+                        if (r === expX - 1 && c === 0) {
+                            // Highlight bottom-left corner cell
+                            expCtx.fillStyle = 'rgba(244, 63, 94, 0.35)';
+                            expCtx.strokeStyle = '#f43f5e';
+                            expCtx.lineWidth = 1.5;
+                            expCtx.beginPath();
+                            expCtx.roundRect(cellX + 1, cellY + 1, cellW - 2, cellW - 2, [0, 0, 0, 10]);
+                            expCtx.fill();
+                            expCtx.stroke();
+
+                            // Text label
+                            expCtx.fillStyle = '#ffffff';
+                            expCtx.font = 'bold 9px JetBrains Mono';
+                            expCtx.textAlign = 'center';
+                            expCtx.fillText(`1/${expX * expX}`, cellX + cellW / 2, cellY + cellW / 2 + 3);
+                        }
+                    }
+                }
+            } else if (expNStr === '1/2') {
+                // Fractional power: Square edge root
+                const size = Math.min(26, 200 / expX);
+                const gridW = expX * size;
+                const startX = cx - gridW / 2;
+                const startY = cy - gridW / 2;
+
+                // Full base squares (faded representation of area X)
+                expCtx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+                expCtx.lineWidth = 0.8;
+                for (let r = 0; r < expX; r++) {
+                    for (let c = 0; c < expX; c++) {
+                        expCtx.fillStyle = 'rgba(255, 255, 255, 0.015)';
+                        expCtx.beginPath();
+                        expCtx.roundRect(startX + c * size + 1, startY + r * size + 1, size - 2, size - 2, 3);
+                        expCtx.fill();
+                        expCtx.stroke();
+                    }
+                }
+
+                // Sub-square of size sqrt(expX) representing fractional exponent
+                const root = Math.sqrt(expX);
+                const rootPixels = root * size;
+
+                expCtx.fillStyle = 'rgba(168, 85, 247, 0.18)';
+                expCtx.strokeStyle = '#a855f7';
+                expCtx.lineWidth = 2.5;
+                expCtx.beginPath();
+                expCtx.roundRect(startX, startY + gridW - rootPixels, rootPixels, rootPixels, 6);
+                expCtx.fill();
+                expCtx.stroke();
+
+                expCtx.strokeStyle = '#f43f5e';
+                expCtx.lineWidth = 2;
+                expCtx.beginPath();
+                expCtx.moveTo(startX, startY + gridW + 10);
+                expCtx.lineTo(startX + rootPixels, startY + gridW + 10);
+                expCtx.stroke();
+
+                expCtx.fillStyle = '#ffffff';
+                expCtx.font = 'bold 11px JetBrains Mono';
+                expCtx.textAlign = 'left';
+                expCtx.fillText(`Edge length = ${root.toFixed(2)}`, startX, startY + gridW + 25);
+            } else if (expNStr === '1/3') {
+                // 3D Isometric cube of expX x expX x expX in faint colors
+                // Highlight edge cuboid of cubeRoot(expX)
+                const blockSize = Math.min(20, 140 / expX);
+                const root = Math.cbrt(expX);
+                drawIsometricGridWithHighlight(expCtx, cx, cy + 40, expX, root, blockSize);
+            }
+        }
+
+        // Isometric projection helper
+        function drawIsometricGrid(ctx, cx, cy, rx, ry, rz, size, colorBase) {
+            const angle = Math.PI / 6;
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.lineWidth = 1;
+
+            for (let z = 0; z < rz; z++) {
+                for (let y = ry - 1; y >= 0; y--) {
+                    for (let x = rx - 1; x >= 0; x--) {
+                        // Math 3D -> Screen 2D
+                        const isoX = (x - y) * size * Math.cos(angle);
+                        const isoY = (x + y) * size * Math.sin(angle) - z * size;
+
+                        const bx = cx + isoX;
+                        const by = cy + isoY;
+
+                        // Shade faces
+                        // Top Face
+                        ctx.fillStyle = `hsl(270, 75%, 65%)`;
+                        ctx.beginPath();
+                        ctx.moveTo(bx, by - size);
+                        ctx.lineTo(bx + size * Math.cos(angle), by - size - size * Math.sin(angle));
+                        ctx.lineTo(bx, by - size - size * 2 * Math.sin(angle));
+                        ctx.lineTo(bx - size * Math.cos(angle), by - size - size * Math.sin(angle));
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
+
+                        // Left Face
+                        ctx.fillStyle = `hsl(270, 75%, 45%)`;
+                        ctx.beginPath();
+                        ctx.moveTo(bx - size * Math.cos(angle), by - size * Math.sin(angle) - size);
+                        ctx.lineTo(bx, by - size);
+                        ctx.lineTo(bx, by);
+                        ctx.lineTo(bx - size * Math.cos(angle), by - size * Math.sin(angle));
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
+
+                        // Right Face
+                        ctx.fillStyle = `hsl(270, 75%, 52%)`;
+                        ctx.beginPath();
+                        ctx.moveTo(bx, by - size);
+                        ctx.lineTo(bx + size * Math.cos(angle), by - size * Math.sin(angle) - size);
+                        ctx.lineTo(bx + size * Math.cos(angle), by - size * Math.sin(angle));
+                        ctx.lineTo(bx, by);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        // Isometric Grid with partial highlighting representing cube root
+        function drawIsometricGridWithHighlight(ctx, cx, cy, baseVal, root, size) {
+            const angle = Math.PI / 6;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+            ctx.lineWidth = 0.5;
+
+            for (let z = 0; z < baseVal; z++) {
+                for (let y = baseVal - 1; y >= 0; y--) {
+                    for (let x = baseVal - 1; x >= 0; x--) {
+                        const isoX = (x - y) * size * Math.cos(angle);
+                        const isoY = (x + y) * size * Math.sin(angle) - z * size;
+
+                        const bx = cx + isoX;
+                        const by = cy + isoY;
+
+                        const inRoot = (x < root && y < root && z < root);
+
+                        let colorTop, colorLeft, colorRight;
+                        if (inRoot) {
+                            colorTop = 'hsl(270, 80%, 68%)';
+                            colorLeft = 'hsl(270, 80%, 48%)';
+                            colorRight = 'hsl(270, 80%, 56%)';
+                            ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+                        } else {
+                            colorTop = 'rgba(255,255,255,0.01)';
+                            colorLeft = 'rgba(255,255,255,0.005)';
+                            colorRight = 'rgba(255,255,255,0.008)';
+                            ctx.strokeStyle = 'rgba(255,255,255,0.02)';
+                        }
+
+                        // Top
+                        ctx.fillStyle = colorTop;
+                        ctx.beginPath();
+                        ctx.moveTo(bx, by - size);
+                        ctx.lineTo(bx + size * Math.cos(angle), by - size - size * Math.sin(angle));
+                        ctx.lineTo(bx, by - size - size * 2 * Math.sin(angle));
+                        ctx.lineTo(bx - size * Math.cos(angle), by - size - size * Math.sin(angle));
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
+
+                        // Left
+                        ctx.fillStyle = colorLeft;
+                        ctx.beginPath();
+                        ctx.moveTo(bx - size * Math.cos(angle), by - size * Math.sin(angle) - size);
+                        ctx.lineTo(bx, by - size);
+                        ctx.lineTo(bx, by);
+                        ctx.lineTo(bx - size * Math.cos(angle), by - size * Math.sin(angle));
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
+
+                        // Right
+                        ctx.fillStyle = colorRight;
+                        ctx.beginPath();
+                        ctx.moveTo(bx, by - size);
+                        ctx.lineTo(bx + size * Math.cos(angle), by - size * Math.sin(angle) - size);
+                        ctx.lineTo(bx + size * Math.cos(angle), by - size * Math.sin(angle));
+                        ctx.lineTo(bx, by);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            const rootPixels = root * size;
+            const markerX = cx - baseVal * size * Math.cos(angle) - 15;
+            const markerY = cy + baseVal * size * Math.sin(angle) + 15;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 10px JetBrains Mono';
+            ctx.textAlign = 'left';
+            ctx.fillText(`Cube edge root = ${root.toFixed(2)}`, cx - 80, cy + 60);
+        }
+
+        // 2. LOGARITHMIC GRAPHER LOGIC
+        function initLogarithms() {
+            const sliders = [slideLogB, slideLogA, slideLogH, slideLogK];
+            sliders.forEach(slider => {
+                slider.addEventListener('input', () => {
+                    logB = parseFloat(slideLogB.value);
+                    logA = parseFloat(slideLogA.value);
+                    logH = parseFloat(slideLogH.value);
+                    logK = parseFloat(slideLogK.value);
+
+                    // Zero check
+                    if (logA === 0) logA = 0.1; // prevent flatlines
+
+                    lblLogB.textContent = logB.toFixed(1);
+                    lblLogA.textContent = logA.toFixed(1);
+                    lblLogH.textContent = logH.toFixed(1);
+                    lblLogK.textContent = logK.toFixed(1);
+
+                    updateLogDisplay();
+                });
+            });
+
+            // Mouse hover coordinates tracker
+            logCanvas.addEventListener('mousemove', (e) => {
+                const rect = logCanvas.getBoundingClientRect();
+                const screenX = e.clientX - rect.left;
+                const screenY = e.clientY - rect.top;
+
+                // Screen coordinates -> Math coordinates
+                // Canvas width/height, unit scale
+                const scale = 40; // 40 pixels = 1 coordinate unit
+                const originX = logCanvas.width / 2;
+                const originY = logCanvas.height / 2;
+
+                mouseXMath = (screenX - originX) / scale;
+                mouseYMath = -(screenY - originY) / scale;
+
+                updateLogDisplay();
+            });
+
+            logCanvas.addEventListener('mouseleave', () => {
+                mouseXMath = null;
+                mouseYMath = null;
+                updateLogDisplay();
+            });
+
+            updateLogDisplay();
+        }
+
+        function updateLogDisplay() {
+            const shiftSign = logH >= 0 ? '-' : '+';
+            const absH = Math.abs(logH).toFixed(1);
+            const kSign = logK >= 0 ? '+' : '-';
+            const absK = Math.abs(logK).toFixed(1);
+
+            logEqDisplay.innerHTML = `y = ${logA.toFixed(1)} &middot; log<sub>${logB.toFixed(1)}</sub>(x ${shiftSign} ${absH}) ${kSign} ${absK}`;
+            hudAsymptote.textContent = `x = ${logH.toFixed(1)}`;
+
+            drawLogGraph();
+        }
+
+        function drawLogGraph() {
+            resizeCanvas(logCanvas);
+            const w = logCanvas.width;
+            const h = logCanvas.height;
+            logCtx.clearRect(0, 0, w, h);
+
+            const scale = 40; // 40px = 1 math unit
+            const originX = w / 2;
+            const originY = h / 2;
+
+            // 1. Grid lines & ticks
+            logCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            logCtx.lineWidth = 1;
+
+            // Verticals
+            for (let x = 0; x < w; x += scale) {
+                logCtx.beginPath();
+                logCtx.moveTo(x, 0);
+                logCtx.lineTo(x, h);
+                logCtx.stroke();
+            }
+            // Horizontals
+            for (let y = 0; y < h; y += scale) {
+                logCtx.beginPath();
+                logCtx.moveTo(0, y);
+                logCtx.lineTo(w, y);
+                logCtx.stroke();
+            }
+
+            // Axes
+            logCtx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            logCtx.lineWidth = 1.5;
+
+            // Y Axis
+            logCtx.beginPath();
+            logCtx.moveTo(originX, 0);
+            logCtx.lineTo(originX, h);
+            logCtx.stroke();
+
+            // X Axis
+            logCtx.beginPath();
+            logCtx.moveTo(0, originY);
+            logCtx.lineTo(w, originY);
+            logCtx.stroke();
+
+            // Numbers on ticks
+            logCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            logCtx.font = '9px JetBrains Mono';
+            logCtx.textAlign = 'center';
+            logCtx.textBaseline = 'top';
+
+            // X values labels
+            for (let dx = -Math.floor(originX / scale); dx < w / scale; dx++) {
+                if (dx === 0) continue;
+                const px = originX + dx * scale;
+                logCtx.fillText(dx, px, originY + 5);
+            }
+            // Y values labels
+            logCtx.textAlign = 'right';
+            logCtx.textBaseline = 'middle';
+            for (let dy = -Math.floor(originY / scale); dy < h / scale; dy++) {
+                if (dy === 0) continue;
+                const py = originY - dy * scale;
+                logCtx.fillText(dy, originX - 6, py);
+            }
+
+            // 2. Draw Undefined Zone (x <= h)
+            const asymptoteX = originX + logH * scale;
+            logCtx.fillStyle = 'rgba(244, 63, 94, 0.04)'; // rose warning tint
+            logCtx.fillRect(0, 0, asymptoteX, h);
+
+            // Cross hatch in undefined zone
+            logCtx.strokeStyle = 'rgba(244, 63, 94, 0.06)';
+            logCtx.lineWidth = 1;
+            const hatchSpacing = 16;
+            for (let i = 0; i < asymptoteX + h; i += hatchSpacing) {
+                logCtx.beginPath();
+                logCtx.moveTo(i, 0);
+                logCtx.lineTo(i - h, h);
+                logCtx.stroke();
+            }
+
+            // 3. Draw Vertical Asymptote line (x = h)
+            logCtx.strokeStyle = 'rgba(244, 63, 94, 0.7)'; // Rose
+            logCtx.lineWidth = 2;
+            logCtx.setLineDash([6, 4]);
+            logCtx.beginPath();
+            logCtx.moveTo(asymptoteX, 0);
+            logCtx.lineTo(asymptoteX, h);
+            logCtx.stroke();
+            logCtx.setLineDash([]); // reset
+
+            // Label Asymptote
+            logCtx.fillStyle = '#f43f5e';
+            logCtx.font = 'bold 10px JetBrains Mono';
+            logCtx.textAlign = 'left';
+            logCtx.fillText(` Asymptote: x = ${logH.toFixed(1)}`, asymptoteX + 2, 20);
+
+            // 4. Plot Log Curve: y = a * log_b(x - h) + k
+            logCtx.strokeStyle = 'var(--color-log)';
+            logCtx.lineWidth = 3;
+            logCtx.beginPath();
+
+            let first = true;
+            const stepPx = 2;
+            for (let px = asymptoteX + 1; px < w; px += stepPx) {
+                const mathX = (px - originX) / scale;
+                const inner = mathX - logH;
+
+                if (inner > 0.001) {
+                    const mathY = logA * (Math.log(inner) / Math.log(logB)) + logK;
+                    const py = originY - mathY * scale;
+
+                    if (py >= 0 && py <= h) {
+                        if (first) {
+                            logCtx.moveTo(px, py);
+                            first = false;
+                        } else {
+                            logCtx.lineTo(px, py);
+                        }
+                    }
+                }
+            }
+            logCtx.stroke();
+
+            // 5. Render mouse tracker coordinate point
+            if (mouseXMath !== null) {
+                const innerVal = mouseXMath - logH;
+                if (innerVal > 0) {
+                    const mathY = logA * (Math.log(innerVal) / Math.log(logB)) + logK;
+                    const py = originY - mathY * scale;
+                    const px = originX + mouseXMath * scale;
+
+                    if (py >= 0 && py <= h) {
+                        // Coordinate Dot
+                        logCtx.fillStyle = '#ffffff';
+                        logCtx.strokeStyle = 'var(--color-log)';
+                        logCtx.lineWidth = 2.5;
+                        logCtx.beginPath();
+                        logCtx.arc(px, py, 6, 0, Math.PI * 2);
+                        logCtx.fill();
+                        logCtx.stroke();
+
+                        // HUD display
+                        hudCoords.innerHTML = `x: ${mouseXMath.toFixed(2)}, y: ${mathY.toFixed(2)}`;
+
+
+                        logCtx.fillStyle = 'rgba(10, 11, 18, 0.85)';
+                        logCtx.strokeStyle = 'var(--card-border)';
+                        logCtx.lineWidth = 1;
+                        logCtx.beginPath();
+                        logCtx.roundRect(px + 10, py - 35, 110, 25, 4);
+                        logCtx.fill();
+                        logCtx.stroke();
+
+                        logCtx.fillStyle = '#ffffff';
+                        logCtx.font = '10px JetBrains Mono';
+                        logCtx.textAlign = 'left';
+                        logCtx.fillText(`(${mouseXMath.toFixed(2)}, ${mathY.toFixed(2)})`, px + 15, py - 18);
+                    }
+                } else {
+                    hudCoords.innerHTML = `<span style="color:#f43f5e">Undefined (x &le; h)</span>`;
+                }
+            } else {
+                hudCoords.innerHTML = `Move mouse over graph`;
+            }
+        }
+
+        // 3. MODULO CLOCK LOGIC
+        function initModulo() {
+            slideModA.addEventListener('input', (e) => {
+                modA = parseInt(e.target.value);
+                lblModA.textContent = modA;
+                hudModA.textContent = modA;
+                resetModuloAnimation();
+                updateModuloDisplay();
+            });
+
+            slideModN.addEventListener('input', (e) => {
+                modN = parseInt(e.target.value);
+                lblModN.textContent = modN;
+                hudModN.textContent = modN;
+                resetModuloAnimation();
+                updateModuloDisplay();
+            });
+
+            btnModPlay.addEventListener('click', () => {
+                if (isModPlaying) {
+                    pauseModuloAnimation();
+                } else {
+                    playModuloAnimation();
+                }
+            });
+
+            btnModReset.addEventListener('click', () => {
+                resetModuloAnimation();
+                updateModuloDisplay();
+            });
+
+            updateModuloDisplay();
+        }
+
+        function updateModuloDisplay() {
+            const remainder = modA % modN;
+            const quotient = Math.floor(modA / modN);
+
+            modEqDisplay.innerHTML = `${modA} &equiv; ${remainder} (mod ${modN})`;
+
+            hudModQuotient.textContent = `${quotient} full loop${quotient !== 1 ? 's' : ''}`;
+            hudModRemainder.textContent = remainder;
+
+            drawModuloClock();
+        }
+
+        function playModuloAnimation() {
+            isModPlaying = true;
+            playBtnText.textContent = "Pause Animation";
+            playIcon.innerHTML = `
+                <rect x="4" y="4" width="4" height="16"></rect>
+                <rect x="14" y="4" width="4" height="16"></rect>
+            `;
+
+            if (modAnimStep === null || modAnimStep >= modA) {
+                modAnimStep = 0;
+            }
+
+            modAnimInterval = setInterval(() => {
+                modAnimStep++;
+                drawModuloClock();
+
+                if (modAnimStep >= modA) {
+                    pauseModuloAnimation();
+                }
+            }, 180);
+        }
+
+        function pauseModuloAnimation() {
+            isModPlaying = false;
+            playBtnText.textContent = "Resume Animation";
+            playIcon.innerHTML = `<polygon points="5 3 19 12 5 21 5 3"></polygon>`;
+            clearInterval(modAnimInterval);
+        }
+
+        function resetModuloAnimation() {
+            pauseModuloAnimation();
+            modAnimStep = null;
+            playBtnText.textContent = "Play Animation";
+        }
+
+        function drawModuloClock() {
+            resizeCanvas(modCanvas);
+            const w = modCanvas.width;
+            const h = modCanvas.height;
+            modCtx.clearRect(0, 0, w, h);
+
+            const cx = w / 2;
+            const cy = h / 2 - 10;
+            const rClock = 110;
+            const rNode = 18;
+
+            modCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            modCtx.lineWidth = 4;
+            modCtx.beginPath();
+            modCtx.arc(cx, cy, rClock, 0, Math.PI * 2);
+            modCtx.stroke();
+
+            // If animating, pointer highlights the current animStep. Else highlights final modulo A remainder.
+            const targetStepVal = modAnimStep !== null ? modAnimStep : modA;
+            const activeNodeIndex = targetStepVal % modN;
+
+            for (let i = 0; i < modN; i++) {
+                const angle = -Math.PI / 2 + (i * 2 * Math.PI) / modN;
+                const nx = cx + rClock * Math.cos(angle);
+                const ny = cy + rClock * Math.sin(angle);
+
+                const isActiveNode = (i === activeNodeIndex);
+
+                // Node circle
+                modCtx.lineWidth = isActiveNode ? 3 : 1.5;
+                modCtx.strokeStyle = isActiveNode ? 'var(--color-mod)' : 'rgba(255, 255, 255, 0.12)';
+                
+                if (isActiveNode) {
+                    modCtx.fillStyle = 'rgba(16, 185, 129, 0.2)';
+                    modCtx.shadowBlur = 12;
+                    modCtx.shadowColor = 'var(--color-mod)';
+                } else {
+                    modCtx.fillStyle = 'rgba(255, 255, 255, 0.01)';
+                }
+
+                modCtx.beginPath();
+                modCtx.arc(nx, ny, rNode, 0, Math.PI * 2);
+                modCtx.fill();
+                modCtx.stroke();
+                modCtx.shadowBlur = 0; // reset
+
+
+                modCtx.fillStyle = isActiveNode ? '#ffffff' : varTextMutedColor();
+                modCtx.font = 'bold 11px JetBrains Mono';
+                modCtx.textAlign = 'center';
+                modCtx.textBaseline = 'middle';
+                modCtx.fillText(i, nx, ny);
+            }
+
+            const anglePointer = -Math.PI / 2 + (activeNodeIndex * 2 * Math.PI) / modN;
+            const px = cx + (rClock - rNode - 10) * Math.cos(anglePointer);
+            const py = cy + (rClock - rNode - 10) * Math.sin(anglePointer);
+
+            modCtx.strokeStyle = 'var(--color-mod)';
+            modCtx.lineWidth = 3.5;
+            modCtx.beginPath();
+            modCtx.moveTo(cx, cy);
+            modCtx.lineTo(px, py);
+            modCtx.stroke();
+
+            // Center pivot joint
+            modCtx.fillStyle = '#ffffff';
+            modCtx.beginPath();
+            modCtx.arc(cx, cy, 6, 0, Math.PI * 2);
+            modCtx.fill();
+
+            modCtx.fillStyle = '#ffffff';
+            modCtx.font = '10px JetBrains Mono';
+            modCtx.textAlign = 'center';
+            
+            const currentCycles = Math.floor(targetStepVal / modN);
+            modCtx.fillText(`Step: ${targetStepVal}`, cx, cy + 30);
+            modCtx.fillStyle = 'var(--color-mod)';
+            modCtx.fillText(`Cycles: ${currentCycles}`, cx, cy + 45);
+        }
+
+        function varTextMutedColor() {
+            return '#8a99ad';
+        }
+
+        // 4. CONCEPTUAL QUIZ LOGIC
+        const quizData = [
+            {
+                question: "What is the mathematical definition of a negative exponent, such as 3⁻²?",
+                options: [
+                    "A negative value: - (3 × 3) = -9",
+                    "A decimal fraction: 1 / (3 × 3) = 1/9",
+                    "A negative multiplier: 3 × -2 = -6",
+                    "The reciprocal root: -√3"
+                ],
+                correct: 1,
+                explanation: "A negative exponent represents division instead of multiplication. x⁻ⁿ is equal to the reciprocal fraction 1/xⁿ. Thus, 3⁻² = 1/3² = 1/9."
+            },
+            {
+                question: "Evaluate the fractional exponent: 8^(2/3).",
+                options: [
+                    "16/3 ≈ 5.33",
+                    "4",
+                    "2.66",
+                    "64"
+                ],
+                correct: 1,
+                explanation: "We break 8^(2/3) down into two parts: (8^(1/3))² = (³√8)². Since the cube root of 8 is 2, we raise 2 to the second power: 2² = 4."
+            },
+            {
+                question: "Evaluate the logarithmic equation: log₄(64).",
+                options: [
+                    "16",
+                    "3",
+                    "4",
+                    "8"
+                ],
+                correct: 1,
+                explanation: "Logarithms find the power. log₄(64) asks: 'To what power do we raise 4 to get 64?' Since 4³ = 4 × 4 × 4 = 64, the answer is 3."
+            },
+            {
+                question: "For the logarithmic function y = log₃(x - 2) + 5, where is the vertical asymptote located?",
+                options: [
+                    "x = -2",
+                    "x = 5",
+                    "x = 0",
+                    "x = 2"
+                ],
+                correct: 3,
+                explanation: "A vertical asymptote occurs where the argument is zero: x - 2 = 0. Solving for x gives x = 2. The function is undefined for any value x ≤ 2."
+            },
+            {
+                question: "Solve the modulo remainder statement: 38 ≡ R (mod 7). What is R?",
+                options: [
+                    "5",
+                    "3",
+                    "2",
+                    "1"
+                ],
+                correct: 1,
+                explanation: "Divide 38 by 7: 38 ÷ 7 = 5 with a remainder of 3 (since 7 × 5 = 35, and 38 - 35 = 3). Modulo is the remainder, so R = 3."
+            }
+        ];
+
+        let quizCurrentIndex = 0;
+        let quizScore = 0;
+        let quizAnswered = false;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function initQuiz() {
+            quizNextBtn.addEventListener('click', () => {
+                quizCurrentIndex++;
+                if (quizCurrentIndex < quizData.length) {
+                    loadQuizQuestion();
+                } else {
+                    showQuizResults();
+                }
+            });
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            quizAnswered = false;
+            quizFeedbackArea.style.display = 'none';
+
+            const q = quizData[quizCurrentIndex];
+            quizProgressText.textContent = `Question ${quizCurrentIndex + 1} of ${quizData.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizCurrentIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            quizOptionsContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = 'quiz-option';
+                div.innerHTML = `
+                    <span>${opt}</span>
+                    <svg class="opt-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="display:none;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                `;
+                div.addEventListener('click', () => selectQuizOption(idx));
+                quizOptionsContainer.appendChild(div);
+            });
+        }
+
+        function selectQuizOption(selectedIndex) {
+            if (quizAnswered) return;
+            quizAnswered = true;
+
+            const q = quizData[quizCurrentIndex];
+            const options = quizOptionsContainer.children;
+
+            if (selectedIndex === q.correct) {
+                quizScore++;
+                options[selectedIndex].classList.add('correct');
+                showCheckmark(options[selectedIndex]);
+                quizFeedbackArea.querySelector('strong').textContent = "Correct Answer!";
+                quizFeedbackArea.querySelector('strong').style.color = '#10b981';
+            } else {
+                options[selectedIndex].classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                showCheckmark(options[q.correct]);
+                quizFeedbackArea.querySelector('strong').textContent = "Incorrect Answer";
+                quizFeedbackArea.querySelector('strong').style.color = '#f43f5e';
+            }
+
+            quizScoreText.textContent = `Score: ${quizScore}/${quizCurrentIndex + 1}`;
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+        }
+
+        // Checkmark svg trigger
+        function showCheckmark(optionElement) {
+            const icon = optionElement.querySelector('.opt-icon');
+            if (icon) icon.style.display = 'block';
+        }
+
+        function showQuizResults() {
+            quizProgressText.textContent = `Evaluation Completed`;
+            quizQuestionTitle.style.display = 'none';
+            quizOptionsContainer.innerHTML = `
+                <div class="quiz-score-overlay">
+                    <h2 style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--color-rose);">
+                        ${((quizScore / quizData.length) * 100).toFixed(0)}% Correct
+                    </h2>
+                    <p style="color:var(--text-muted); margin-bottom:1.5rem;">
+                        You scored ${quizScore} out of ${quizData.length} conceptual questions.
+                    </p>
+                    <button class="btn" onclick="restartQuiz()" style="width:auto; margin:0 auto; padding:8px 24px;">Restart Quiz</button>
+                </div>
+            `;
+            quizFeedbackArea.style.display = 'none';
+        }
+
+        window.restartQuiz = function() {
+            quizCurrentIndex = 0;
+            quizScore = 0;
+            quizQuestionTitle.style.display = 'block';
+            loadQuizQuestion();
+        };
+
+        // DOM Loaded Init
+        document.addEventListener('DOMContentLoaded', () => {
+            initExponents();
+            initLogarithms();
+            initModulo();
+            initQuiz();
+
+            // Resize listener for responsive redraws
+            window.addEventListener('resize', () => {
+                drawExponents();
+                drawLogGraph();
+                drawModuloClock();
+            });
+        });
+    </script>
+</body>
+
+</html>

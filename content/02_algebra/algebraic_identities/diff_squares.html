@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Difference of Squares - Algebraic Identities</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="/assets/shared.css">
+    <script src="/assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Algebra Domain / Rose Theme override */
+            --color-rose: #f43f5e;
+            --color-rose-glow: rgba(244, 63, 94, 0.35);
+            --color-accent: #f43f5e;
+            --color-accent-glow: rgba(244, 63, 94, 0.35);
+
+            --color-a: #f43f5e;      /* Rose for a */
+            --color-b: #38bdf8;      /* Cyan for b */
+            --color-block-a: #f43f5e;
+            --color-block-b: #38bdf8;
+        }
+
+        /* Highlight active menu item */
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-rose) !important;
+            box-shadow: 0 4px 20px var(--color-rose-glow) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-rose);
+            background: rgba(244, 63, 94, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            text-shadow: 0 0 5px var(--color-rose-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        /* Math Display styling */
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* Control Sliders */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-rose);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-rose-glow);
+        }
+
+        /* Presets */
+        .presets-grid {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-preset {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-preset:hover, .btn-preset.active {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        /* Quiz layout rules */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .math-expr {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(255,255,255,0.04);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Control Panel Buttons */
+        .action-btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 0.75rem;
+        }
+
+        .btn-action {
+            flex: 1;
+            background: rgba(255,255,255,0.04);
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-action:hover {
+            background: var(--color-rose);
+            color: #fff;
+            border-color: var(--color-rose);
+            box-shadow: 0 4px 15px var(--color-rose-glow);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside>
+        <div class="logo-container">
+            <div class="logo-title">
+                Algebraic<span class="logo-accent" style="color:var(--color-rose); text-shadow:0 0 10px var(--color-rose-glow)">Identities</span>
+            </div>
+            <div class="logo-sub">Difference of Squares</div>
+        </div>
+
+        <ul class="syllabus-menu" id="syllabusMenu">
+            <li class="syllabus-item">
+                <a href="index.html">
+                    <span class="syllabus-title">1. Identities Dashboard</span>
+                    <span class="syllabus-desc">Core Geometric Rules</span>
+                    <span class="syllabus-number">01</span>
+                </a>
+            </li>
+            <li class="syllabus-item">
+                <a href="square_sum.html">
+                    <span class="syllabus-title">2. Square of a Sum</span>
+                    <span class="syllabus-desc">(a + b)² = a² + 2ab + b²</span>
+                    <span class="syllabus-number">02</span>
+                </a>
+            </li>
+            <li class="syllabus-item">
+                <a href="square_diff.html">
+                    <span class="syllabus-title">3. Square of a Difference</span>
+                    <span class="syllabus-desc">(a - b)² = a² - 2ab + b²</span>
+                    <span class="syllabus-number">03</span>
+                </a>
+            </li>
+            <li class="syllabus-item active">
+                <a href="#sandbox">
+                    <span class="syllabus-title">4. Difference of Squares</span>
+                    <span class="syllabus-desc">a² - b² = (a - b)(a + b)</span>
+                    <span class="syllabus-number">04</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Difference of Squares</h1>
+            <p>Explore the geometric partition of <span class="math-expr">a² - b²</span>. Watch the sliced L-shaped area rotate and translate to form a single rectangle of dimensions <span class="math-expr">(a - b) × (a + b)</span>.</p>
+        </header>
+
+        <!-- SECTION 1: INTERACTIVE SANDBOX -->
+        <section id="sandbox">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Slice & Rearrange Simulation</h2>
+            </div>
+            <p class="section-intro">
+                Adjust sliders for side lengths <span style="color:var(--color-a); font-weight:700;">a</span> and <span style="color:var(--color-b); font-weight:700;">b</span>. Slide the transition stages to slice the blue rectangle and rotate it to the bottom of the red rectangle.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Grid Canvas -->
+                <div class="panel">
+                    <div class="canvas-container" style="height: 380px; position: relative;">
+                        <canvas id="squaresCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders & Math Calculations -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Identity Evaluation</h3>
+                        <div class="equation-box">
+                            <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:4px;">a² - b² Left Side:</div>
+                            <span style="color:var(--color-rose);" id="leftValText">7.0² - 2.0² = 49.0 - 4.0 = 45.00</span>
+                            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:8px; margin-bottom:4px;">(a - b)(a + b) Right Side:</div>
+                            <span style="color:var(--color-b);" id="rightValText">(7.0 - 2.0)(7.0 + 2.0) = 5.0 × 9.0 = 45.00</span>
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Length a</span>
+                                <span class="number" id="lblValA" style="color:var(--color-a); font-weight:700;">7.0</span>
+                            </div>
+                            <input type="range" id="slideA" min="5" max="10" step="0.5" value="7">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Length b</span>
+                                <span class="number" id="lblValB" style="color:var(--color-b); font-weight:700;">2.0</span>
+                            </div>
+                            <input type="range" id="slideB" min="1" max="3.5" step="0.5" value="2">
+                        </div>
+                        <div class="slider-row" style="margin-top:0.5rem; border-top:1px solid rgba(255,255,255,0.06); padding-top:1rem;">
+                            <div class="slider-label">
+                                <span>Transition Progress</span>
+                                <span class="number" id="lblValTransition" style="font-family:'JetBrains Mono'; color:#fff;">0%</span>
+                            </div>
+                            <input type="range" id="slideTransition" min="0" max="100" step="1" value="0">
+                        </div>
+                    </div>
+
+                    <div class="action-btn-row">
+                        <button class="btn-action" id="btnAnimate">Animate Stage</button>
+                        <button class="btn-action" id="btnReset" style="background:rgba(255,255,255,0.015);">Reset Stage</button>
+                    </div>
+
+                    <div class="presets-grid" style="margin-top: 1.5rem;">
+                        <button class="btn-preset active" id="btnPresetDefault">Default (a = 7, b = 2)</button>
+                        <button class="btn-preset" id="btnPresetLargeDiff">Large Difference (a = 8, b = 1)</button>
+                        <button class="btn-preset" id="btnPresetSmallDiff">Small Difference (a = 6, b = 3)</button>
+                    </div>
+
+                    <div class="formula-steps">
+                        <div><strong>Geometric Reconstruction:</strong></div>
+                        <div style="margin-left: 10px; margin-top: 6px;">
+                            &bull; Stage 0: L-shape area = <span id="stepL = a2-b2">45.00</span><br>
+                            &bull; Red Rectangle A: <span id="lblDimA" style="font-size:0.8rem; color:var(--color-a);">5.0 × 7.0</span> = <span id="stepAreaA" style="color:var(--color-a); font-weight:700;">35.00</span><br>
+                            &bull; Blue Rectangle B: <span id="lblDimB" style="font-size:0.8rem; color:var(--color-b);">2.0 × 5.0</span> = <span id="stepAreaB" style="color:var(--color-b); font-weight:700;">10.00</span>
+                        </div>
+                        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); font-weight:700;">
+                            Stage 100: Joined Rectangle = (a-b) × (a+b) = <span id="stepTotalArea" style="color:#ffffff;">45.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: ALGEBRAIC PROOF -->
+        <section id="proof">
+            <div class="section-header">
+                <span class="section-tag">Proof</span>
+                <h2>Algebraic Expansion</h2>
+            </div>
+            <div class="panel" style="max-width: 850px;">
+                <p style="line-height: 1.6; margin-bottom: 1.5rem; color:var(--text-muted);">
+                    Let's prove this algebraic identity by distributing the factors:
+                </p>
+                <div class="formula-steps" style="font-size: 0.95rem; padding: 1.5rem;">
+                    <div style="margin-bottom:8px;">1. Start with the right-side factored expression:</div>
+                    <div style="margin-left: 15px; font-weight: 700; color:#fff;">(a - b)(a + b)</div>
+                    <br>
+                    <div style="margin-bottom:8px;">2. Distribute terms (FOIL method):</div>
+                    <div style="margin-left: 15px; font-weight: 700; color:#fff;">= a(a + b) - b(a + b)</div>
+                    <div style="margin-left: 15px; font-weight: 700; color:#fff;">= a² + ab - ba - b²</div>
+                    <br>
+                    <div style="margin-bottom:8px;">3. Since multiplication is commutative (<span class="math-expr">ab = ba</span>), the middle terms cancel out:</div>
+                    <div style="margin-left: 15px; font-weight: 700; color:var(--color-rose);">= a² - b²</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Quiz</span>
+                <h2>Check Your Understanding</h2>
+            </div>
+            
+            <div class="workspace-grid">
+                <!-- Left Panel: Quiz Questions -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 3</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Factor the expression 9x² - 16.</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="feedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text goes here.</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Core Takeaways -->
+                <div class="panel">
+                    <h3>Syllabus Checkpoint</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom:0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background:var(--color-block-a); box-shadow:0 0 6px var(--color-block-a)"></span>Rectangle A has dimensions (a - b) × a.</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background:var(--color-block-b); box-shadow:0 0 6px var(--color-block-b)"></span>Rectangle B has dimensions b × (a - b).</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background:#fff; box-shadow:0 0 6px rgba(255,255,255,0.5)"></span>Realigned, they form a single (a - b) × (a + b) rectangle.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // DOM Elements
+        const canvas = document.getElementById('squaresCanvas');
+        const ctx = canvas.getContext('2d');
+        const slideA = document.getElementById('slideA');
+        const slideB = document.getElementById('slideB');
+        const slideTransition = document.getElementById('slideTransition');
+        
+        const lblValA = document.getElementById('lblValA');
+        const lblValB = document.getElementById('lblValB');
+        const lblValTransition = document.getElementById('lblValTransition');
+        
+        // Output text fields
+        const leftValText = document.getElementById('leftValText');
+        const rightValText = document.getElementById('rightValText');
+        const stepAreaA = document.getElementById('stepAreaA');
+        const stepAreaB = document.getElementById('stepAreaB');
+        const stepTotalArea = document.getElementById('stepTotalArea');
+        const stepLDiff = document.getElementById('stepL = a2-b2');
+        const lblDimA = document.getElementById('lblDimA');
+        const lblDimB = document.getElementById('lblDimB');
+
+        // Animation buttons
+        const btnAnimate = document.getElementById('btnAnimate');
+        const btnReset = document.getElementById('btnReset');
+
+        // Presets
+        const btnPresetDefault = document.getElementById('btnPresetDefault');
+        const btnPresetLargeDiff = document.getElementById('btnPresetLargeDiff');
+        const btnPresetSmallDiff = document.getElementById('btnPresetSmallDiff');
+
+        let aVal = 7.0;
+        let bVal = 2.0;
+        let tVal = 0.0; // 0 to 1.0
+
+        let animationFrameId = null;
+
+        function updateValues() {
+            aVal = parseFloat(slideA.value);
+            bVal = parseFloat(slideB.value);
+            tVal = parseFloat(slideTransition.value) / 100;
+
+            // Constraint: a must be strictly greater than b.
+            if (bVal >= aVal - 1) {
+                bVal = aVal - 1.5;
+                slideB.value = bVal;
+            }
+
+            lblValA.textContent = aVal.toFixed(1);
+            lblValB.textContent = bVal.toFixed(1);
+            lblValTransition.textContent = `${slideTransition.value}%`;
+
+            const amb = aVal - bVal;
+            const apb = aVal + bVal;
+            const leftSide = aVal * aVal - bVal * bVal;
+            const rightSide = amb * apb;
+
+            leftValText.textContent = `${aVal.toFixed(1)}² - ${bVal.toFixed(1)}² = ${ (aVal*aVal).toFixed(1) } - ${ (bVal*bVal).toFixed(1) } = ${leftSide.toFixed(2)}`;
+            rightValText.textContent = `(${aVal.toFixed(1)} - ${bVal.toFixed(1)})(${aVal.toFixed(1)} + ${bVal.toFixed(1)}) = ${amb.toFixed(1)} × ${apb.toFixed(1)} = ${rightSide.toFixed(2)}`;
+
+            lblDimA.textContent = `${amb.toFixed(1)} × ${aVal.toFixed(1)}`;
+            lblDimB.textContent = `${bVal.toFixed(1)} × ${amb.toFixed(1)}`;
+
+            stepLDiff.textContent = leftSide.toFixed(2);
+            stepAreaA.textContent = (amb * aVal).toFixed(2);
+            stepAreaB.textContent = (bVal * amb).toFixed(2);
+            stepTotalArea.textContent = rightSide.toFixed(2);
+
+            drawVisuals();
+        }
+
+        function drawVisuals() {
+            // Sizing setup
+            const w = canvas.parentElement.clientWidth;
+            const h = canvas.parentElement.clientHeight;
+            canvas.width = w;
+            canvas.height = h;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Scale calculations (max potential units: a + b = 10 + 4 = 14)
+            const margin = 40;
+            const maxUnits = 14.5;
+            const graphArea = Math.min(w, h) - margin * 2;
+            const scale = graphArea / maxUnits;
+
+            const startX = (w - (aVal - bVal) * scale) / 2;
+            const startY = (h - (aVal + bVal) * scale) / 2;
+
+            const aPix = aVal * scale;
+            const bPix = bVal * scale;
+            const ambPix = (aVal - bVal) * scale;
+
+            // Draw Background Grid (underneath target dimensions)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            const step = scale; // 1 unit grid line
+            // We cover the grid up to (a-b) x (a+b)
+            for (let i = 0; i <= (aVal - bVal); i++) {
+                ctx.beginPath();
+                ctx.moveTo(startX + i * step, startY);
+                ctx.lineTo(startX + i * step, startY + (aVal + bVal) * scale);
+                ctx.stroke();
+            }
+            for (let i = 0; i <= (aVal + bVal); i++) {
+                ctx.beginPath();
+                ctx.moveTo(startX, startY + i * step);
+                ctx.lineTo(startX + (aVal - bVal) * scale, startY + i * step);
+                ctx.stroke();
+            }
+
+            // --- Shapes ---
+
+            // 1. Draw cut-out b^2 square (dotted outline at top right in original position)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            // Pivot at (startX + ambPix, startY)
+            // Draw ONLY if transition is not fully completed to keep original context clear
+            if (tVal < 0.98) {
+                ctx.strokeRect(startX + ambPix, startY, bPix, bPix);
+            }
+            ctx.setLineDash([]);
+
+            // 2. Stationary Block A (red rectangle: width a-b, height a)
+            ctx.fillStyle = 'rgba(244, 63, 94, 0.18)';
+            ctx.strokeStyle = '#f43f5e';
+            ctx.lineWidth = 2.5;
+            ctx.fillRect(startX, startY, ambPix, aPix);
+            ctx.strokeRect(startX, startY, ambPix, aPix);
+
+            // Stationary Block A Label
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '11px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText("Block A", startX + ambPix/2, startY + aPix/2 - 8);
+            ctx.font = '9px JetBrains Mono';
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.fillText(`${(aVal - bVal).toFixed(1)} × ${aVal.toFixed(1)}`, startX + ambPix/2, startY + aPix/2 + 8);
+
+            // 3. Animated Block B (blue rectangle: width b, height a-b originally)
+            // Interpolate pivot coordinates:
+            // Original bottom-left of B is (startX + ambPix, startY + aPix)
+            // Final bottom-left of B is (startX, startY + aPix + bPix)
+            const origPivotX = startX + ambPix;
+            const origPivotY = startY + aPix;
+            const finalPivotX = startX;
+            const finalPivotY = startY + aPix + bPix;
+
+            const pivotX = (1 - tVal) * origPivotX + tVal * finalPivotX;
+            const pivotY = (1 - tVal) * origPivotY + tVal * finalPivotY;
+
+            // Interpolate rotation: 0 to -90 degrees (-PI/2 radians)
+            const theta = -tVal * Math.PI / 2;
+
+            ctx.save();
+            ctx.translate(pivotX, pivotY);
+            ctx.rotate(theta);
+
+            // Draw relative to bottom-left corner (0, 0)
+            // In unrotated system: width is bPix, height is ambPix.
+            // Lies in x in [0, bPix], y in [-ambPix, 0]
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.18)';
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.5;
+            ctx.fillRect(0, -ambPix, bPix, ambPix);
+            ctx.strokeRect(0, -ambPix, bPix, ambPix);
+
+            // Label inside rotated block
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '11px JetBrains Mono';
+            ctx.fillText("Block B", bPix/2, -ambPix/2 - 8);
+            ctx.font = '9px JetBrains Mono';
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.fillText(`${bVal.toFixed(1)} × ${(aVal - bVal).toFixed(1)}`, bPix/2, -ambPix/2 + 8);
+
+            ctx.restore();
+
+            // --- Dimension text markers ---
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '11px Outfit';
+
+            // Width labels
+            ctx.fillText(`a - b = ${(aVal - bVal).toFixed(1)}`, startX + ambPix/2, startY - 14);
+            if (tVal < 0.2) {
+                ctx.fillText(`b = ${bVal.toFixed(1)}`, startX + ambPix + bPix/2, startY - 14);
+            }
+
+            // Height labels
+            ctx.save();
+            ctx.translate(startX - 14, startY + aPix/2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText(`a = ${aVal.toFixed(1)}`, 0, 0);
+            ctx.restore();
+
+            // Show additional height tag when fully transitioned
+            if (tVal > 0.8) {
+                ctx.save();
+                ctx.translate(startX - 14, startY + aPix + bPix/2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.fillText(`b = ${bVal.toFixed(1)}`, 0, 0);
+                ctx.restore();
+
+                // Highlight overall height (a + b) on left
+                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(startX - 28, startY);
+                ctx.lineTo(startX - 28, startY + aPix + bPix);
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(startX - 36, startY + (aPix + bPix)/2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.fillText(`Total Height = a + b = ${(aVal + bVal).toFixed(1)}`, 0, 0);
+                ctx.restore();
+            }
+        }
+
+        // Animation triggers
+        btnAnimate.addEventListener('click', () => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            
+            let currentVal = parseFloat(slideTransition.value);
+            if (currentVal >= 100) {
+                currentVal = 0; // reset
+            }
+
+            function frame() {
+                currentVal += 1.5;
+                if (currentVal >= 100) {
+                    currentVal = 100;
+                    slideTransition.value = currentVal;
+                    updateValues();
+                    animationFrameId = null;
+                } else {
+                    slideTransition.value = currentVal;
+                    updateValues();
+                    animationFrameId = requestAnimationFrame(frame);
+                }
+            }
+            animationFrameId = requestAnimationFrame(frame);
+        });
+
+        btnReset.addEventListener('click', () => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            slideTransition.value = 0;
+            updateValues();
+        });
+
+        // Preset actions
+        btnPresetDefault.addEventListener('click', () => {
+            slideA.value = 7;
+            slideB.value = 2;
+            slideTransition.value = 0;
+            setActivePreset(btnPresetDefault);
+            updateValues();
+        });
+
+        btnPresetLargeDiff.addEventListener('click', () => {
+            slideA.value = 8;
+            slideB.value = 1;
+            slideTransition.value = 0;
+            setActivePreset(btnPresetLargeDiff);
+            updateValues();
+        });
+
+        btnPresetSmallDiff.addEventListener('click', () => {
+            slideA.value = 6;
+            slideB.value = 3;
+            slideTransition.value = 0;
+            setActivePreset(btnPresetSmallDiff);
+            updateValues();
+        });
+
+        function setActivePreset(activeBtn) {
+            [btnPresetDefault, btnPresetLargeDiff, btnPresetSmallDiff].forEach(btn => btn.classList.remove('active'));
+            activeBtn.classList.add('active');
+        }
+
+        slideA.addEventListener('input', () => {
+            setActivePreset({classList:{remove:()=>{}}}); // deselect presets
+            updateValues();
+        });
+        slideB.addEventListener('input', () => {
+            setActivePreset({classList:{remove:()=>{}}}); // deselect presets
+            updateValues();
+        });
+        slideTransition.addEventListener('input', updateValues);
+
+        // Initialize sizing and redraw
+        window.addEventListener('resize', drawVisuals);
+        slideA.value = 7;
+        slideB.value = 2;
+        updateValues();
+
+
+        // --- CONCEPTUAL QUIZ LOGIC ---
+        const quizQuestions = [
+            {
+                question: "Factor the expression 9x² - 16. Which matches the difference of squares identity?",
+                options: [
+                    "(3x - 4)²",
+                    "(3x - 4)(3x + 4)",
+                    "(3x + 4)²",
+                    "(9x - 4)(x + 4)"
+                ],
+                correctIndex: 1,
+                explanation: "Here, 9x² = (3x)² and 16 = 4². Using the difference of squares formula a² - b² = (a - b)(a + b), we set a = 3x and b = 4, giving (3x - 4)(3x + 4)."
+            },
+            {
+                question: "Explain the visual transformation when the progress slider goes from 0% to 100%.",
+                options: [
+                    "Block B is rotated 90 degrees counter-clockwise and slid to the bottom of Block A.",
+                    "Block B is deleted and a new block is generated.",
+                    "Block A is scaled to match the dimensions of Block B.",
+                    "The missing corner is added back to double the total area."
+                ],
+                correctIndex: 0,
+                explanation: "When you transition from 0% to 100%, Block B (which represents area b × (a-b)) is sliced, rotated 90 degrees counter-clockwise, and translated to the bottom of Block A (which represents area (a-b) × a). The combined block forms a single rectangle of width a - b and height a + b."
+            },
+            {
+                question: "If we evaluate 19 × 21 mentally using this identity, what is the best substitution for variables a and b?",
+                options: [
+                    "a = 20, b = 1",
+                    "a = 19, b = 21",
+                    "a = 10, b = 9",
+                    "a = 21, b = 2"
+                ],
+                correctIndex: 0,
+                explanation: "We rewrite the multiplication as (20 - 1) × (20 + 1). Applying the identity yields a² - b² = 20² - 1² = 400 - 1 = 399."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let questionsAnswered = 0;
+
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const feedbackTitle = document.getElementById('feedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[currentQuestionIndex];
+            
+            quizQuestionTitle.textContent = q.question;
+            quizProgressText.textContent = `Question ${currentQuestionIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${score}/${questionsAnswered}`;
+
+            quizOptionsContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('div');
+                btn.className = 'quiz-option';
+                btn.innerHTML = `<span>${opt}</span>`;
+                btn.addEventListener('click', () => checkAnswer(idx));
+                quizOptionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIdx) {
+            const q = quizQuestions[currentQuestionIndex];
+            const options = quizOptionsContainer.children;
+
+            // Prevent double clicking
+            if (quizFeedbackArea.style.display === 'block') return;
+
+            questionsAnswered++;
+
+            if (selectedIdx === q.correctIndex) {
+                options[selectedIdx].classList.add('correct');
+                feedbackTitle.textContent = "Correct Answer! ★";
+                feedbackTitle.style.color = '#10b981';
+                score++;
+            } else {
+                options[selectedIdx].classList.add('incorrect');
+                options[q.correctIndex].classList.add('correct');
+                feedbackTitle.textContent = "Incorrect";
+                feedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizScoreText.textContent = `Score: ${score}/${questionsAnswered}`;
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex >= quizQuestions.length) {
+                currentQuestionIndex = 0; // Loop quiz
+            }
+            loadQuestion();
+        });
+
+        // Initialize quiz
+        loadQuestion();
+
+    </script>
+</body>
+</html>

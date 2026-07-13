@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Square of a Difference - Algebraic Identities</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="/assets/shared.css">
+    <script src="/assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Algebra Domain / Rose Theme override */
+            --color-rose: #f43f5e;
+            --color-rose-glow: rgba(244, 63, 94, 0.35);
+            --color-accent: #f43f5e;
+            --color-accent-glow: rgba(244, 63, 94, 0.35);
+
+            --color-a: #f43f5e;       /* Rose for a */
+            --color-b: #38bdf8;       /* Cyan for b */
+            --color-target: #ffb000;  /* Amber for (a-b)^2 */
+            --color-overlap: #10b981; /* Emerald for b^2 overlap */
+        }
+
+        /* Highlight active menu item */
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-rose) !important;
+            box-shadow: 0 4px 20px var(--color-rose-glow) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-rose);
+            background: rgba(244, 63, 94, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            text-shadow: 0 0 5px var(--color-rose-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        /* Math Display styling */
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* Control Sliders */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-rose);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-rose-glow);
+        }
+
+        /* Presets */
+        .presets-grid {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-preset {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-preset:hover, .btn-preset.active {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        /* Quiz layout rules */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .math-expr {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(255,255,255,0.04);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside>
+        <div class="logo-container">
+            <div class="logo-title">
+                Algebraic<span class="logo-accent" style="color:var(--color-rose); text-shadow:0 0 10px var(--color-rose-glow)">Identities</span>
+            </div>
+            <div class="logo-sub">Square of Difference</div>
+        </div>
+
+        <ul class="syllabus-menu" id="syllabusMenu">
+            <li class="syllabus-item">
+                <a href="index.html">
+                    <span class="syllabus-title">1. Identities Dashboard</span>
+                    <span class="syllabus-desc">Core Geometric Rules</span>
+                    <span class="syllabus-number">01</span>
+                </a>
+            </li>
+            <li class="syllabus-item">
+                <a href="square_sum.html">
+                    <span class="syllabus-title">2. Square of a Sum</span>
+                    <span class="syllabus-desc">(a + b)² = a² + 2ab + b²</span>
+                    <span class="syllabus-number">02</span>
+                </a>
+            </li>
+            <li class="syllabus-item active">
+                <a href="#sandbox">
+                    <span class="syllabus-title">3. Square of a Difference</span>
+                    <span class="syllabus-desc">(a - b)² = a² - 2ab + b²</span>
+                    <span class="syllabus-number">03</span>
+                </a>
+            </li>
+            <li class="syllabus-item">
+                <a href="diff_squares.html">
+                    <span class="syllabus-title">4. Difference of Squares</span>
+                    <span class="syllabus-desc">a² - b² = (a - b)(a + b)</span>
+                    <span class="syllabus-number">04</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Square of a Difference</h1>
+            <p>Understand the algebraic expansion of <span class="math-expr">(a - b)²</span>. Explore geometrically why subtracting two rectangles of area <span class="math-expr">ab</span> from a large square of area <span class="math-expr">a²</span> requires adding the overlapping corner <span class="math-expr">b²</span> back.</p>
+        </header>
+
+        <!-- SECTION 1: INTERACTIVE SANDBOX -->
+        <section id="sandbox">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Visualizing Overlapping Subtraction</h2>
+            </div>
+            <p class="section-intro">
+                Adjust sliders for side lengths <span style="color:var(--color-a); font-weight:700;">a</span> and <span style="color:var(--color-b); font-weight:700;">b</span>. To keep the target square size valid, we enforce <span class="math-expr">a > b</span>.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Grid Canvas -->
+                <div class="panel">
+                    <div class="canvas-container" style="height: 380px; position: relative;">
+                        <canvas id="diffCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders & Math Calculations -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Identity Evaluation</h3>
+                        <div class="equation-box">
+                            <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:4px;">(a - b)² Left Side:</div>
+                            <span style="color:var(--color-target);" id="leftValText">(7.0 - 2.0)² = 5.0² = 25.00</span>
+                            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:8px; margin-bottom:4px;">a² - 2ab + b² Right Side:</div>
+                            <span style="color:var(--color-b);" id="rightValText">49.00 - 2(14.00) + 4.00 = 25.00</span>
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Length a</span>
+                                <span class="number" id="lblValA" style="color:var(--color-a); font-weight:700;">7.0</span>
+                            </div>
+                            <input type="range" id="slideA" min="5" max="10" step="0.5" value="7">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Length b</span>
+                                <span class="number" id="lblValB" style="color:var(--color-b); font-weight:700;">2.0</span>
+                            </div>
+                            <input type="range" id="slideB" min="1" max="4" step="0.5" value="2">
+                        </div>
+                    </div>
+
+                    <div class="presets-grid">
+                        <button class="btn-preset active" id="btnPresetDefault">Standard (a = 7, b = 2)</button>
+                        <button class="btn-preset" id="btnPresetLargeDiff">Large Difference (a = 9, b = 1)</button>
+                        <button class="btn-preset" id="btnPresetSmallDiff">Small Difference (a = 6, b = 3.5)</button>
+                    </div>
+
+                    <div class="formula-steps">
+                        <div><strong>Geometric Accounting:</strong></div>
+                        <div style="margin-left: 10px; margin-top: 6px;">
+                            &bull; Outer Square Area (a²): <span id="stepASquared" style="color:var(--color-a); font-weight:700;">49.00</span><br>
+                            &bull; Minus Horizontal Strip (ab): <span id="stepStripH" style="color:#ffffff;">-14.00</span><br>
+                            &bull; Minus Vertical Strip (ab): <span id="stepStripV" style="color:#ffffff;">-14.00</span><br>
+                            &bull; Plus Overlap Corner (b²): <span id="stepBSquared" style="color:var(--color-overlap); font-weight:700;">+4.00</span>
+                        </div>
+                        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); font-weight:700;">
+                            Target Area (a-b)² = <span id="stepTotalArea" style="color:var(--color-target);">25.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: ALGEBRAIC PROOF -->
+        <section id="proof">
+            <div class="section-header">
+                <span class="section-tag">Proof</span>
+                <h2>Algebraic Expansion</h2>
+            </div>
+            <div class="panel" style="max-width: 850px;">
+                <p style="line-height: 1.6; margin-bottom: 1.5rem; color:var(--text-muted);">
+                    Let's prove this algebraic identity by distributing the negative term:
+                </p>
+                <div class="formula-steps" style="font-size: 0.95rem; padding: 1.5rem;">
+                    <div style="margin-bottom:8px;">1. Expand the exponent as a binomial product:</div>
+                    <div style="margin-left: 15px; font-weight: 700; color:#fff;">(a - b)² = (a - b)(a - b)</div>
+                    <br>
+                    <div style="margin-bottom:8px;">2. Distribute terms using the distributive law:</div>
+                    <div style="margin-left: 15px; font-weight: 700; color:#fff;">= a(a - b) - b(a - b)</div>
+                    <br>
+                    <div style="margin-bottom:8px;">3. Distribute variables into the terms (be careful of signs!):</div>
+                    <div style="margin-left: 15px; font-weight: 700; color:#fff;">= a² - ab - ba + b²</div>
+                    <br>
+                    <div style="margin-bottom:8px;">4. Group the two matching negative terms (<span class="math-expr">ab = ba</span>):</div>
+                    <div style="margin-left: 15px; font-weight: 700; color:var(--color-rose);">= a² - 2ab + b²</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Quiz</span>
+                <h2>Check Your Understanding</h2>
+            </div>
+            
+            <div class="workspace-grid">
+                <!-- Left Panel: Quiz Questions -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 3</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Expand the expression (2x - 3)².</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="feedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text goes here.</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Core Takeaways -->
+                <div class="panel">
+                    <h3>Syllabus Checkpoint</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom:0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background:var(--color-target); box-shadow:0 0 6px var(--color-target)"></span>(a - b)² is the amber square.</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background:var(--color-rose); box-shadow:0 0 6px var(--color-rose)"></span>Subtracting 2ab removes the corner b² twice.</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background:var(--color-overlap); box-shadow:0 0 6px var(--color-overlap)"></span>Adding b² (green) corrects the double subtraction.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // DOM Elements
+        const canvas = document.getElementById('diffCanvas');
+        const ctx = canvas.getContext('2d');
+        const slideA = document.getElementById('slideA');
+        const slideB = document.getElementById('slideB');
+        const lblValA = document.getElementById('lblValA');
+        const lblValB = document.getElementById('lblValB');
+        
+        // Output text fields
+        const leftValText = document.getElementById('leftValText');
+        const rightValText = document.getElementById('rightValText');
+        const stepASquared = document.getElementById('stepASquared');
+        const stepStripH = document.getElementById('stepStripH');
+        const stepStripV = document.getElementById('stepStripV');
+        const stepBSquared = document.getElementById('stepBSquared');
+        const stepTotalArea = document.getElementById('stepTotalArea');
+
+        // Presets
+        const btnPresetDefault = document.getElementById('btnPresetDefault');
+        const btnPresetLargeDiff = document.getElementById('btnPresetLargeDiff');
+        const btnPresetSmallDiff = document.getElementById('btnPresetSmallDiff');
+
+        let aVal = 7.0;
+        let bVal = 2.0;
+
+        function updateValues() {
+            aVal = parseFloat(slideA.value);
+            bVal = parseFloat(slideB.value);
+
+            // Constraint: a must be strictly greater than b.
+            if (bVal >= aVal) {
+                bVal = aVal - 1;
+                slideB.value = bVal;
+            }
+
+            lblValA.textContent = aVal.toFixed(1);
+            lblValB.textContent = bVal.toFixed(1);
+
+            const amb = aVal - bVal;
+            const leftSide = amb * amb;
+            const aSq = aVal * aVal;
+            const bSq = bVal * bVal;
+            const ab = aVal * bVal;
+            const rightSide = aSq - 2*ab + bSq;
+
+            leftValText.textContent = `(${aVal.toFixed(1)} - ${bVal.toFixed(1)})² = ${amb.toFixed(1)}² = ${leftSide.toFixed(2)}`;
+            rightValText.textContent = `${aSq.toFixed(2)} - 2(${ab.toFixed(2)}) + ${bSq.toFixed(2)} = ${rightSide.toFixed(2)}`;
+
+            stepASquared.textContent = aSq.toFixed(2);
+            stepStripH.textContent = `-${ab.toFixed(2)}`;
+            stepStripV.textContent = `-${ab.toFixed(2)}`;
+            stepBSquared.textContent = `+${bSq.toFixed(2)}`;
+            stepTotalArea.textContent = rightSide.toFixed(2);
+
+            drawVisuals();
+        }
+
+        function drawVisuals() {
+            // Sizing setup
+            const w = canvas.parentElement.clientWidth;
+            const h = canvas.parentElement.clientHeight;
+            canvas.width = w;
+            canvas.height = h;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Max scale layout based on max 'a' (which is 10)
+            const margin = 45;
+            const maxUnits = 10.5;
+            const graphArea = Math.min(w, h) - margin * 2;
+            const scale = graphArea / maxUnits;
+
+            const startX = (w - aVal * scale) / 2;
+            const startY = (h - aVal * scale) / 2;
+
+            const aPix = aVal * scale;
+            const bPix = bVal * scale;
+            const ambPix = (aVal - bVal) * scale;
+
+            // Draw Background Grids (underneath)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            const step = scale; // 1 unit grid line
+            for (let i = 0; i <= aVal; i++) {
+                // Vertical grid lines
+                ctx.beginPath();
+                ctx.moveTo(startX + i * step, startY);
+                ctx.lineTo(startX + i * step, startY + aVal * scale);
+                ctx.stroke();
+
+                // Horizontal grid lines
+                ctx.beginPath();
+                ctx.moveTo(startX, startY + i * step);
+                ctx.lineTo(startX + aVal * scale, startY + i * step);
+                ctx.stroke();
+            }
+
+            // --- Shapes ---
+            // 1. Large Outer Square (a^2) border only
+            ctx.strokeStyle = 'rgba(244, 63, 94, 0.25)';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(startX, startY, aPix, aPix);
+
+            // 2. Target Square (a-b)^2 at top left
+            ctx.fillStyle = 'rgba(255, 176, 0, 0.18)';
+            ctx.strokeStyle = '#ffb000';
+            ctx.lineWidth = 2.5;
+            ctx.fillRect(startX, startY, ambPix, ambPix);
+            ctx.strokeRect(startX, startY, ambPix, ambPix);
+
+            // 3. Subtracted Horizontal strip (bottom part of square: width a, height b)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.015)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            ctx.strokeRect(startX, startY + ambPix, aPix, bPix);
+
+            // 4. Subtracted Vertical strip (right part of square: width b, height a)
+            ctx.strokeRect(startX + ambPix, startY, bPix, aPix);
+            ctx.setLineDash([]);
+
+            // 5. Overlap Corner (b^2) at bottom right
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.25)';
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2;
+            ctx.fillRect(startX + ambPix, startY + ambPix, bPix, bPix);
+            ctx.strokeRect(startX + ambPix, startY + ambPix, bPix, bPix);
+
+            // --- Draw Labels ---
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '12px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Target Square label
+            ctx.fillText("(a-b)²", startX + ambPix/2, startY + ambPix/2 - 8);
+            ctx.font = '9px JetBrains Mono';
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.fillText(((aVal-bVal)*(aVal-bVal)).toFixed(1), startX + ambPix/2, startY + ambPix/2 + 8);
+
+            // Overlap b^2 label
+            ctx.font = '11px JetBrains Mono';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText("b²", startX + ambPix + bPix/2, startY + ambPix + bPix/2 - 8);
+            ctx.font = '9px JetBrains Mono';
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.fillText((bVal*bVal).toFixed(1), startX + ambPix + bPix/2, startY + ambPix + bPix/2 + 8);
+
+            // Dimensions labels along top & left
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '11px Outfit';
+
+            // Top dimension tags
+            ctx.fillText(`a - b = ${ (aVal-bVal).toFixed(1) }`, startX + ambPix/2, startY - 14);
+            ctx.fillText(`b = ${ bVal.toFixed(1) }`, startX + ambPix + bPix/2, startY - 14);
+
+            // Overall "a" length on bottom
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(startX, startY + aPix + 14);
+            ctx.lineTo(startX + aPix, startY + aPix + 14);
+            ctx.stroke();
+            ctx.fillText(`a = ${aVal.toFixed(1)}`, startX + aPix/2, startY + aPix + 28);
+
+            // Left dimension tags
+            ctx.save();
+            ctx.translate(startX - 14, startY + ambPix/2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText(`a - b = ${ (aVal-bVal).toFixed(1) }`, 0, 0);
+            ctx.restore();
+
+            ctx.save();
+            ctx.translate(startX - 14, startY + ambPix + bPix/2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText(`b = ${ bVal.toFixed(1) }`, 0, 0);
+            ctx.restore();
+        }
+
+        // Preset actions
+        btnPresetDefault.addEventListener('click', () => {
+            slideA.value = 7;
+            slideB.value = 2;
+            setActivePreset(btnPresetDefault);
+            updateValues();
+        });
+
+        btnPresetLargeDiff.addEventListener('click', () => {
+            slideA.value = 9;
+            slideB.value = 1;
+            setActivePreset(btnPresetLargeDiff);
+            updateValues();
+        });
+
+        btnPresetSmallDiff.addEventListener('click', () => {
+            slideA.value = 6;
+            slideB.value = 3.5;
+            setActivePreset(btnPresetSmallDiff);
+            updateValues();
+        });
+
+        function setActivePreset(activeBtn) {
+            [btnPresetDefault, btnPresetLargeDiff, btnPresetSmallDiff].forEach(btn => btn.classList.remove('active'));
+            activeBtn.classList.add('active');
+        }
+
+        slideA.addEventListener('input', () => {
+            setActivePreset({classList:{remove:()=>{}}}); // deselect presets
+            updateValues();
+        });
+        slideB.addEventListener('input', () => {
+            setActivePreset({classList:{remove:()=>{}}}); // deselect presets
+            updateValues();
+        });
+
+        // Initialize sizing and redraw
+        window.addEventListener('resize', drawVisuals);
+        slideA.value = 7;
+        slideB.value = 2;
+        updateValues();
+
+
+        // --- CONCEPTUAL QUIZ LOGIC ---
+        const quizQuestions = [
+            {
+                question: "Expand the expression (2x - 3)². Which matches the square of a difference identity?",
+                options: [
+                    "4x² - 9",
+                    "4x² - 12x + 9",
+                    "4x² - 6x + 9",
+                    "2x² - 12x + 9"
+                ],
+                correctIndex: 1,
+                explanation: "Using (a - b)² = a² - 2ab + b², we assign a = 2x and b = 3. Expanding yields (2x)² - 2(2x)(3) + 3² = 4x² - 12x + 9."
+            },
+            {
+                question: "If we compute 97² using the identity (100 - 3)², what is the sum of the subtracted 2ab terms?",
+                options: [
+                    "-600",
+                    "-300",
+                    "9",
+                    "9409"
+                ],
+                correctIndex: 0,
+                explanation: "Here, a = 100 and b = 3. The middle term -2ab is -2 × 100 × 3 = -600. The full sum is 10000 - 600 + 9 = 9409."
+            },
+            {
+                question: "Why do we add b² back in the geometric representation of a² - 2ab + b²?",
+                options: [
+                    "Because we subtracted it twice when removing the two ab strips.",
+                    "Because the blue region is not part of the original square.",
+                    "To scale the square to a higher dimension.",
+                    "To balance the coordinate snaps."
+                ],
+                correctIndex: 0,
+                explanation: "When we subtract the horizontal strip of size a × b and the vertical strip of size b × a from the total square a², their intersection (the bottom-right b × b square) gets subtracted twice. Adding b² back corrects this double subtraction."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let questionsAnswered = 0;
+
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const feedbackTitle = document.getElementById('feedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[currentQuestionIndex];
+            
+            quizQuestionTitle.textContent = q.question;
+            quizProgressText.textContent = `Question ${currentQuestionIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${score}/${questionsAnswered}`;
+
+            quizOptionsContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('div');
+                btn.className = 'quiz-option';
+                btn.innerHTML = `<span>${opt}</span>`;
+                btn.addEventListener('click', () => checkAnswer(idx));
+                quizOptionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIdx) {
+            const q = quizQuestions[currentQuestionIndex];
+            const options = quizOptionsContainer.children;
+
+            // Prevent double clicking
+            if (quizFeedbackArea.style.display === 'block') return;
+
+            questionsAnswered++;
+
+            if (selectedIdx === q.correctIndex) {
+                options[selectedIdx].classList.add('correct');
+                feedbackTitle.textContent = "Correct Answer! ★";
+                feedbackTitle.style.color = '#10b981';
+                score++;
+            } else {
+                options[selectedIdx].classList.add('incorrect');
+                options[q.correctIndex].classList.add('correct');
+                feedbackTitle.textContent = "Incorrect";
+                feedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizScoreText.textContent = `Score: ${score}/${questionsAnswered}`;
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex >= quizQuestions.length) {
+                currentQuestionIndex = 0; // Loop quiz
+            }
+            loadQuestion();
+        });
+
+        // Initialize quiz
+        loadQuestion();
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,1427 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to Slope - Algebraic Structures</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "02_algebra",
+            logo: {"main":"Algebra","accent":"Lab","sub":"Introduction to Slope"},
+            navigation: [
+    {
+        "label": "Rise & Run Grapher",
+        "desc": "Rise & Run Grapher interactive section",
+        "href": "#sandbox"
+    },
+    {
+        "label": "Slope Classifications",
+        "desc": "Slope Classifications interactive section",
+        "href": "#classification"
+    },
+    {
+        "label": "Staircase Steepness Simulator",
+        "desc": "Staircase Steepness Simulator interactive section",
+        "href": "#staircase"
+    },
+    {
+        "label": "Conceptual Quiz",
+        "desc": "Conceptual Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Algebra Domain / Rose Theme override */
+            --color-rose: #f43f5e;
+            --color-rose-glow: rgba(244, 63, 94, 0.35);
+            --color-accent: #f43f5e;
+            --color-accent-glow: rgba(244, 63, 94, 0.35);
+
+            --color-rise: #f43f5e;
+            /* Rose for Rise */
+            --color-run: #38bdf8;
+            /* Cyan for Run */
+            --color-line: #a855f7;
+            /* Purple for Line */
+        }
+
+        /* Highlight classes on sidebar active menu */
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-rose) !important;
+            box-shadow: 0 4px 20px var(--color-rose-glow) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-rose);
+            background: rgba(244, 63, 94, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            text-shadow: 0 0 5px var(--color-rose-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        /* HUD Classification Card */
+        .hud-card {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 1.5rem;
+        }
+
+        .hud-pill {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 0.75rem;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all var(--transition-speed) ease;
+        }
+
+        .hud-pill.active.positive {
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+        }
+
+        .hud-pill.active.negative {
+            color: #f43f5e;
+            background: rgba(244, 63, 94, 0.1);
+            border-color: rgba(244, 63, 94, 0.3);
+            box-shadow: 0 0 10px rgba(244, 63, 94, 0.15);
+        }
+
+        .hud-pill.active.zero {
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+            border-color: rgba(56, 189, 248, 0.3);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
+        }
+
+        .hud-pill.active.undefined {
+            color: #ffb000;
+            background: rgba(255, 176, 0, 0.1);
+            border-color: rgba(255, 176, 0, 0.3);
+            box-shadow: 0 0 10px rgba(255, 176, 0, 0.15);
+        }
+
+        @media (max-width: 600px) {
+            .hud-card {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Math Display styling */
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        /* Control Sliders */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-rose);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-rose-glow);
+        }
+
+        /* Preset buttons */
+        .presets-grid {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-preset {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-preset:hover,
+        .btn-preset.active {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .math-symbol {
+            font-style: italic;
+        }
+
+        /* Toggles layout */
+        .toggles-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 1rem;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-container input {
+            cursor: pointer;
+        }
+
+        /* Staircase status banner */
+        .climb-banner {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid transparent;
+        }
+
+        .climb-banner.gentle {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .climb-banner.standard {
+            background: rgba(56, 189, 248, 0.1);
+            color: #38bdf8;
+            border-color: rgba(56, 189, 248, 0.2);
+        }
+
+        .climb-banner.steep {
+            background: rgba(255, 176, 0, 0.1);
+            color: #ffb000;
+            border-color: rgba(255, 176, 0, 0.2);
+        }
+
+        .climb-banner.dangerous {
+            background: rgba(244, 63, 94, 0.1);
+            color: #f43f5e;
+            border-color: rgba(244, 63, 94, 0.2);
+        }
+
+        /* Quiz layout rules */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .quiz-score-overlay {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1
+                style="background: linear-gradient(135deg, #ffffff 30%, var(--color-rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Introduction to Slope</h1>
+            <p>Explore the concept of slope. Drag points on a coordinate plane, calculate rise over run, understand
+                positive, negative, zero, and undefined slopes, and build climbable stairs.</p>
+        </header>
+
+        <!-- SECTION 1: SANDBOX -->
+        <section id="sandbox">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Rise & Run Grapher</h2>
+            </div>
+            <p class="section-intro">
+                Drag the two points <span style="color:var(--color-rose); font-weight:700;">A</span> and <span
+                    style="color:var(--color-line); font-weight:700;">B</span> around the coordinate system. Snapping to
+                coordinates is active by default to yield clean mathematical divisions. Watch the slope ratio calculate
+                dynamically.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Graph Canvas -->
+                <div class="panel">
+                    <div class="canvas-container" style="height: 380px;">
+                        <canvas id="slopeCanvas"></canvas>
+                    </div>
+
+                    <div class="toggles-grid">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="chkSnap" checked>
+                            <span>Snap coordinates to grid intersections (Integer Mode)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Math Calculations & HUD -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Slope Ratio Value</h3>
+                        <div class="equation-box" id="slopeValText" style="color:var(--color-rose);">
+                            m = 1.00
+                        </div>
+                    </div>
+
+                    <div class="presets-grid">
+                        <button class="btn-preset active" id="btnPresetDiag">Diagonal (m = 1)</button>
+                        <button class="btn-preset" id="btnPresetSteep">Steep (m = 2)</button>
+                        <button class="btn-preset" id="btnPresetFall">Falling (m = -0.5)</button>
+                        <button class="btn-preset" id="btnPresetHoriz">Horizontal (m = 0)</button>
+                        <button class="btn-preset" id="btnPresetVert">Vertical (Undefined)</button>
+                    </div>
+
+                    <div class="formula-steps">
+                        <div><strong>Formula: m = Rise / Run</strong></div>
+                        <div style="margin-left: 10px; margin-top: 6px;">
+                            &bull; Point A = (<span id="ptAX" style="color:var(--text-color);">1</span>, <span id="ptAY"
+                                style="color:var(--text-color);">2</span>)<br>
+                            &bull; Point B = (<span id="ptBX" style="color:var(--text-color);">5</span>, <span id="ptBY"
+                                style="color:var(--text-color);">6</span>)
+                        </div>
+                        <br>
+                        <div style="border-top:1px solid rgba(255,255,255,0.06); padding-top:10px;">
+                            &bull; Rise (&Delta;y) = y₂ - y₁ = <span id="valRise"
+                                style="color:var(--color-rise); font-weight:700;">4.0</span><br>
+                            &bull; Run (&Delta;x) = x₂ - x₁ = <span id="valRun"
+                                style="color:var(--color-run); font-weight:700;">4.0</span>
+                        </div>
+                        <br>
+                        <div style="font-weight: 700; color:var(--color-rose);">
+                            m = <span id="calcFraction">4 / 4</span> = <span id="calcResult">1.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: SLOPE CLASSIFICATIONS HUD -->
+        <section id="classification">
+            <div class="section-header">
+                <span class="section-tag">Concept HUD</span>
+                <h2>Slope Classifications</h2>
+            </div>
+            <p class="section-intro">
+                Depending on the direction of rise and run, the slope falls into one of four distinct categories. The
+                dashboard HUD lights up dynamically as you drag points A and B on the coordinate system above.
+            </p>
+
+            <div class="hud-card">
+                <div class="hud-pill active positive" id="hudPos">
+                    <div style="font-size: 1.1rem; margin-bottom: 4px;">&nearr; Positive</div>
+                    <div style="font-size:0.75rem; font-weight:normal; opacity:0.8;">Rise & Run same sign. Line climbs
+                        up left-to-right.</div>
+                </div>
+                <div class="hud-pill" id="hudNeg">
+                    <div style="font-size: 1.1rem; margin-bottom: 4px;">&searr; Negative</div>
+                    <div style="font-size:0.75rem; font-weight:normal; opacity:0.8;">Rise & Run opposite signs. Line
+                        falls left-to-right.</div>
+                </div>
+                <div class="hud-pill" id="hudZero">
+                    <div style="font-size: 1.1rem; margin-bottom: 4px;">&rarr; Zero Slope</div>
+                    <div style="font-size:0.75rem; font-weight:normal; opacity:0.8;">Rise is 0. Horizontal line. y stays
+                        constant.</div>
+                </div>
+                <div class="hud-pill" id="hudUndefined">
+                    <div style="font-size: 1.1rem; margin-bottom: 4px;">&uarr; Undefined</div>
+                    <div style="font-size:0.75rem; font-weight:normal; opacity:0.8;">Run is 0. Vertical line. Division
+                        by zero!</div>
+                </div>
+            </div>
+
+            <!-- Transition Hook Card leading to y=mx+b -->
+            <div class="panel" style="margin-top: 2rem; border-color: rgba(244, 63, 94, 0.15);">
+                <h3>Connecting to Linear Equations</h3>
+                <br>
+                <p class="section-intro" style="margin-bottom:1rem; font-size:0.9rem;">
+                    Slope is the foundational element of linear equations. If you extend this line, it intercepts the
+                    vertical y-axis at y-coordinate <span class="math-symbol"
+                        style="color:var(--color-rose); font-weight:700;" id="yInterceptVal">b = 1.0</span>.
+                </p>
+                <div class="equation-box" id="eqLinearText"
+                    style="margin-bottom:0; font-size:1.35rem; color:var(--text-color);">
+                    y = 1.00x + 1.00
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: STAIRCASE BUILDER -->
+        <section id="staircase">
+            <div class="section-header">
+                <span class="section-tag">Staircase Simulation</span>
+                <h2>Staircase Steepness Simulator</h2>
+            </div>
+            <p class="section-intro">
+                Architects design staircases using specific slope safety guidelines. Adjust step rise (height) and step
+                run (depth) to build a flight of stairs, then test run the walker to see if the slope is safe for
+                climbing!
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Staircase Canvas -->
+                <div class="panel">
+                    <div class="canvas-container" style="height: 380px;">
+                        <canvas id="stairCanvas"></canvas>
+                    </div>
+
+                    <div id="climbStatus" class="climb-banner standard">
+                        Standard Slope: Safe and comfortable staircase.
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders & Climb trigger -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Stair Step Ratio</h3>
+                        <div class="equation-box" id="stairSlopeText" style="color:var(--color-run);">
+                            Rise/Run = 0.50 / 0.80 = 0.63
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Step Rise (Height)</span>
+                                <span class="number" id="lblStairRise">0.50 m</span>
+                            </div>
+                            <input type="range" id="slideStairRise" min="0" max="1.2" step="0.05" value="0.5">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Step Run (Depth)</span>
+                                <span class="number" id="lblStairRun">0.80 m</span>
+                            </div>
+                            <input type="range" id="slideStairRun" min="0.4" max="2" step="0.05" value="0.8">
+                        </div>
+                    </div>
+
+                    <button class="btn" id="btnClimb"
+                        style="background: var(--color-rose); box-shadow:0 4px 15px var(--color-rose-glow);">
+                        Test Climb!
+                    </button>
+
+                    <div class="panel-hint" style="margin-top: 1rem;">
+                        <svg viewBox="0 0 24 24" style="fill:var(--text-muted); width: 16px; height: 16px;">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z" />
+                        </svg>
+                        <span>According to building codes, comfortable staircases have a slope of around <strong>0.5 to
+                                0.7</strong> (rise height &approx; 7 inches, run depth &approx; 11 inches). If the slope
+                            gets too high, it effectively behaves as a vertical ladder!</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Self Evaluation</span>
+                <h2>Conceptual Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Review your mastery of slopes, calculation steps, and zero vs undefined conditions with this interactive
+                quiz.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Active Question -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div
+                            style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Find the slope of a
+                            line passing through (2, 3) and (6, 11).</h3>
+
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong>Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text goes here.</p>
+                        <button class="btn" id="quizNextBtn"
+                            style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Concept Summary -->
+                <div class="panel">
+                    <h3>Curriculum Focus</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom:0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background:var(--color-rose); box-shadow:0 0 6px var(--color-rose-glow);"></span>Rise
+                                & Run sign variations</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background:var(--color-run); box-shadow:0 0 6px var(--color-run);"></span>Horizontal
+                                / zero slope lines</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background:var(--color-line); box-shadow:0 0 6px var(--color-line);"></span>Vertical
+                                / undefined slope lines</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot"
+                                    style="background:#ffb000; box-shadow:0 0 6px #ffb000;"></span>Conversion to linear
+                                equations</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('slopeCanvas');
+        const ctx = canvas.getContext('2d');
+        const chkSnap = document.getElementById('chkSnap');
+
+        // HUD labels
+        const ptAX = document.getElementById('ptAX');
+        const ptAY = document.getElementById('ptAY');
+        const ptBX = document.getElementById('ptBX');
+        const ptBY = document.getElementById('ptBY');
+        const valRise = document.getElementById('valRise');
+        const valRun = document.getElementById('valRun');
+        const calcFraction = document.getElementById('calcFraction');
+        const calcResult = document.getElementById('calcResult');
+        const slopeValText = document.getElementById('slopeValText');
+        const yInterceptVal = document.getElementById('yInterceptVal');
+        const eqLinearText = document.getElementById('eqLinearText');
+
+        // HUD Pills
+        const hudPos = document.getElementById('hudPos');
+        const hudNeg = document.getElementById('hudNeg');
+        const hudZero = document.getElementById('hudZero');
+        const hudUndefined = document.getElementById('hudUndefined');
+
+        // Presets
+        const btnPresetDiag = document.getElementById('btnPresetDiag');
+        const btnPresetSteep = document.getElementById('btnPresetSteep');
+        const btnPresetFall = document.getElementById('btnPresetFall');
+        const btnPresetHoriz = document.getElementById('btnPresetHoriz');
+        const btnPresetVert = document.getElementById('btnPresetVert');
+
+        // Staircase simulation elements
+        const stairCanvas = document.getElementById('stairCanvas');
+        const stairCtx = stairCanvas.getContext('2d');
+        const slideStairRise = document.getElementById('slideStairRise');
+        const slideStairRun = document.getElementById('slideStairRun');
+        const lblStairRise = document.getElementById('lblStairRise');
+        const lblStairRun = document.getElementById('lblStairRun');
+        const stairSlopeText = document.getElementById('stairSlopeText');
+        const btnClimb = document.getElementById('btnClimb');
+        const climbStatus = document.getElementById('climbStatus');
+
+        // Points state
+        let pA = { x: -3.0, y: -2.0 };
+        let pB = { x: 3.0, y: 4.0 };
+
+        // Dragging state
+        let draggingPoint = null; // 'A' or 'B'
+
+        // Staircase state
+        let climbProgress = 0.0;
+        let isClimbing = false;
+        let climbFrameId = null;
+
+        function initCanvasSize(canvasElement) {
+            const container = canvasElement.parentElement;
+            canvasElement.width = container.clientWidth;
+            canvasElement.height = container.clientHeight;
+        }
+
+        // Coordinate space mapping (Math range: -8 to 8)
+        function getCoordsHelper(canvasElement) {
+            const w = canvasElement.width;
+            const h = canvasElement.height;
+            const centerX = w / 2;
+            const centerY = h / 2;
+            const scaleX = w / 18; // 18 units wide
+            const scaleY = h / 18; // 18 units high
+            return { centerX, centerY, scaleX, scaleY };
+        }
+
+        function toPixel(canvasElement, xMath, yMath) {
+            const { centerX, centerY, scaleX, scaleY } = getCoordsHelper(canvasElement);
+            return {
+                x: centerX + xMath * scaleX,
+                y: centerY - yMath * scaleY
+            };
+        }
+
+        function toMath(canvasElement, xPixel, yPixel) {
+            const { centerX, centerY, scaleX, scaleY } = getCoordsHelper(canvasElement);
+            return {
+                x: (xPixel - centerX) / scaleX,
+                y: (centerY - yPixel) / scaleY
+            };
+        }
+
+        // Grid drawer
+        function drawGrid(canvasElement, context) {
+            const w = canvasElement.width;
+            const h = canvasElement.height;
+            const { centerX, centerY, scaleX, scaleY } = getCoordsHelper(canvasElement);
+
+            context.clearRect(0, 0, w, h);
+
+            context.lineWidth = 1;
+            context.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            context.fillStyle = 'rgba(255, 255, 255, 0.35)';
+            context.font = '10px JetBrains Mono';
+
+            // Grid lines and numbers
+            for (let i = -8; i <= 8; i++) {
+                if (i === 0) continue;
+
+                const pX = toPixel(canvasElement, i, 0);
+                context.beginPath();
+                context.moveTo(pX.x, 0);
+                context.lineTo(pX.x, h);
+                context.stroke();
+
+                const pY = toPixel(canvasElement, 0, i);
+                context.beginPath();
+                context.moveTo(0, pY.y);
+                context.lineTo(w, pY.y);
+                context.stroke();
+
+                if (i % 2 === 0) {
+                    context.fillText(i, pX.x - 6, centerY + 14);
+                    context.fillText(i, centerX - 14, pY.y + 4);
+                }
+            }
+
+            // Primary Axes
+            context.lineWidth = 1.5;
+            context.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+
+            context.beginPath();
+            context.moveTo(0, centerY);
+            context.lineTo(w, centerY);
+            context.stroke();
+
+            context.beginPath();
+            context.moveTo(centerX, 0);
+            context.lineTo(centerX, h);
+            context.stroke();
+
+            context.fillText("y", centerX + 8, 12);
+            context.fillText("x", w - 12, centerY - 8);
+            context.fillText("0", centerX - 12, centerY + 14);
+        }
+
+        // Main Sandbox Graph rendering
+        function drawSandbox() {
+            initCanvasSize(canvas);
+            drawGrid(canvas, ctx);
+
+            const w = canvas.width;
+            const h = canvas.height;
+
+            const pixA = toPixel(canvas, pA.x, pA.y);
+            const pixB = toPixel(canvas, pB.x, pB.y);
+
+            // 1. Draw Infinite Line passing through A and B
+            const dx = pB.x - pA.x;
+            const dy = pB.y - pA.y;
+
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#a855f7';
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = 'rgba(168, 85, 247, 0.4)';
+
+            ctx.beginPath();
+            if (Math.abs(dx) < 0.0001) {
+
+                const top = toPixel(canvas, pA.x, 9);
+                const bottom = toPixel(canvas, pA.x, -9);
+                ctx.moveTo(top.x, top.y);
+                ctx.lineTo(bottom.x, bottom.y);
+            } else {
+                // Standard sloped line y - yA = m * (x - xA) -> y = m*(x - xA) + yA
+                const m = dy / dx;
+                const leftY = m * (-9 - pA.x) + pA.y;
+                const rightY = m * (9 - pA.x) + pA.y;
+
+                const leftPt = toPixel(canvas, -9, leftY);
+                const rightPt = toPixel(canvas, 9, rightY);
+
+                ctx.moveTo(leftPt.x, leftPt.y);
+                ctx.lineTo(rightPt.x, rightPt.y);
+            }
+            ctx.stroke();
+            ctx.shadowBlur = 0; // reset
+
+            // 2. Draw Right-Angle Rise & Run Triangle (if not vertical or horizontal)
+            if (Math.abs(dx) > 0.0001 && Math.abs(dy) > 0.0001) {
+                const cornerPt = toPixel(canvas, pB.x, pA.y);
+
+                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = '#38bdf8';
+                ctx.beginPath();
+                ctx.moveTo(pixA.x, pixA.y);
+                ctx.lineTo(cornerPt.x, cornerPt.y);
+                ctx.stroke();
+
+                ctx.strokeStyle = '#f43f5e';
+                ctx.beginPath();
+                ctx.moveTo(cornerPt.x, cornerPt.y);
+                ctx.lineTo(pixB.x, pixB.y);
+                ctx.stroke();
+
+                // Label dimensions on triangle
+                ctx.font = '11px JetBrains Mono';
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillText(`Run \u0394x = ${dx.toFixed(1)}`, (pixA.x + cornerPt.x) / 2 - 30, cornerPt.y + 16);
+
+                ctx.fillStyle = '#f43f5e';
+                ctx.fillText(`Rise \u0394y = ${dy.toFixed(1)}`, cornerPt.x + 8, (cornerPt.y + pixB.y) / 2 + 4);
+            } else if (Math.abs(dy) < 0.0001) {
+                // Horizontal line: only Run exists
+                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = '#38bdf8';
+                ctx.beginPath();
+                ctx.moveTo(pixA.x, pixA.y);
+                ctx.lineTo(pixB.x, pixB.y);
+                ctx.stroke();
+            } else if (Math.abs(dx) < 0.0001) {
+                // Vertical line: only Rise exists
+                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = '#f43f5e';
+                ctx.beginPath();
+                ctx.moveTo(pixA.x, pixA.y);
+                ctx.lineTo(pixB.x, pixB.y);
+                ctx.stroke();
+            }
+
+            // 3. Draw Points A and B
+            // Point A
+            ctx.fillStyle = '#f43f5e'; // Rose
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(pixA.x, pixA.y, 7, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.font = 'bold 11px Outfit';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(`A(${pA.x.toFixed(1)}, ${pA.y.toFixed(1)})`, pixA.x - 25, pixA.y - 12);
+
+            // Point B
+            ctx.fillStyle = '#38bdf8'; // Cyan
+            ctx.beginPath();
+            ctx.arc(pixB.x, pixB.y, 7, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(`B(${pB.x.toFixed(1)}, ${pB.y.toFixed(1)})`, pixB.x + 10, pixB.y - 12);
+        }
+
+        function updateCalculations() {
+            const dx = pB.x - pA.x;
+            const dy = pB.y - pA.y;
+
+            ptAX.textContent = pA.x.toFixed(0);
+            ptAY.textContent = pA.y.toFixed(0);
+            ptBX.textContent = pB.x.toFixed(0);
+            ptBY.textContent = pB.y.toFixed(0);
+
+            valRise.textContent = dy.toFixed(1);
+            valRun.textContent = dx.toFixed(1);
+
+            // HUD Active reset
+            hudPos.classList.remove('active');
+            hudNeg.classList.remove('active');
+            hudZero.classList.remove('active');
+            hudUndefined.classList.remove('active');
+
+            if (Math.abs(dx) < 0.0001) {
+                // Undefined slope
+                slopeValText.textContent = "m = Undefined";
+                calcFraction.innerHTML = `${dy.toFixed(0)} / 0`;
+                calcResult.innerHTML = `<span style="color:#ef4444">Undefined (Cannot divide by 0!)</span>`;
+                hudUndefined.classList.add('active');
+
+                yInterceptVal.textContent = "b = None (Parallel to Y-Axis)";
+                eqLinearText.innerHTML = `x = ${pA.x.toFixed(1)} <span style="font-size:0.8rem; font-weight:normal; color:var(--text-muted)">(Vertical line)</span>`;
+            } else {
+                const m = dy / dx;
+                slopeValText.textContent = `m = ${m.toFixed(2)}`;
+                calcFraction.innerHTML = `${dy.toFixed(0)} / ${dx.toFixed(0)}`;
+                calcResult.textContent = m.toFixed(2);
+
+                // Classify orientation HUD
+                if (m > 0) hudPos.classList.add('active');
+                else if (m < 0) hudNeg.classList.add('active');
+                else if (m === 0) hudZero.classList.add('active');
+
+                // Solve y-intercept: y = m*x + b -> b = yA - m*xA
+                const b = pA.y - m * pA.x;
+                yInterceptVal.textContent = `b = ${b.toFixed(2)}`;
+
+                const signB = b >= 0 ? '+' : '-';
+                const showM = m === 1 ? '' : (m === -1 ? '-' : m.toFixed(2));
+                const showB = b === 0 ? '' : ` ${signB} ${Math.abs(b).toFixed(2)}`;
+
+                eqLinearText.textContent = `y = ${showM}x${showB}`;
+            }
+        }
+
+        // Coordinate snaps
+        function handleDragMove(e) {
+            if (!draggingPoint) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            let mathPt = toMath(canvas, mouseX, mouseY);
+
+            // Clamp math point inside grid
+            mathPt.x = Math.max(-8, Math.min(8, mathPt.x));
+            mathPt.y = Math.max(-8, Math.min(8, mathPt.y));
+
+            if (chkSnap.checked) {
+                mathPt.x = Math.round(mathPt.x);
+                mathPt.y = Math.round(mathPt.y);
+            }
+
+            if (draggingPoint === 'A') {
+                pA = mathPt;
+            } else if (draggingPoint === 'B') {
+                pB = mathPt;
+            }
+
+            // Highlight off presets if customized
+            document.querySelectorAll('.btn-preset').forEach(btn => btn.classList.remove('active'));
+
+            updateCalculations();
+            drawSandbox();
+        }
+
+        // Mouse listeners
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            const mathPt = toMath(canvas, mouseX, mouseY);
+
+            const pixA = toPixel(canvas, pA.x, pA.y);
+            const pixB = toPixel(canvas, pB.x, pB.y);
+
+            const distA = Math.sqrt((e.clientX - rect.left - pixA.x) ** 2 + (e.clientY - rect.top - pixA.y) ** 2);
+            const distB = Math.sqrt((e.clientX - rect.left - pixB.x) ** 2 + (e.clientY - rect.top - pixB.y) ** 2);
+
+            if (distA < 15) {
+                draggingPoint = 'A';
+            } else if (distB < 15) {
+                draggingPoint = 'B';
+            }
+        });
+
+        window.addEventListener('mousemove', handleDragMove);
+        window.addEventListener('mouseup', () => { draggingPoint = null; });
+
+        // Touch support
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 0) return;
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = touch.clientX - rect.left;
+            const mouseY = touch.clientY - rect.top;
+
+            const pixA = toPixel(canvas, pA.x, pA.y);
+            const pixB = toPixel(canvas, pB.x, pB.y);
+
+            const distA = Math.sqrt((mouseX - pixA.x) ** 2 + (mouseY - pixA.y) ** 2);
+            const distB = Math.sqrt((mouseX - pixB.x) ** 2 + (mouseY - pixB.y) ** 2);
+
+            if (distA < 20) {
+                draggingPoint = 'A';
+                e.preventDefault();
+            } else if (distB < 20) {
+                draggingPoint = 'B';
+                e.preventDefault();
+            }
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (!draggingPoint || e.touches.length === 0) return;
+            const touch = e.touches[0];
+            handleDragMove(touch);
+            e.preventDefault();
+        });
+
+        canvas.addEventListener('touchend', () => { draggingPoint = null; });
+
+        // Presets Triggering
+        function loadPreset(presets, classBtn) {
+            document.querySelectorAll('.btn-preset').forEach(btn => btn.classList.remove('active'));
+            classBtn.classList.add('active');
+            pA = presets.A;
+            pB = presets.B;
+            updateCalculations();
+            drawSandbox();
+        }
+
+        btnPresetDiag.addEventListener('click', () => loadPreset({ A: { x: -3, y: -2 }, B: { x: 3, y: 4 } }, btnPresetDiag));
+        btnPresetSteep.addEventListener('click', () => loadPreset({ A: { x: -2, y: -4 }, B: { x: 2, y: 4 } }, btnPresetSteep));
+        btnPresetFall.addEventListener('click', () => loadPreset({ A: { x: -4, y: 3 }, B: { x: 4, y: -1 } }, btnPresetFall));
+        btnPresetHoriz.addEventListener('click', () => loadPreset({ A: { x: -5, y: 2 }, B: { x: 5, y: 2 } }, btnPresetHoriz));
+        btnPresetVert.addEventListener('click', () => loadPreset({ A: { x: 2, y: -5 }, B: { x: 2, y: 5 } }, btnPresetVert));
+
+
+        function drawStaircaseWorld() {
+            initCanvasSize(stairCanvas);
+
+            const w = stairCanvas.width;
+            const h = stairCanvas.height;
+
+            stairCtx.clearRect(0, 0, w, h);
+
+            const rise = parseFloat(slideStairRise.value);
+            const run = parseFloat(slideStairRun.value);
+            const slope = rise / run;
+
+            stairCtx.lineWidth = 4;
+            stairCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+            stairCtx.beginPath();
+            stairCtx.moveTo(0, h - 20);
+            stairCtx.lineTo(w, h - 20);
+            stairCtx.stroke();
+            // Setup drawing scaling: map coordinates to pixels
+            const startX = 40;
+            const startY = h - 20;
+            const maxStairsCount = 6;
+
+            // Pixels per unit meter based strictly on horizontal run width
+            const pMeter = (w - startX - 40) / (maxStairsCount * run);
+
+            // 1. Draw staircase lines
+            stairCtx.lineWidth = 3;
+            stairCtx.strokeStyle = '#38bdf8'; // Stair lines Cyan
+            stairCtx.beginPath();
+            stairCtx.moveTo(startX, startY);
+
+            let curX = startX;
+            let curY = startY;
+
+            for (let i = 0; i < maxStairsCount; i++) {
+                // Horizontal step Run
+                curX += run * pMeter;
+                stairCtx.lineTo(curX, curY);
+                // Vertical step Rise
+                curY -= rise * pMeter;
+                stairCtx.lineTo(curX, curY);
+            }
+            stairCtx.stroke();
+
+            // Shading under steps
+            stairCtx.fillStyle = 'rgba(56, 189, 248, 0.05)';
+            stairCtx.lineTo(curX, startY);
+            stairCtx.lineTo(startX, startY);
+            stairCtx.fill();
+
+            // Check out-of-bounds of canvas top border
+            const isOutOfBounds = curY < 40;
+            const targetDotY = Math.max(40, curY);
+
+            // 2. Draw landing deck target
+            stairCtx.fillStyle = isOutOfBounds ? '#ffb000' : '#10b981';
+            stairCtx.beginPath();
+            stairCtx.arc(curX, targetDotY, 8, 0, Math.PI * 2);
+            stairCtx.fill();
+
+            // 3. Draw climbing Walker
+            // Total progress runs from step 0 to maxStairsCount
+            const currentStepIdx = Math.floor(climbProgress);
+            const stepFraction = climbProgress - currentStepIdx;
+
+            let walkerX = startX;
+            let walkerY = startY;
+
+            if (isClimbing) {
+                // Walker progresses horizontal run first, then vertical rise per step
+                const passedStepsX = currentStepIdx * run * pMeter;
+                const passedStepsY = currentStepIdx * rise * pMeter;
+
+                if (stepFraction < 0.5) {
+                    // walking horizontally along run
+                    const subFrac = stepFraction / 0.5;
+                    walkerX = startX + passedStepsX + (run * pMeter) * subFrac * 0.5;
+                    walkerY = startY - passedStepsY;
+                } else {
+                    // climbing vertically up rise
+                    const subFrac = (stepFraction - 0.5) / 0.5;
+                    walkerX = startX + passedStepsX + (run * pMeter) * 0.5;
+                    walkerY = startY - passedStepsY - (rise * pMeter) * subFrac;
+                }
+            }
+
+            const drawWalkerY = Math.max(40, walkerY);
+
+            stairCtx.fillStyle = '#ffffff';
+            stairCtx.strokeStyle = '#ffffff';
+            stairCtx.lineWidth = 2;
+
+            // Head
+            const headY = drawWalkerY - 24;
+            stairCtx.beginPath();
+            stairCtx.arc(walkerX, headY, 6, 0, Math.PI * 2);
+            stairCtx.fill();
+
+            stairCtx.beginPath();
+            stairCtx.moveTo(walkerX, headY + 6);
+            stairCtx.lineTo(walkerX, drawWalkerY - 6);
+            stairCtx.stroke();
+
+            // Arms
+            stairCtx.beginPath();
+            stairCtx.moveTo(walkerX - 6, headY + 12);
+            stairCtx.lineTo(walkerX + 6, headY + 12);
+            stairCtx.stroke();
+
+            // Legs
+            stairCtx.beginPath();
+            stairCtx.moveTo(walkerX, drawWalkerY - 6);
+            stairCtx.lineTo(walkerX - 4, drawWalkerY);
+            stairCtx.moveTo(walkerX, drawWalkerY - 6);
+            stairCtx.lineTo(walkerX + 4, drawWalkerY);
+            stairCtx.stroke();
+        }
+
+        // Animate climb step loop
+        function stepClimbAnimation() {
+            const rise = parseFloat(slideStairRise.value);
+            const run = parseFloat(slideStairRun.value);
+            const slope = rise / run;
+
+            // If slope is dangerous, walker falls or stops early!
+            if (slope > 1.3 && climbProgress >= 2.0) {
+                isClimbing = false;
+                climbStatus.textContent = "Danger! Stairs too steep to climb safely without ladder harnesses. Test failed.";
+                climbStatus.className = "climb-banner dangerous";
+                drawStaircaseWorld();
+                return;
+            }
+
+            climbProgress += 0.04;
+            if (climbProgress >= 6.0) {
+                isClimbing = false;
+                climbProgress = 0.0;
+                climbStatus.textContent = "Success! Landed safely on the deck platform.";
+                climbStatus.className = "climb-banner gentle";
+                drawStaircaseWorld();
+                return;
+            }
+
+            drawStaircaseWorld();
+            climbFrameId = requestAnimationFrame(stepClimbAnimation);
+        }
+
+        btnClimb.addEventListener('click', () => {
+            if (isClimbing) return;
+
+            const rise = parseFloat(slideStairRise.value);
+            const run = parseFloat(slideStairRun.value);
+            const slope = rise / run;
+
+            isClimbing = true;
+            climbProgress = 0.0;
+
+            if (slope <= 0.8) {
+                climbStatus.textContent = "Climbing comfortable gentle stairs...";
+                climbStatus.className = "climb-banner gentle";
+            } else if (slope <= 1.3) {
+                climbStatus.textContent = "Climbing standard incline stairs...";
+                climbStatus.className = "climb-banner standard";
+            } else {
+                climbStatus.textContent = "Attempting steep climb...";
+                climbStatus.className = "climb-banner steep";
+            }
+
+            if (climbFrameId) cancelAnimationFrame(climbFrameId);
+            stepClimbAnimation();
+        });
+
+        // Sync staircase sliders
+        function updateStaircaseMath() {
+            const rise = parseFloat(slideStairRise.value);
+            const run = parseFloat(slideStairRun.value);
+            const slope = rise / run;
+
+            lblStairRise.textContent = `${rise.toFixed(2)} m`;
+            lblStairRun.textContent = `${run.toFixed(2)} m`;
+
+            stairSlopeText.innerHTML = `Rise/Run = ${rise.toFixed(2)} / ${run.toFixed(2)} = ${slope.toFixed(2)}`;
+
+            if (slope <= 0.8) {
+                climbStatus.textContent = "Gentle Slope: Safe and comfortable staircase.";
+                climbStatus.className = "climb-banner gentle";
+            } else if (slope <= 1.3) {
+                climbStatus.textContent = "Standard Incline: Meets building code requirements.";
+                climbStatus.className = "climb-banner standard";
+            } else if (slope <= 1.8) {
+                climbStatus.textContent = "Steep Slope: Caution required. Difficult to descend.";
+                climbStatus.className = "climb-banner steep";
+            } else {
+                climbStatus.textContent = "Dangerous: Too steep to walk! Safe staircase limit exceeded.";
+                climbStatus.className = "climb-banner dangerous";
+            }
+
+            isClimbing = false;
+            climbProgress = 0.0;
+            if (climbFrameId) cancelAnimationFrame(climbFrameId);
+            drawStaircaseWorld();
+        }
+
+        slideStairRise.addEventListener('input', updateStaircaseMath);
+        slideStairRun.addEventListener('input', updateStaircaseMath);
+
+        window.addEventListener('resize', () => {
+            drawSandbox();
+            drawStaircaseWorld();
+        });
+
+
+        const quizQuestions = [
+            {
+                question: "Find the slope of a line passing through (2, 3) and (6, 11).",
+                options: [
+                    "m = 1/2",
+                    "m = 2",
+                    "m = 4",
+                    "m = 8"
+                ],
+                correctIndex: 1,
+                explanation: "Using the slope formula m = (y₂ - y₁) / (x₂ - x₁), we calculate: Rise = 11 - 3 = 8, and Run = 6 - 2 = 4. Hence, m = 8 / 4 = 2."
+            },
+            {
+                question: "What is the slope of a perfectly horizontal line?",
+                options: [
+                    "m = 0",
+                    "m = 1",
+                    "m = Undefined",
+                    "The slope changes constantly"
+                ],
+                correctIndex: 0,
+                explanation: "On a horizontal line, the y-coordinates are identical, meaning Rise = 0. Since Run is non-zero, the slope m = 0 / Run = 0."
+            },
+            {
+                question: "Why is the slope of a vertical line classified as 'Undefined'?",
+                options: [
+                    "Because vertical lines do not have a constant rise.",
+                    "Because the rise is equal to zero.",
+                    "Because the run is equal to zero, which forces division by zero.",
+                    "Because the line does not exist."
+                ],
+                correctIndex: 2,
+                explanation: "On a vertical line, the x-coordinates are identical, so Run = x₂ - x₁ = 0. Dividing any non-zero Rise by 0 is mathematically undefined."
+            },
+            {
+                question: "A line goes downwards from left to right. What sign does its slope carry?",
+                options: [
+                    "Positive",
+                    "Negative",
+                    "It has no sign",
+                    "Undefined"
+                ],
+                correctIndex: 1,
+                explanation: "If a line goes down left-to-right, an increase in x (positive run) causes a decrease in y (negative rise). A negative divided by a positive yields a negative slope."
+            },
+            {
+                question: "If a line has a slope of m = -3 and crosses the y-axis at (0, 4), what is its equation in slope-intercept form?",
+                options: [
+                    "y = 4x - 3",
+                    "y = -3x - 4",
+                    "y = -3x + 4",
+                    "y = 3x + 4"
+                ],
+                correctIndex: 2,
+                explanation: "Using slope-intercept form y = mx + b, where m is the slope (-3) and b is the y-intercept (4), the equation is y = -3x + 4."
+            }
+        ];
+
+        let quizCurrentIndex = 0;
+        let quizScore = 0;
+        let quizHasAnswered = false;
+
+        const quizQuestionArea = document.getElementById('quizQuestionArea');
+        let quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        let quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+        let quizProgressText = document.getElementById('quizProgressText');
+        let quizScoreText = document.getElementById('quizScoreText');
+
+        function loadQuizQuestion() {
+            quizHasAnswered = false;
+            quizFeedbackArea.style.display = 'none';
+
+            if (quizCurrentIndex >= quizQuestions.length) {
+                showQuizResults();
+                return;
+            }
+
+            const q = quizQuestions[quizCurrentIndex];
+            quizQuestionTitle.textContent = q.question;
+            quizProgressText.textContent = `Question ${quizCurrentIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizCurrentIndex}`;
+
+            quizOptionsContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const optBtn = document.createElement('div');
+                optBtn.className = 'quiz-option';
+                optBtn.innerHTML = `
+                    <span>${opt}</span>
+                    <span class="opt-indicator" style="font-family:'JetBrains Mono'; font-weight:700;"></span>
+                `;
+                optBtn.addEventListener('click', () => handleQuizAnswer(idx, optBtn));
+                quizOptionsContainer.appendChild(optBtn);
+            });
+        }
+
+        function handleQuizAnswer(selectedIndex, optionElement) {
+            if (quizHasAnswered) return;
+            quizHasAnswered = true;
+
+            const q = quizQuestions[quizCurrentIndex];
+            const children = quizOptionsContainer.children;
+
+            if (selectedIndex === q.correctIndex) {
+                optionElement.classList.add('correct');
+                optionElement.querySelector('.opt-indicator').innerHTML = `✓`;
+                quizScore++;
+                quizExplanationText.innerHTML = `<strong>Correct!</strong><br>${q.explanation}`;
+            } else {
+                optionElement.classList.add('incorrect');
+                optionElement.querySelector('.opt-indicator').innerHTML = `✗`;
+
+                children[q.correctIndex].classList.add('correct');
+                children[q.correctIndex].querySelector('.opt-indicator').innerHTML = `✓`;
+
+                quizExplanationText.innerHTML = `<strong>Incorrect.</strong><br>${q.explanation}`;
+            }
+
+            quizScoreText.textContent = `Score: ${quizScore}/${quizCurrentIndex + 1}`;
+            quizFeedbackArea.style.display = 'block';
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizCurrentIndex++;
+            loadQuizQuestion();
+        });
+
+        function showQuizResults() {
+            quizQuestionArea.innerHTML = `
+                <div class="quiz-score-overlay">
+                    <h3 style="font-size:1.75rem; color:var(--color-rose); margin-bottom:1rem;">Quiz Completed!</h3>
+                    <p style="font-size:1.15rem; margin-bottom:1.5rem;">Your score: <strong>${quizScore} / ${quizQuestions.length}</strong> (${((quizScore / quizQuestions.length) * 100).toFixed(0)}%)</p>
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-rose); width:auto; display:inline-flex;">Retake Quiz</button>
+                </div>
+            `;
+            quizFeedbackArea.style.display = 'none';
+        }
+
+        window.resetQuiz = function () {
+            quizCurrentIndex = 0;
+            quizScore = 0;
+
+            quizQuestionArea.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                    <span id="quizProgressText">Question 1 of 5</span>
+                    <span id="quizScoreText">Score: 0/0</span>
+                </div>
+                <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;"></h3>
+                <div id="quizOptionsContainer"></div>
+            `;
+
+            // Reassign elements
+            quizQuestionTitle = document.getElementById('quizQuestionTitle');
+            quizOptionsContainer = document.getElementById('quizOptionsContainer');
+            quizProgressText = document.getElementById('quizProgressText');
+            quizScoreText = document.getElementById('quizScoreText');
+
+            loadQuizQuestion();
+        };
+
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Setup base graph values
+            updateCalculations();
+            drawSandbox();
+
+            // Setup staircase
+            updateStaircaseMath();
+
+            loadQuizQuestion();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arithmetic & Numbers Dashboard - play-math</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/shared.css">
+    <style>
+        :root {
+            --bg-color: #050608;
+            --grid-color: rgba(255, 255, 255, 0.02);
+            --card-bg: rgba(13, 16, 23, 0.65);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --card-border-hover: rgba(56, 189, 248, 0.3);
+            --text-color: #e2e8f0;
+            --text-muted: #6b7c93;
+            --color-arithmetic: #38bdf8;
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            background-image:
+                radial-gradient(var(--grid-color) 1px, transparent 1px),
+                radial-gradient(var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4rem 2rem;
+        }
+
+        .bg-glow {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.06) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+            filter: blur(50px);
+        }
+
+        header {
+            text-align: center;
+            max-width: 800px;
+            margin-bottom: 3rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ffffff 40%, var(--color-arithmetic) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .controls-container {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 3rem;
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem 1rem 3.25rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            color: var(--text-color);
+            background: rgba(15, 18, 30, 0.55);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            outline: none;
+            backdrop-filter: blur(20px);
+            transition: all var(--transition-speed) ease;
+        }
+
+        .search-input:focus {
+            border-color: rgba(56, 189, 248, 0.5);
+            box-shadow: 0 4px 25px rgba(56, 189, 248, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            fill: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .roadmap-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .roadmap-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--color-arithmetic);
+        }
+
+        footer {
+            margin-top: 5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+
+    <div class="dashboard-card-wrapper">
+        <div class="btn-back-container">
+            <a href="../../index.html" class="btn-back" id="btnBackHome">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Roadmap
+            </a>
+        </div>
+
+        <header>
+            <h1>Arithmetic & Numbers</h1>
+            <p>Foundational quantity definitions, basic operators, ratios, decimal systems, and ordering principles.</p>
+        </header>
+
+        <!-- Dynamic Concept Dictionary Dropdown -->
+        <details class="dictionary-details">
+            <summary>Arithmetic Concept Dictionary</summary>
+            <div class="dictionary-content">
+                <div class="dictionary-card-display" id="dictionaryCard" style="display:none;"></div>
+                <div class="dictionary-list-grid" id="dictionaryList"></div>
+            </div>
+        </details>
+
+        <!-- Search Bar -->
+        <div class="controls-container">
+            <div class="search-wrapper">
+                <input type="text" class="search-input" id="roadmapSearch" placeholder="Search arithmetic subtopics...">
+                <svg class="search-icon" viewBox="0 0 24 24">
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Roadmap Modules Card -->
+        <div class="roadmap-card" id="card-01_arithmetic_number_sense">
+            <ul class="subtopics-list" data-domain-id="01_arithmetic_number_sense"></ul>
+        </div>
+    </div>
+
+    <footer>
+        play-math • Powered by HTML5 Canvas & CSS3<br>
+        Copyright (c) 2026: vatofichor - Sebastian Mass [>_<] <br>& Assisted By Gemini Antigravity /|\
+    </footer>
+
+    <script>
+        const DOMAIN_ID = "01_arithmetic_number_sense";
+
+        // Domain Specific Dictionary
+        const arithmeticDictionary = [
+            {
+                phrase: "Order of Operations (PEMDAS)",
+                html: `
+                    <h3>Order of Operations (PEMDAS)</h3>
+                    <p>Standard algebraic priorities for executing compound operations to prevent evaluation ambiguity.</p>
+                    <div class="example-box">
+                        <strong>Priority Steps:</strong><br>
+                        1. Parentheses <code>()</code><br>
+                        2. Exponents <code>x²</code><br>
+                        3. Multiplication & Division (Left-to-Right) <code>×, ÷</code><br>
+                        4. Addition & Subtraction (Left-to-Right) <code>+, -</code>
+                    </div>
+                `
+            },
+            {
+                phrase: "Fractions & Parts of Circle",
+                html: `
+                    <h3>Fractions & Circle Segments</h3>
+                    <p>Representing portions of a whole unit by subdividing circles or grids into denominators and shaded numerators.</p>
+                    <div class="example-box">
+                        <code>Fraction = Numerator (shaded parts) / Denominator (total segments)</code>
+                    </div>
+                `
+            },
+            {
+                phrase: "Decimals & Place Value",
+                html: `
+                    <h3>Decimals & Positional Place Values</h3>
+                    <p>Positional numbering systems where base-10 weights shift fractional powers of ten to the right of the decimal point.</p>
+                    <div class="example-box">
+                        <code>0.1 = 1/10 (Tenths)</code><br>
+                        <code>0.01 = 1/100 (Centuries/Hundredths)</code>
+                    </div>
+                `
+            },
+            {
+                phrase: "Ratios & Quantities Comparisons",
+                html: `
+                    <h3>Ratios & Quantities Comparisons</h3>
+                    <p>Comparing sizes or counts of two or more items showing how many times one value contains another.</p>
+                    <div class="example-box">
+                        <code>Ratio = a : b = a / b</code>
+                    </div>
+                `
+            }
+        ];
+
+        async function loadCategorySubtopics() {
+            try {
+                const match = window.location.pathname.match(/\/play-math/i);
+                const base = match ? match[0] : '';
+                let response = await fetch(`${base}/api/roadmap`);
+                if (!response.ok) {
+                    response = await fetch(`${base}/api/roadmap.php`);
+                }
+                if (!response.ok) throw new Error('Failed to load roadmap data');
+                const data = await response.json();
+
+                const listElement = document.querySelector(`[data-domain-id="${DOMAIN_ID}"]`);
+                if (!listElement) return;
+
+                const subtopics = data[DOMAIN_ID];
+                let listHtml = '';
+
+                subtopics.forEach(sub => {
+                    let targetPath = sub.path;
+                    if (targetPath) {
+                        if (window.location.protocol === 'file:') {
+                            targetPath = '.' + sub.path.substring(sub.path.indexOf('/', 2));
+                        }
+                    }
+
+                    if (sub.live) {
+                        listHtml += `
+                            <li class="subtopic-item active-module" onclick="window.location.href='${targetPath}'">
+                                <span class="subtopic-name">
+                                    <span class="orange-dot"></span>
+                                    ${sub.name}
+                                </span>
+                            </li>
+                        `;
+                    } else {
+                        listHtml += `
+                            <li class="subtopic-item">
+                                <span class="subtopic-name">${sub.name}</span>
+                            </li>
+                        `;
+                    }
+                });
+
+                listElement.innerHTML = listHtml;
+            } catch (err) {
+                console.error('Error loading subtopics:', err);
+            }
+        }
+
+        function loadDictionary(dictionaryData) {
+            const listGrid = document.getElementById('dictionaryList');
+            if (!listGrid || !dictionaryData) return;
+
+            const sortedData = [...dictionaryData].sort((a, b) => a.phrase.localeCompare(b.phrase));
+            let gridHtml = '';
+            sortedData.forEach((item, idx) => {
+                gridHtml += `
+                    <button class="dictionary-term-btn" onclick="selectDictionaryTerm(${idx})">
+                        ${item.phrase}
+                    </button>
+                `;
+            });
+            listGrid.innerHTML = gridHtml;
+            window.activeDictionary = sortedData;
+        }
+
+        function selectDictionaryTerm(index) {
+            const term = window.activeDictionary[index];
+            const cardDisplay = document.getElementById('dictionaryCard');
+            if (!term || !cardDisplay) return;
+
+            cardDisplay.innerHTML = term.html;
+            cardDisplay.style.display = 'block';
+
+            const buttons = document.querySelectorAll('.dictionary-term-btn');
+            buttons.forEach((btn, idx) => {
+                if (idx === index) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        }
+
+        // Routing Fallback & Search
+        function initializeDashboard() {
+            const isLocalFile = window.location.protocol === 'file:';
+            const endsWithHtml = window.location.pathname.endsWith('.html');
+            const supportsRewriting = !isLocalFile && !endsWithHtml;
+
+            if (supportsRewriting) {
+                document.getElementById('btnBackHome').href = '/';
+            }
+
+            const searchInput = document.getElementById('roadmapSearch');
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                const items = document.querySelectorAll('.subtopic-item');
+                items.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    if (text.includes(query) || query === '') {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadCategorySubtopics();
+            loadDictionary(arithmeticDictionary);
+            initializeDashboard();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

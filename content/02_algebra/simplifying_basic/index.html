@@ -1,0 +1,1751 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simplifying Basic Expressions - Algebraic Structures</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "02_algebra",
+            logo: {"main":"Algebra","accent":"Lab","sub":"Simplifying Basic Expressions"},
+            navigation: [
+    {
+        "label": "Distributive Expansion Sandbox",
+        "desc": "Distributive Expansion Sandbox interactive section",
+        "href": "#distributive"
+    },
+    {
+        "label": "Double Expansion & Combine Sandbox",
+        "desc": "Double Expansion & Combine Sandbox interactive section",
+        "href": "#double"
+    },
+    {
+        "label": "Algebraic Fraction Divider",
+        "desc": "Algebraic Fraction Divider interactive section",
+        "href": "#fraction"
+    },
+    {
+        "label": "Conceptual Quiz",
+        "desc": "Conceptual Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Algebra Domain / Rose Theme override */
+            --color-rose: #f43f5e;
+            --color-rose-glow: rgba(244, 63, 94, 0.35);
+            --color-accent: #f43f5e;
+            --color-accent-glow: rgba(244, 63, 94, 0.35);
+
+            --color-dist: #f43f5e;      /* Rose for Distributive Expansion */
+            --color-double: #a855f7;    /* Purple for Double Expansion */
+            --color-frac: #38bdf8;      /* Cyan for Fractional Division */
+            --color-amber: #ffb000;     /* Amber for constant unit blocks */
+            --color-amber-glow: rgba(255, 176, 0, 0.35);
+        }
+
+        /* Highlight active menu item for Algebra Domain */
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-rose) !important;
+            box-shadow: 0 4px 20px var(--color-rose-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-title {
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-desc {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-rose);
+            background: rgba(244, 63, 94, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            text-shadow: 0 0 5px var(--color-rose-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        /* Controls styling */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        /* Thumb colors by section */
+        #distributive input[type="range"]::-webkit-slider-thumb {
+            background: var(--color-dist);
+            box-shadow: 0 0 8px var(--color-rose-glow);
+        }
+        #double input[type="range"]::-webkit-slider-thumb {
+            background: var(--color-double);
+            box-shadow: 0 0 8px var(--color-purple-glow);
+        }
+        #fraction input[type="range"]::-webkit-slider-thumb {
+            background: var(--color-frac);
+            box-shadow: 0 0 8px var(--color-cyan-glow);
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        /* Action Buttons by theme */
+        .btn-action {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+            border: 1px solid transparent;
+        }
+
+        .btn-dist {
+            background: rgba(244, 63, 94, 0.1);
+            color: var(--color-dist);
+            border-color: rgba(244, 63, 94, 0.25);
+        }
+        .btn-dist:hover {
+            background: var(--color-dist);
+            color: #000;
+            box-shadow: 0 4px 15px var(--color-rose-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn-double {
+            background: rgba(168, 85, 247, 0.1);
+            color: var(--color-double);
+            border-color: rgba(168, 85, 247, 0.25);
+        }
+        .btn-double:hover:not(:disabled) {
+            background: var(--color-double);
+            color: #fff;
+            box-shadow: 0 4px 15px var(--color-purple-glow);
+            transform: translateY(-1px);
+        }
+        .btn-double:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-frac {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--color-frac);
+            border-color: rgba(56, 189, 248, 0.25);
+        }
+        .btn-frac:hover {
+            background: var(--color-frac);
+            color: #000;
+            box-shadow: 0 4px 15px var(--color-cyan-glow);
+            transform: translateY(-1px);
+        }
+
+        /* Double Stage Controls Row */
+        .stage-btn-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+        .btn-stage-control {
+            flex: 1;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+        }
+        .btn-stage-control.active {
+            background: rgba(168, 85, 247, 0.15);
+            color: var(--color-double);
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+
+        /* Quiz styling */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .quiz-score-overlay {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Simplifying Expressions</h1>
+            <p>Master the rules of distributive expansion, collecting like terms, and dividing algebraic fractions. Visually explore how multipliers scale area models and how operations can be reduced to their simplest equivalent forms.</p>
+        </header>
+
+        <!-- SECTION 1: DISTRIBUTIVE LAW -->
+        <section id="distributive">
+            <div class="section-header">
+                <span class="section-tag">Distributive Law</span>
+                <h2>Distributive Expansion Sandbox</h2>
+            </div>
+            <p class="section-intro">
+                The distributive law allows you to multiply a single term by a group of terms inside parentheses. Geometrically, the expression <span class="math-symbol">a(bx + c)</span> represents a single rectangle with height <span class="math-symbol">a</span> and total width <span class="math-symbol">bx + c</span>. Expanding the expression divides the rectangle into two separate areas: <span class="math-symbol">abx</span> and <span class="math-symbol">ac</span>.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Canvas -->
+                <div class="panel">
+                    <div style="margin-bottom: 1rem; font-family:'Outfit'; font-size: 0.95rem; font-weight: 600; color:var(--text-muted);" id="distCanvasTitle">
+                        Area representation of 3(2x + 4)
+                    </div>
+                    <div class="canvas-container" style="height: 340px;">
+                        <canvas id="distCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Controls -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Distributive Equation</h3>
+                        <div class="equation-box" id="distEqDisplay" style="color:var(--color-dist);">
+                            3(2x + 4) = 6x + 12
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Multiplier (<span class="math-symbol" style="font-weight:700;">a</span>)</span>
+                                <span class="number" id="lblDistA">3</span>
+                            </div>
+                            <input type="range" id="slideDistA" min="2" max="5" value="3" step="1">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Variable Coefficient (<span class="math-symbol" style="font-weight:700;">b</span>)</span>
+                                <span class="number" id="lblDistB">2</span>
+                            </div>
+                            <input type="range" id="slideDistB" min="1" max="4" value="2" step="1">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Constant Term (<span class="math-symbol" style="font-weight:700;">c</span>)</span>
+                                <span class="number" id="lblDistC">4</span>
+                            </div>
+                            <input type="range" id="slideDistC" min="1" max="5" value="4" step="1">
+                        </div>
+                    </div>
+
+                    <button class="btn-action btn-dist" id="btnDistAnimate">Animate Distributive Expansion</button>
+
+                    <div class="formula-steps">
+                        <div><strong>Distributive Expansion Steps:</strong></div>
+                        <div id="distExplanation" style="margin-top: 8px; font-size:0.85rem; line-height:1.5; color:var(--text-muted);">
+                            1. Distribute 3 to the variable term: 3 &middot; (2x) = 6x.<br>
+                            2. Distribute 3 to the constant term: 3 &middot; (4) = 12.<br>
+                            3. Combine parts into final expanded binomial: 6x + 12.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: DOUBLE EXPANSION -->
+        <section id="double">
+            <div class="section-header">
+                <span class="section-tag">Combining Like Terms</span>
+                <h2>Double Expansion & Combine Sandbox</h2>
+            </div>
+            <p class="section-intro">
+                Expanding multiple brackets involves distributing each multiplier individually and then collecting like terms. By grouping all variable terms (<span class="math-symbol">x</span>) and constant numbers together, the final expression can be simplified into a single linear binomial.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Canvas -->
+                <div class="panel">
+                    <div style="margin-bottom: 1rem; font-family:'Outfit'; font-size: 0.95rem; font-weight: 600; color:var(--text-muted);" id="doubleCanvasTitle">
+                        Visualizing: 2(x + 3) + 2(x + 1)
+                    </div>
+                    <div class="canvas-container" style="height: 360px;">
+                        <canvas id="doubleCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Controls -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Expression Flow</h3>
+                        <div class="equation-box" id="doubleEqDisplay" style="color:var(--color-double); font-size: 1.35rem;">
+                            2(x + 3) + 2(x + 1) = 4x + 8
+                        </div>
+                    </div>
+
+                    <div class="stage-btn-row">
+                        <button class="btn-stage-control active" data-stage="0">Initial</button>
+                        <button class="btn-stage-control" data-stage="1">1. Expand</button>
+                        <button class="btn-stage-control" data-stage="2">2. Group</button>
+                        <button class="btn-stage-control" data-stage="3">3. Simplify</button>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Group 1 Count (<span class="math-symbol" style="font-weight:700;">a</span>)</span>
+                                <span class="number" id="lblDoubleA">2</span>
+                            </div>
+                            <input type="range" id="slideDoubleA" min="1" max="4" value="2" step="1">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Group 1 Unit (<span class="math-symbol" style="font-weight:700;">b</span>)</span>
+                                <span class="number" id="lblDoubleB">3</span>
+                            </div>
+                            <input type="range" id="slideDoubleB" min="1" max="4" value="3" step="1">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Group 2 Count (<span class="math-symbol" style="font-weight:700;">c</span>)</span>
+                                <span class="number" id="lblDoubleC">2</span>
+                            </div>
+                            <input type="range" id="slideDoubleC" min="1" max="4" value="2" step="1">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Group 2 Unit (<span class="math-symbol" style="font-weight:700;">d</span>)</span>
+                                <span class="number" id="lblDoubleD">1</span>
+                            </div>
+                            <input type="range" id="slideDoubleD" min="1" max="4" value="1" step="1">
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-action btn-double" id="btnDoublePrev" style="flex:1;" disabled>Previous Step</button>
+                        <button class="btn-action btn-double" id="btnDoubleNext" style="flex:1;">Next Step</button>
+                    </div>
+
+                    <div class="formula-steps">
+                        <div><strong>Current Stage Explanation:</strong></div>
+                        <div id="doubleExplanation" style="margin-top: 8px; font-size:0.85rem; line-height:1.5; color:var(--text-muted);">
+                            Initial state: We have 2 groups of (x + 3) and 2 groups of (x + 1). Click 'Next Step' to expand the brackets.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: FRACTION DIVISION -->
+        <section id="fraction">
+            <div class="section-header">
+                <span class="section-tag">Fraction Simplification</span>
+                <h2>Algebraic Fraction Divider</h2>
+            </div>
+            <p class="section-intro">
+                Algebraic fractions represent division. When simplifying <span class="math-symbol">(dx + db) / d</span>, we can visualize the numerator as <span class="math-symbol">d</span> identical columns, each of height <span class="math-symbol">x + b</span>. Dividing by the denominator <span class="math-symbol">d</span> splits these columns into <span class="math-symbol">d</span> equal shares and keeps exactly one share, recovering the height <span class="math-symbol">x + b</span>.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Canvas -->
+                <div class="panel">
+                    <div style="margin-bottom: 1rem; font-family:'Outfit'; font-size: 0.95rem; font-weight: 600; color:var(--text-muted);" id="fracCanvasTitle">
+                        Visualizing: (3x + 6) / 3
+                    </div>
+                    <div class="canvas-container" style="height: 340px;">
+                        <canvas id="fracCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Controls -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Fraction Division</h3>
+                        <div class="equation-box" id="fracEqDisplay" style="color:var(--color-frac);">
+                            (3x + 6) / 3 = x + 2
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Divisor / Denominator (<span class="math-symbol" style="font-weight:700;">d</span>)</span>
+                                <span class="number" id="lblFracD">3</span>
+                            </div>
+                            <input type="range" id="slideFracD" min="2" max="5" value="3" step="1">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Constant (<span class="math-symbol" style="font-weight:700;">b</span>)</span>
+                                <span class="number" id="lblFracB">2</span>
+                            </div>
+                            <input type="range" id="slideFracB" min="1" max="4" value="2" step="1">
+                        </div>
+                    </div>
+
+                    <button class="btn-action btn-frac" id="btnFracAnimate">Animate Division</button>
+
+                    <div class="formula-steps">
+                        <div><strong>Division Steps:</strong></div>
+                        <div id="fracExplanation" style="margin-top: 8px; font-size:0.85rem; line-height:1.5; color:var(--text-muted);">
+                            1. Write the expression as individual divided terms: (3x)/3 + 6/3.<br>
+                            2. Divide variable term coefficient: 3x / 3 = x.<br>
+                            3. Divide constant term: 6 / 3 = 2.<br>
+                            4. Simplified result: x + 2.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Self Evaluation</span>
+                <h2>Conceptual Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Test your understanding of bracket distribution, negative signs, combined terms, and fraction divisions.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Quiz Questions -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Expand the expression: 4(2y - 3).</h3>
+
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong>Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text goes here.</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Concept Summary -->
+                <div class="panel">
+                    <h3>Focus Benchmarks</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom:0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background:var(--color-dist); box-shadow:0 0 6px var(--color-rose-glow);"></span>Distributive Law ($a(bx+c) = abx + ac$)</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background:var(--color-double); box-shadow:0 0 6px var(--color-purple-glow);"></span>Combining like terms (variables vs constants)</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background:var(--color-dist); box-shadow:0 0 6px var(--color-rose-glow);"></span>Distributing negative signs ($-a(x - b) = -ax + ab$)</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background:var(--color-frac); box-shadow:0 0 6px var(--color-cyan-glow);"></span>Algebraic fraction divisions ($\frac{ax+ab}{a} = x+b$)</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Distributive Law Sandbox
+        const distCanvas = document.getElementById('distCanvas');
+        const distCtx = distCanvas.getContext('2d');
+        const slideDistA = document.getElementById('slideDistA');
+        const slideDistB = document.getElementById('slideDistB');
+        const slideDistC = document.getElementById('slideDistC');
+        const lblDistA = document.getElementById('lblDistA');
+        const lblDistB = document.getElementById('lblDistB');
+        const lblDistC = document.getElementById('lblDistC');
+        const btnDistAnimate = document.getElementById('btnDistAnimate');
+        const distEqDisplay = document.getElementById('distEqDisplay');
+        const distExplanation = document.getElementById('distExplanation');
+        const distCanvasTitle = document.getElementById('distCanvasTitle');
+
+        let distA = 3;
+        let distB = 2;
+        let distC = 4;
+        let distProgress = 0.0;
+        let isDistAnimating = false;
+        let distDirection = 1; // 1 = expanding, -1 = resetting
+
+        // Double Expansion & Combine Sandbox
+        const doubleCanvas = document.getElementById('doubleCanvas');
+        const doubleCtx = doubleCanvas.getContext('2d');
+        const slideDoubleA = document.getElementById('slideDoubleA');
+        const slideDoubleB = document.getElementById('slideDoubleB');
+        const slideDoubleC = document.getElementById('slideDoubleC');
+        const slideDoubleD = document.getElementById('slideDoubleD');
+        const lblDoubleA = document.getElementById('lblDoubleA');
+        const lblDoubleB = document.getElementById('lblDoubleB');
+        const lblDoubleC = document.getElementById('lblDoubleC');
+        const lblDoubleD = document.getElementById('lblDoubleD');
+        const btnDoublePrev = document.getElementById('btnDoublePrev');
+        const btnDoubleNext = document.getElementById('btnDoubleNext');
+        const doubleEqDisplay = document.getElementById('doubleEqDisplay');
+        const doubleExplanation = document.getElementById('doubleExplanation');
+        const doubleCanvasTitle = document.getElementById('doubleCanvasTitle');
+        const stageBtns = document.querySelectorAll('.btn-stage-control');
+
+        let doubleA = 2;
+        let doubleB = 3;
+        let doubleC = 2;
+        let doubleD = 1;
+        let doubleStage = 0; // 0: Initial, 1: Expand, 2: Group, 3: Simplify
+        let doubleCurStage = 0;
+        let doubleTarStage = 0;
+        let doubleProgress = 0.0;
+        let isDoubleAnimating = false;
+        let blocks = [];
+
+        // Fraction Sandbox
+        const fracCanvas = document.getElementById('fracCanvas');
+        const fracCtx = fracCanvas.getContext('2d');
+        const slideFracD = document.getElementById('slideFracD');
+        const slideFracB = document.getElementById('slideFracB');
+        const lblFracD = document.getElementById('lblFracD');
+        const lblFracB = document.getElementById('lblFracB');
+        const btnFracAnimate = document.getElementById('btnFracAnimate');
+        const fracEqDisplay = document.getElementById('fracEqDisplay');
+        const fracExplanation = document.getElementById('fracExplanation');
+        const fracCanvasTitle = document.getElementById('fracCanvasTitle');
+
+        let fracD = 3;
+        let fracB = 2;
+        let fracProgress = 0.0;
+        let isFracAnimating = false;
+        let fracDirection = 1; // 1 = dividing, -1 = resetting
+
+        // General helpers
+        function resizeCanvas(canvasElement) {
+            const container = canvasElement.parentElement;
+            canvasElement.width = container.clientWidth;
+            canvasElement.height = container.clientHeight;
+        }
+
+        // --- 1. DISTRIBUTIVE LAW LOGIC ---
+        function initDistributive() {
+            const updateDist = () => {
+                distA = parseInt(slideDistA.value);
+                distB = parseInt(slideDistB.value);
+                distC = parseInt(slideDistC.value);
+
+                lblDistA.textContent = distA;
+                lblDistB.textContent = distB;
+                lblDistC.textContent = distC;
+
+                distCanvasTitle.textContent = `Area representation of ${distA}(${distB === 1 ? '' : distB}x + ${distC})`;
+                distEqDisplay.innerHTML = `${distA}(${distB === 1 ? '' : distB}x + ${distC}) = ${distA * distB}x + ${distA * distC}`;
+
+                distExplanation.innerHTML = `
+                    1. Distribute ${distA} to the variable term: ${distA} &middot; (${distB === 1 ? '' : distB}x) = ${distA * distB}x.<br>
+                    2. Distribute ${distA} to the constant term: ${distA} &middot; (${distC}) = ${distA * distC}.<br>
+                    3. Combine parts into final expanded binomial: ${distA * distB}x + ${distA * distC}.
+                `;
+
+                resetDistAnimation();
+                drawDistributive();
+            };
+
+            slideDistA.addEventListener('input', updateDist);
+            slideDistB.addEventListener('input', updateDist);
+            slideDistC.addEventListener('input', updateDist);
+
+            btnDistAnimate.addEventListener('click', () => {
+                if (isDistAnimating) return;
+                isDistAnimating = true;
+                animateDistributive();
+            });
+
+            updateDist();
+        }
+
+        function resetDistAnimation() {
+            distProgress = 0.0;
+            isDistAnimating = false;
+            distDirection = 1;
+            btnDistAnimate.textContent = "Animate Distributive Expansion";
+        }
+
+        function animateDistributive() {
+            const duration = 1200;
+            const start = performance.now();
+            const startVal = distProgress;
+            const targetVal = distDirection === 1 ? 1.0 : 0.0;
+
+            function step(time) {
+                const elapsed = time - start;
+                const progress = Math.min(elapsed / duration, 1.0);
+                const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+                distProgress = startVal + (targetVal - startVal) * ease;
+                drawDistributive();
+
+                if (progress < 1.0) {
+                    requestAnimationFrame(step);
+                } else {
+                    distProgress = targetVal;
+                    isDistAnimating = false;
+                    distDirection = distDirection === 1 ? -1 : 1;
+                    btnDistAnimate.textContent = distDirection === 1 ? "Animate Distributive Expansion" : "Reset Animation";
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        function drawDistributive() {
+            resizeCanvas(distCanvas);
+            const w = distCanvas.width;
+            const h = distCanvas.height;
+            distCtx.clearRect(0, 0, w, h);
+
+            const cx = w / 2;
+            const cy = h / 2;
+
+            const scale = 22;
+            const boxW1 = distB * 1.8 * scale;
+            const boxW2 = distC * scale;
+            const totalW = boxW1 + boxW2;
+            const boxH = distA * 1.5 * scale;
+
+            const startX = cx - totalW / 2;
+            const startY = cy - boxH / 2;
+
+            distCtx.strokeStyle = 'rgba(0,0,0,0.25)';
+            distCtx.lineWidth = 1;
+
+            distCtx.fillStyle = 'var(--color-rose)';
+            distCtx.beginPath();
+            distCtx.roundRect(startX + 1, startY + 1, boxW1 - 2, boxH - 2, 4);
+            distCtx.fill();
+            distCtx.stroke();
+
+            distCtx.fillStyle = 'var(--color-cyan)';
+            distCtx.beginPath();
+            distCtx.roundRect(startX + boxW1 + 1, startY + 1, boxW2 - 2, boxH - 2, 4);
+            distCtx.fill();
+            distCtx.stroke();
+
+            // Divider dashed line
+            distCtx.strokeStyle = 'rgba(255,255,255,0.25)';
+            distCtx.setLineDash([5, 5]);
+            distCtx.lineWidth = 2;
+            distCtx.beginPath();
+            distCtx.moveTo(startX + boxW1, startY);
+            distCtx.lineTo(startX + boxW1, startY + boxH);
+            distCtx.stroke();
+            distCtx.setLineDash([]); // Reset
+
+            // Labels
+            distCtx.fillStyle = '#ffffff';
+            distCtx.font = 'bold 13px Outfit';
+            distCtx.textAlign = 'center';
+            distCtx.textBaseline = 'middle';
+
+            // Top labels
+            distCtx.fillText(`${distB === 1 ? '' : distB}x`, startX + boxW1 / 2, startY - 15);
+            distCtx.fillText(`${distC}`, startX + boxW1 + boxW2 / 2, startY - 15);
+
+            // Left label (height a)
+            distCtx.textAlign = 'right';
+            distCtx.fillText(`${distA}`, startX - 14, cy);
+
+            // Height guide line
+            distCtx.strokeStyle = 'rgba(255,255,255,0.2)';
+            distCtx.lineWidth = 1.5;
+            distCtx.beginPath();
+            distCtx.moveTo(startX - 6, startY);
+            distCtx.lineTo(startX - 6, startY + boxH);
+            distCtx.stroke();
+
+            const p = distProgress;
+
+            if (p > 0) {
+                distCtx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                distCtx.lineWidth = 2;
+
+                // Curved arrow from a to middle of left box
+                const target1X = startX + boxW1 / 2;
+                const arrow1X = (startX - 6) + (target1X - (startX - 6)) * p;
+                distCtx.beginPath();
+                distCtx.moveTo(startX - 6, cy);
+                distCtx.quadraticCurveTo((startX - 6 + target1X) / 2, cy - 30, arrow1X, cy);
+                distCtx.stroke();
+
+                if (p > 0.9) {
+                    drawArrowhead(distCtx, arrow1X, cy, 0);
+                }
+
+                // Curved arrow from a to middle of right box
+                const target2X = startX + boxW1 + boxW2 / 2;
+                const arrow2X = (startX - 6) + (target2X - (startX - 6)) * p;
+                distCtx.beginPath();
+                distCtx.moveTo(startX - 6, cy);
+                distCtx.quadraticCurveTo((startX - 6 + target2X) / 2, cy + 40, arrow2X, cy);
+                distCtx.stroke();
+
+                if (p > 0.9) {
+                    drawArrowhead(distCtx, arrow2X, cy, 0);
+                }
+
+                // Intermediate expressions inside compartments
+                if (p > 0.5) {
+                    const opacity = (p - 0.5) / 0.5;
+                    distCtx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+                    distCtx.textAlign = 'center';
+
+                    // Left Box product
+                    distCtx.font = 'bold 13px Outfit';
+                    distCtx.fillText(`${distA} · (${distB === 1 ? '' : distB}x)`, startX + boxW1 / 2, cy - 10);
+                    distCtx.font = 'bold 11px JetBrains Mono';
+                    distCtx.fillText(`= ${distA * distB}x`, startX + boxW1 / 2, cy + 12);
+
+                    // Right Box product
+                    distCtx.font = 'bold 13px Outfit';
+                    distCtx.fillText(`${distA} · (${distC})`, startX + boxW1 + boxW2 / 2, cy - 10);
+                    distCtx.font = 'bold 11px JetBrains Mono';
+                    distCtx.fillText(`= ${distA * distC}`, startX + boxW1 + boxW2 / 2, cy + 12);
+                }
+            } else {
+                // Initial "?" in areas
+                distCtx.fillStyle = 'rgba(255,255,255,0.7)';
+                distCtx.font = 'bold 14px Outfit';
+                distCtx.textAlign = 'center';
+                distCtx.fillText('?', startX + boxW1 / 2, cy);
+                distCtx.fillText('?', startX + boxW1 + boxW2 / 2, cy);
+            }
+        }
+
+        function drawArrowhead(ctx, x, y, angle) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-7, -4);
+            ctx.lineTo(-7, 4);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // --- 2. DOUBLE EXPANSION & COMBINE LOGIC ---
+        function initDouble() {
+            const updateDouble = () => {
+                doubleA = parseInt(slideDoubleA.value);
+                doubleB = parseInt(slideDoubleB.value);
+                doubleC = parseInt(slideDoubleC.value);
+                doubleD = parseInt(slideDoubleD.value);
+
+                lblDoubleA.textContent = doubleA;
+                lblDoubleB.textContent = doubleB;
+                lblDoubleC.textContent = doubleC;
+                lblDoubleD.textContent = doubleD;
+
+                doubleCanvasTitle.textContent = `Visualizing: ${doubleA}(x + ${doubleB}) + ${doubleC}(x + ${doubleD})`;
+                
+                updateDoubleExplanation();
+                createBlocks();
+                
+                doubleStage = 0;
+                doubleCurStage = 0;
+                doubleTarStage = 0;
+                doubleProgress = 0.0;
+                isDoubleAnimating = false;
+                
+                updateStageButtons();
+                drawDouble();
+            };
+
+            slideDoubleA.addEventListener('input', updateDouble);
+            slideDoubleB.addEventListener('input', updateDouble);
+            slideDoubleC.addEventListener('input', updateDouble);
+            slideDoubleD.addEventListener('input', updateDouble);
+
+            stageBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const nextStg = parseInt(e.target.getAttribute('data-stage'));
+                    setDoubleStage(nextStg);
+                });
+            });
+
+            btnDoublePrev.addEventListener('click', () => {
+                if (doubleStage > 0) setDoubleStage(doubleStage - 1);
+            });
+
+            btnDoubleNext.addEventListener('click', () => {
+                if (doubleStage < 3) setDoubleStage(doubleStage + 1);
+            });
+
+            updateDouble();
+        }
+
+        function setDoubleStage(target) {
+            if (isDoubleAnimating || target === doubleStage) return;
+            doubleCurStage = doubleStage;
+            doubleTarStage = target;
+            doubleStage = target;
+            
+            isDoubleAnimating = true;
+            updateStageButtons();
+            updateDoubleExplanation();
+            
+            // Animate transition
+            const duration = 800;
+            const start = performance.now();
+            doubleProgress = 0.0;
+
+            function step(time) {
+                const elapsed = time - start;
+                const progress = Math.min(elapsed / duration, 1.0);
+                const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+                doubleProgress = ease;
+                drawDouble();
+
+                if (progress < 1.0) {
+                    requestAnimationFrame(step);
+                } else {
+                    doubleProgress = 1.0;
+                    doubleCurStage = doubleTarStage;
+                    isDoubleAnimating = false;
+                    drawDouble();
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        function updateStageButtons() {
+            stageBtns.forEach(btn => {
+                const stg = parseInt(btn.getAttribute('data-stage'));
+                if (stg === doubleStage) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            btnDoublePrev.disabled = (doubleStage === 0);
+            btnDoubleNext.disabled = (doubleStage === 3);
+        }
+
+        function updateDoubleExplanation() {
+            const expA = doubleA;
+            const expB = doubleB;
+            const expC = doubleC;
+            const expD = doubleD;
+
+            const tA = expA;
+            const tB = expA * expB;
+            const tC = expC;
+            const tD = expC * expD;
+
+            const totalX = tA + tC;
+            const totalU = tB + tD;
+
+            if (doubleStage === 0) {
+                doubleEqDisplay.innerHTML = `${expA}(x + ${expB}) + ${expC}(x + ${expD})`;
+                doubleExplanation.innerHTML = `Initial state: We have ${expA} groups of (x + ${expB}) and ${expC} groups of (x + ${expD}). Brackets group them geometrically.`;
+            } else if (doubleStage === 1) {
+                doubleEqDisplay.innerHTML = `${tA}x + ${tB} + ${tC}x + ${tD}`;
+                doubleExplanation.innerHTML = `Stage 1 - Expand brackets:<br>
+                    &bull; Multiply Group 1: ${expA}(x + ${expB}) = ${tA}x + ${tB}.<br>
+                    &bull; Multiply Group 2: ${expC}(x + ${expD}) = ${tC}x + ${tD}.<br>
+                    Parentheses are removed, exposing all independent terms.`;
+            } else if (doubleStage === 2) {
+                doubleEqDisplay.innerHTML = `(${tA}x + ${tC}x) + (${tB} + ${tD})`;
+                doubleExplanation.innerHTML = `Stage 2 - Group like terms:<br>
+                    Collect all variable <span class="math-symbol">x</span> blocks to the left side and all constant <span class="math-symbol">1</span> blocks to the right side.`;
+            } else if (doubleStage === 3) {
+                doubleEqDisplay.innerHTML = `${totalX}x + ${totalU}`;
+                doubleExplanation.innerHTML = `Stage 3 - Combine coefficients:<br>
+                    &bull; Sum variable coefficients: ${tA}x + ${tC}x = ${totalX}x.<br>
+                    &bull; Sum constants: ${tB} + ${tD} = ${totalU}.<br>
+                    The expression is fully simplified: ${totalX}x + ${totalU}.`;
+            }
+        }
+
+        function createBlocks() {
+            blocks = [];
+            let xIndex = 0;
+            let uIndex = 0;
+
+            // Group 1
+            for (let r = 0; r < doubleA; r++) {
+                blocks.push({
+                    type: 'x',
+                    group: 1,
+                    row: r,
+                    col: -1,
+                    color: 'var(--color-rose)',
+                    label: 'x',
+                    xIndex: xIndex++
+                });
+                for (let u = 0; u < doubleB; u++) {
+                    blocks.push({
+                        type: 'unit',
+                        group: 1,
+                        row: r,
+                        col: u,
+                        color: 'var(--color-amber)',
+                        label: '1',
+                        uIndex: uIndex++
+                    });
+                }
+            }
+
+            // Group 2
+            for (let r = 0; r < doubleC; r++) {
+                blocks.push({
+                    type: 'x',
+                    group: 2,
+                    row: r,
+                    col: -1,
+                    color: 'var(--color-rose)',
+                    label: 'x',
+                    xIndex: xIndex++
+                });
+                for (let u = 0; u < doubleD; u++) {
+                    blocks.push({
+                        type: 'unit',
+                        group: 2,
+                        row: r,
+                        col: u,
+                        color: 'var(--color-amber)',
+                        label: '1',
+                        uIndex: uIndex++
+                    });
+                }
+            }
+        }
+
+        function getBlockPos(block, stage, w, h) {
+            const cx = w / 2;
+            const cy = h / 2;
+
+            if (stage === 0 || stage === 1) {
+                // Group 1 (Top)
+                if (block.group === 1) {
+                    const rowW = 60 + doubleB * 24;
+                    const startX = cx - rowW / 2;
+                    const y = cy - 80 + block.row * 26;
+                    if (block.type === 'x') {
+                        return { x: startX, y: y, w: 56, h: 22 };
+                    } else {
+                        return { x: startX + 56 + block.col * 24, y: y, w: 22, h: 22 };
+                    }
+                } else {
+                    // Group 2 (Bottom)
+                    const rowW = 60 + doubleD * 24;
+                    const startX = cx - rowW / 2;
+                    const y = cy + 20 + block.row * 26;
+                    if (block.type === 'x') {
+                        return { x: startX, y: y, w: 56, h: 22 };
+                    } else {
+                        return { x: startX + 56 + block.col * 24, y: y, w: 22, h: 22 };
+                    }
+                }
+            } else if (stage === 2) {
+                // Stack X's on left, Units on right
+                const totalX = doubleA + doubleC;
+                const xStackH = totalX * 26;
+                const xStartY = cy - xStackH / 2;
+
+                const totalU = doubleA * doubleB + doubleC * doubleD;
+                const cols = Math.min(4, Math.ceil(Math.sqrt(totalU)));
+                const gridRows = Math.ceil(totalU / cols);
+                const gridStartY = cy - (gridRows * 24) / 2;
+
+                if (block.type === 'x') {
+                    return { x: cx - 90, y: xStartY + block.xIndex * 26, w: 56, h: 22 };
+                } else {
+                    const col = block.uIndex % cols;
+                    const row = Math.floor(block.uIndex / cols);
+                    return { x: cx + 30 + col * 24, y: gridStartY + row * 24, w: 22, h: 22 };
+                }
+            } else {
+                // Stage 3: Morph targets
+                if (block.type === 'x') {
+                    return { x: cx - 90, y: cy - 35, w: 56, h: 70 };
+                } else {
+                    return { x: cx + 30, y: cy - 35, w: 70, h: 70 };
+                }
+            }
+        }
+
+        function drawDouble() {
+            resizeCanvas(doubleCanvas);
+            const w = doubleCanvas.width;
+            const h = doubleCanvas.height;
+            doubleCtx.clearRect(0, 0, w, h);
+
+            const cx = w / 2;
+            const cy = h / 2;
+
+            // Opacity of brackets (only visible in stage 0 or transitioning to/from stage 0)
+            let bracketsOpacity = 0;
+            if (doubleCurStage === 0 && doubleTarStage === 0) bracketsOpacity = 1;
+            else if (doubleCurStage === 0 && doubleTarStage === 1) bracketsOpacity = 1 - doubleProgress;
+            else if (doubleCurStage === 1 && doubleTarStage === 0) bracketsOpacity = doubleProgress;
+
+            // Opacity of merged boxes (only visible in stage 3 or transitioning to/from stage 3)
+            let mergedOpacity = 0;
+            if (doubleCurStage === 3 && doubleTarStage === 3) mergedOpacity = 1;
+            else if (doubleCurStage === 2 && doubleTarStage === 3) mergedOpacity = doubleProgress;
+            else if (doubleCurStage === 3 && doubleTarStage === 2) mergedOpacity = 1 - doubleProgress;
+
+            blocks.forEach(block => {
+                const posCur = getBlockPos(block, doubleCurStage, w, h);
+                const posTar = getBlockPos(block, doubleTarStage, w, h);
+
+                const bx = posCur.x + (posTar.x - posCur.x) * doubleProgress;
+                const by = posCur.y + (posTar.y - posCur.y) * doubleProgress;
+                const bw = posCur.w + (posTar.w - posCur.w) * doubleProgress;
+                const bh = posCur.h + (posTar.h - posCur.h) * doubleProgress;
+
+                doubleCtx.strokeStyle = 'rgba(0,0,0,0.15)';
+                doubleCtx.lineWidth = 1;
+
+                if (doubleCurStage === 3 && doubleTarStage === 3) {
+                    // Fully merged, skip individual block drawing
+                    return;
+                }
+
+                // If sliding into Stage 3, fade them out
+                let blockOpacity = 1;
+                if (doubleTarStage === 3 && doubleCurStage === 2) {
+                    blockOpacity = 1 - doubleProgress;
+                } else if (doubleCurStage === 3 && doubleTarStage === 2) {
+                    blockOpacity = doubleProgress;
+                }
+
+                if (blockOpacity > 0.01) {
+                    doubleCtx.save();
+                    doubleCtx.globalAlpha = blockOpacity;
+                    doubleCtx.fillStyle = block.color;
+                    doubleCtx.beginPath();
+                    doubleCtx.roundRect(bx + 1, by + 1, bw - 2, bh - 2, 4);
+                    doubleCtx.fill();
+                    doubleCtx.stroke();
+
+                    // Text labels
+                    doubleCtx.fillStyle = block.type === 'x' ? '#ffffff' : '#000000';
+                    doubleCtx.font = block.type === 'x' ? 'bold 11px Outfit' : 'bold 10px JetBrains Mono';
+                    doubleCtx.textAlign = 'center';
+                    doubleCtx.textBaseline = 'middle';
+                    doubleCtx.fillText(block.label, bx + bw / 2, by + bh / 2);
+                    doubleCtx.restore();
+                }
+            });
+
+            if (bracketsOpacity > 0.01) {
+                doubleCtx.strokeStyle = `rgba(255, 255, 255, ${bracketsOpacity * 0.45})`;
+                doubleCtx.lineWidth = 2.5;
+
+                // Brackets Group 1
+                const rowW1 = 60 + doubleB * 24;
+                const startX1 = cx - rowW1 / 2;
+                const startY1 = cy - 83;
+                const endY1 = startY1 + doubleA * 26 + 2;
+
+                // Group 1 multiplier label
+                doubleCtx.fillStyle = `rgba(255, 255, 255, ${bracketsOpacity})`;
+                doubleCtx.font = 'bold 15px Outfit';
+                doubleCtx.textAlign = 'right';
+                doubleCtx.textBaseline = 'middle';
+                doubleCtx.fillText(`${doubleA}`, startX1 - 18, startY1 + (doubleA * 26) / 2);
+
+                // Left [
+                doubleCtx.beginPath();
+                doubleCtx.moveTo(startX1 - 6, startY1);
+                doubleCtx.lineTo(startX1 - 12, startY1);
+                doubleCtx.lineTo(startX1 - 12, endY1);
+                doubleCtx.lineTo(startX1 - 6, endY1);
+                doubleCtx.stroke();
+
+                // Right ]
+                doubleCtx.beginPath();
+                doubleCtx.moveTo(startX1 + rowW1 + 6, startY1);
+                doubleCtx.lineTo(startX1 + rowW1 + 12, startY1);
+                doubleCtx.lineTo(startX1 + rowW1 + 12, endY1);
+                doubleCtx.lineTo(startX1 + rowW1 + 6, endY1);
+                doubleCtx.stroke();
+
+                // Plus Sign between groups
+                doubleCtx.fillStyle = `rgba(255, 255, 255, ${bracketsOpacity * 0.6})`;
+                doubleCtx.font = 'bold 18px Outfit';
+                doubleCtx.textAlign = 'center';
+                doubleCtx.fillText('+', cx, cy - 3);
+
+                // Brackets Group 2
+                const rowW2 = 60 + doubleD * 24;
+                const startX2 = cx - rowW2 / 2;
+                const startY2 = cy + 17;
+                const endY2 = startY2 + doubleC * 26 + 2;
+
+                // Group 2 multiplier label
+                doubleCtx.fillStyle = `rgba(255, 255, 255, ${bracketsOpacity})`;
+                doubleCtx.textAlign = 'right';
+                doubleCtx.fillText(`${doubleC}`, startX2 - 18, startY2 + (doubleC * 26) / 2);
+
+                // Left [
+                doubleCtx.beginPath();
+                doubleCtx.moveTo(startX2 - 6, startY2);
+                doubleCtx.lineTo(startX2 - 12, startY2);
+                doubleCtx.lineTo(startX2 - 12, endY2);
+                doubleCtx.lineTo(startX2 - 6, endY2);
+                doubleCtx.stroke();
+
+                // Right ]
+                doubleCtx.beginPath();
+                doubleCtx.moveTo(startX2 + rowW2 + 6, startY2);
+                doubleCtx.lineTo(startX2 + rowW2 + 12, startY2);
+                doubleCtx.lineTo(startX2 + rowW2 + 12, endY2);
+                doubleCtx.lineTo(startX2 + rowW2 + 6, endY2);
+                doubleCtx.stroke();
+            }
+
+            if (mergedOpacity > 0.01) {
+                doubleCtx.strokeStyle = 'rgba(0,0,0,0.15)';
+                doubleCtx.lineWidth = 1;
+
+                const tX = doubleA + doubleC;
+                const tU = doubleA * doubleB + doubleC * doubleD;
+
+                doubleCtx.fillStyle = `rgba(244, 63, 94, ${mergedOpacity})`;
+                doubleCtx.beginPath();
+                doubleCtx.roundRect(cx - 90, cy - 35, 56, 70, 6);
+                doubleCtx.fill();
+                doubleCtx.stroke();
+
+                // Label for X block
+                doubleCtx.fillStyle = `rgba(255, 255, 255, ${mergedOpacity})`;
+                doubleCtx.font = 'bold 15px Outfit';
+                doubleCtx.textAlign = 'center';
+                doubleCtx.textBaseline = 'middle';
+                doubleCtx.fillText(`${tX}x`, cx - 62, cy);
+
+                // Plus sign
+                doubleCtx.fillStyle = `rgba(255, 255, 255, ${mergedOpacity * 0.7})`;
+                doubleCtx.font = 'bold 18px Outfit';
+                doubleCtx.fillText('+', cx - 5, cy);
+
+                doubleCtx.fillStyle = `rgba(255, 176, 0, ${mergedOpacity})`;
+                doubleCtx.beginPath();
+                doubleCtx.roundRect(cx + 30, cy - 35, 70, 70, 6);
+                doubleCtx.fill();
+                doubleCtx.stroke();
+
+                // Label for constants
+                doubleCtx.fillStyle = `rgba(0, 0, 0, ${mergedOpacity})`;
+                doubleCtx.font = 'bold 16px JetBrains Mono';
+                doubleCtx.fillText(`${tU}`, cx + 65, cy);
+            }
+        }
+
+        // --- 3. ALGEBRAIC FRACTION DIVIDER LOGIC ---
+        function initFraction() {
+            const updateFrac = () => {
+                fracD = parseInt(slideFracD.value);
+                fracB = parseInt(slideFracB.value);
+
+                lblFracD.textContent = fracD;
+                lblFracB.textContent = fracB;
+
+                fracCanvasTitle.textContent = `Visualizing: (${fracD === 1 ? '' : fracD}x + ${fracD * fracB}) / ${fracD}`;
+                fracEqDisplay.innerHTML = `\\frac{${fracD}x + ${fracD * fracB}}{${fracD}} = x + ${fracB}`;
+                // Let's render as standard fractions in HTML format
+                fracEqDisplay.innerHTML = `
+                    <div style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; margin-right:10px;">
+                        <span style="border-bottom:1.5px solid var(--text-color); padding:0 8px;">${fracD}x + ${fracD * fracB}</span>
+                        <span>${fracD}</span>
+                    </div>
+                    <span style="font-size:1.6rem; vertical-align:middle; margin-right:10px;">=</span>
+                    <span style="vertical-align:middle;">x + ${fracB}</span>
+                `;
+
+                fracExplanation.innerHTML = `
+                    1. Distribute division by denominator: &nbsp; <sup>(${fracD}x)</sup>&frasl;<sub>${fracD}</sub> &nbsp;+&nbsp; <sup>(${fracD * fracB})</sup>&frasl;<sub>${fracD}</sub>.<br>
+                    2. Divide variable coefficient: &nbsp; ${fracD}x / ${fracD} = x.<br>
+                    3. Divide constant: &nbsp; ${fracD * fracB} / ${fracD} = ${fracB}.<br>
+                    4. Simplified expression: &nbsp; x + ${fracB}.
+                `;
+
+                resetFracAnimation();
+                drawFraction();
+            };
+
+            slideFracD.addEventListener('input', updateFrac);
+            slideFracB.addEventListener('input', updateFrac);
+
+            btnFracAnimate.addEventListener('click', () => {
+                if (isFracAnimating) return;
+                isFracAnimating = true;
+                animateFraction();
+            });
+
+            updateFrac();
+        }
+
+        function resetFracAnimation() {
+            fracProgress = 0.0;
+            isFracAnimating = false;
+            fracDirection = 1;
+            btnFracAnimate.textContent = "Animate Division";
+        }
+
+        function animateFraction() {
+            const duration = 1500;
+            const start = performance.now();
+            const startVal = fracProgress;
+            const targetVal = fracDirection === 1 ? 1.0 : 0.0;
+
+            function step(time) {
+                const elapsed = time - start;
+                const progress = Math.min(elapsed / duration, 1.0);
+                const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+                fracProgress = startVal + (targetVal - startVal) * ease;
+                drawFraction();
+
+                if (progress < 1.0) {
+                    requestAnimationFrame(step);
+                } else {
+                    fracProgress = targetVal;
+                    isFracAnimating = false;
+                    fracDirection = fracDirection === 1 ? -1 : 1;
+                    btnFracAnimate.textContent = fracDirection === 1 ? "Animate Division" : "Reset Animation";
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        function drawFraction() {
+            resizeCanvas(fracCanvas);
+            const w = fracCanvas.width;
+            const h = fracCanvas.height;
+            fracCtx.clearRect(0, 0, w, h);
+
+            const cx = w / 2;
+            const cy = h / 2;
+
+            const colW = 44;
+            const xH = 70;
+            const unitH = 22;
+            const colH = xH + fracB * unitH;
+
+            const p = fracProgress;
+
+            // 1. Calculate spacing gap
+            let gap = 2;
+            if (p > 0 && p <= 0.4) {
+                gap = 2 + 28 * (p / 0.4);
+            } else if (p > 0.4) {
+                gap = 30;
+            }
+
+            const totalW = fracD * colW + (fracD - 1) * gap;
+            const startX = cx - totalW / 2;
+            const startY = cy - colH / 2 - 25;
+
+            // 2. Denominator and line opacity
+            let extraOpacity = 1;
+            if (p > 0.4 && p <= 0.7) {
+                extraOpacity = 1 - (p - 0.4) / 0.3;
+            } else if (p > 0.7) {
+                extraOpacity = 0;
+            }
+
+            // 3. Faded columns opacity
+            let extraColsOpacity = 1;
+            if (p > 0.4 && p <= 0.7) {
+                extraColsOpacity = 1 - 0.85 * ((p - 0.4) / 0.3);
+            } else if (p > 0.7) {
+                extraColsOpacity = 0.15;
+            }
+
+            // 4. Primary column zoom / slide to center
+            let col0X = startX;
+            let col0Scale = 1.0;
+            if (p > 0.7) {
+                const t = (p - 0.7) / 0.3;
+                col0X = startX + (cx - colW / 2 - startX) * t;
+                col0Scale = 1.0 + 0.12 * t;
+            }
+
+            fracCtx.strokeStyle = 'rgba(0,0,0,0.15)';
+            fracCtx.lineWidth = 1;
+
+            for (let c = 0; c < fracD; c++) {
+                let currentX = startX + c * (colW + gap);
+                let opacity = extraColsOpacity;
+                let scale = 1.0;
+
+                if (c === 0) {
+                    currentX = col0X;
+                    opacity = 1.0;
+                    scale = col0Scale;
+                }
+
+                fracCtx.save();
+                if (c === 0 && p > 0.7) {
+                    const colCenterX = currentX + colW / 2;
+                    const colCenterY = startY + colH / 2;
+                    fracCtx.translate(colCenterX, colCenterY);
+                    fracCtx.scale(scale, scale);
+                    fracCtx.translate(-colCenterX, -colCenterY);
+                }
+
+                if (c === 0) {
+                    fracCtx.fillStyle = 'var(--color-rose)';
+                } else if (p > 0.4) {
+                    fracCtx.fillStyle = `rgba(100, 100, 100, ${opacity})`;
+                } else {
+                    fracCtx.fillStyle = `rgba(244, 63, 94, ${opacity})`;
+                }
+
+                fracCtx.beginPath();
+                fracCtx.roundRect(currentX + 1.5, startY + 1.5, colW - 3, xH - 3, 4);
+                fracCtx.fill();
+                fracCtx.stroke();
+
+                fracCtx.fillStyle = c === 0 ? '#ffffff' : `rgba(255, 255, 255, ${opacity * 0.5})`;
+                if (c > 0 && p > 0.4) fracCtx.fillStyle = `rgba(160, 160, 160, ${opacity})`;
+                fracCtx.font = 'bold 14px Outfit';
+                fracCtx.textAlign = 'center';
+                fracCtx.textBaseline = 'middle';
+                fracCtx.fillText('x', currentX + colW / 2, startY + xH / 2);
+
+                for (let u = 0; u < fracB; u++) {
+                    const uy = startY + xH + u * unitH;
+                    if (c === 0) {
+                        fracCtx.fillStyle = 'var(--color-amber)';
+                    } else if (p > 0.4) {
+                        fracCtx.fillStyle = `rgba(120, 120, 120, ${opacity})`;
+                    } else {
+                        fracCtx.fillStyle = `rgba(255, 176, 0, ${opacity})`;
+                    }
+
+                    fracCtx.beginPath();
+                    fracCtx.roundRect(currentX + 1.5, uy + 1.5, colW - 3, unitH - 3, 3);
+                    fracCtx.fill();
+                    fracCtx.stroke();
+
+                    // label
+                    fracCtx.fillStyle = c === 0 ? '#000000' : `rgba(0, 0, 0, ${opacity * 0.5})`;
+                    if (c > 0 && p > 0.4) fracCtx.fillStyle = `rgba(60, 60, 60, ${opacity})`;
+                    fracCtx.font = 'bold 10px JetBrains Mono';
+                    fracCtx.fillText('1', currentX + colW / 2, uy + unitH / 2);
+                }
+
+                // Highlighting border on the 1st share
+                if (c === 0 && p > 0.6) {
+                    fracCtx.strokeStyle = 'var(--color-amber)';
+                    fracCtx.lineWidth = 2;
+                    fracCtx.shadowColor = 'var(--color-amber-glow)';
+                    fracCtx.shadowBlur = 8;
+                    fracCtx.beginPath();
+                    fracCtx.roundRect(currentX - 2, startY - 2, colW + 4, colH + 4, 6);
+                    fracCtx.stroke();
+                    fracCtx.shadowColor = 'transparent';
+                    fracCtx.shadowBlur = 0;
+                }
+
+                fracCtx.restore();
+            }
+
+            if (extraOpacity > 0.01) {
+                fracCtx.strokeStyle = `rgba(255, 255, 255, ${extraOpacity * 0.35})`;
+                fracCtx.lineWidth = 2.5;
+                fracCtx.beginPath();
+                fracCtx.moveTo(startX - 20, startY + colH + 10);
+                fracCtx.lineTo(startX + totalW + 20, startY + colH + 10);
+                fracCtx.stroke();
+
+                fracCtx.fillStyle = `rgba(255, 255, 255, ${extraOpacity})`;
+                fracCtx.font = 'bold 20px Outfit';
+                fracCtx.textAlign = 'center';
+                fracCtx.fillText(`${fracD}`, cx, startY + colH + 34);
+
+                fracCtx.fillStyle = `rgba(255, 255, 255, ${extraOpacity * 0.5})`;
+                fracCtx.font = '11px JetBrains Mono';
+                fracCtx.fillText(`Divide numerator into ${fracD} equal columns`, cx, startY + colH + 54);
+            }
+
+            // If completely divided, draw result label
+            if (p > 0.85) {
+                const opacity = (p - 0.85) / 0.15;
+                fracCtx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+                fracCtx.font = 'bold 14px Outfit';
+                fracCtx.textAlign = 'center';
+                fracCtx.fillText(`1 stack remains: x + ${fracB}`, cx, startY + colH + 34);
+            }
+        }
+
+        // --- 4. CONCEPTUAL QUIZ LOGIC ---
+        const quizData = [
+            {
+                question: "Expand the expression: 4(2y - 3).",
+                options: [
+                    "8y - 3",
+                    "8y - 12",
+                    "6y - 7",
+                    "8y + 12"
+                ],
+                correct: 1,
+                explanation: "Distribute the multiplier 4 to both terms inside the brackets: 4 &middot; (2y) - 4 &middot; (3) = 8y - 12."
+            },
+            {
+                question: "Expand and simplify: 3(x + 2) + 2(x - 4).",
+                options: [
+                    "5x - 2",
+                    "5x + 14",
+                    "5x - 8",
+                    "5x + 2"
+                ],
+                correct: 0,
+                explanation: "First expand both terms: 3(x + 2) = 3x + 6, and 2(x - 4) = 2x - 8. Next, group like terms together: (3x + 2x) + (6 - 8) = 5x - 2."
+            },
+            {
+                question: "Simplify the expression: -2(x - 5).",
+                options: [
+                    "-2x - 10",
+                    "-2x + 10",
+                    "-2x - 5",
+                    "2x + 10"
+                ],
+                correct: 1,
+                explanation: "Distributing a negative sign flips the signs of the terms inside. Multiplying -2 by x gives -2x, and multiplying -2 by -5 gives +10. Thus, -2x + 10."
+            },
+            {
+                question: "Simplify the algebraic fraction: (6w + 15) / 3.",
+                options: [
+                    "2w + 5",
+                    "2w + 15",
+                    "6w + 5",
+                    "3w + 5"
+                ],
+                correct: 0,
+                explanation: "Divide each term in the numerator by the denominator: (6w)/3 + 15/3 = 2w + 5."
+            },
+            {
+                question: "Expand and simplify: 2a(b + 3) - ab.",
+                options: [
+                    "ab + 6a",
+                    "2ab + 6a",
+                    "ab + 3",
+                    "2a + 2b"
+                ],
+                correct: 0,
+                explanation: "First, distribute 2a to both terms inside brackets: 2a(b + 3) = 2ab + 6a. Then subtract ab: 2ab + 6a - ab = ab + 6a."
+            }
+        ];
+
+        let quizCurrentIndex = 0;
+        let quizScore = 0;
+        let quizAnswered = false;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function initQuiz() {
+            quizNextBtn.addEventListener('click', () => {
+                quizCurrentIndex++;
+                if (quizCurrentIndex < quizData.length) {
+                    loadQuizQuestion();
+                } else {
+                    showQuizResults();
+                }
+            });
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            quizAnswered = false;
+            quizFeedbackArea.style.display = 'none';
+
+            const q = quizData[quizCurrentIndex];
+            quizProgressText.textContent = `Question ${quizCurrentIndex + 1} of ${quizData.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizCurrentIndex}`;
+            quizQuestionTitle.innerHTML = q.question;
+
+            quizOptionsContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = 'quiz-option';
+                div.innerHTML = `
+                    <span>${opt}</span>
+                    <svg class="opt-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="display:none; color:#10b981;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                `;
+                div.addEventListener('click', () => selectQuizOption(idx));
+                quizOptionsContainer.appendChild(div);
+            });
+        }
+
+        function selectQuizOption(selectedIndex) {
+            if (quizAnswered) return;
+            quizAnswered = true;
+
+            const q = quizData[quizCurrentIndex];
+            const options = quizOptionsContainer.children;
+
+            if (selectedIndex === q.correct) {
+                quizScore++;
+                options[selectedIndex].classList.add('correct');
+                showCheckmark(options[selectedIndex]);
+                quizFeedbackArea.querySelector('strong').textContent = "Correct Answer!";
+                quizFeedbackArea.querySelector('strong').style.color = '#10b981';
+            } else {
+                options[selectedIndex].classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                showCheckmark(options[q.correct]);
+                quizFeedbackArea.querySelector('strong').textContent = "Incorrect Answer";
+                quizFeedbackArea.querySelector('strong').style.color = '#f43f5e';
+            }
+
+            quizScoreText.textContent = `Score: ${quizScore}/${quizCurrentIndex + 1}`;
+            quizExplanationText.innerHTML = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+        }
+
+        function showCheckmark(optionElement) {
+            const icon = optionElement.querySelector('.opt-icon');
+            if (icon) icon.style.display = 'block';
+        }
+
+        function showQuizResults() {
+            quizProgressText.textContent = `Evaluation Completed`;
+            quizQuestionTitle.style.display = 'none';
+            quizOptionsContainer.innerHTML = `
+                <div class="quiz-score-overlay">
+                    <h2 style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--color-rose);">
+                        ${((quizScore / quizData.length) * 100).toFixed(0)}% Correct
+                    </h2>
+                    <p style="color:var(--text-muted); margin-bottom:1.5rem;">
+                        You scored ${quizScore} out of ${quizData.length} conceptual questions.
+                    </p>
+                    <button class="btn" onclick="restartQuiz()" style="width:auto; margin:0 auto; padding:8px 24px; background:var(--color-rose); color:#000; box-shadow: 0 4px 15px var(--color-rose-glow);">Restart Quiz</button>
+                </div>
+            `;
+            quizFeedbackArea.style.display = 'none';
+        }
+
+        window.restartQuiz = function() {
+            quizCurrentIndex = 0;
+            quizScore = 0;
+            quizQuestionTitle.style.display = 'block';
+            loadQuizQuestion();
+        };
+
+        // --- SCROLL SPY LOGIC ---
+        function initScrollSpy() {
+            const sections = document.querySelectorAll('section');
+            const navItems = document.querySelectorAll('.syllabus-menu .syllabus-item');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (window.scrollY >= sectionTop - 120) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                    const linkHref = item.querySelector('a').getAttribute('href');
+                    if (linkHref === `#${current}`) {
+                        item.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // DOM Initializations
+        document.addEventListener('DOMContentLoaded', () => {
+            initDistributive();
+            initDouble();
+            initFraction();
+            initQuiz();
+            initScrollSpy();
+
+            window.addEventListener('resize', () => {
+                drawDistributive();
+                drawDouble();
+                drawFraction();
+            });
+        });
+    </script>
+</body>
+
+</html>

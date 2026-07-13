@@ -1,0 +1,386 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to Fractions - Arithmetic & Numbers</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "01_arithmetic_number_sense",
+            logo: {"main":"Number","accent":"Lab","sub":"Introduction to Fractions"},
+            navigation: [
+    {
+        "label": "Fractions of a Circle (Pie Charts)",
+        "desc": "Fractions of a Circle (Pie Charts) interactive section",
+        "href": "#section1"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Cyan Theme for Arithmetic */
+            --color-primary: #38bdf8;
+            --color-primary-glow: rgba(56, 189, 248, 0.35);
+            
+            --color-numerator: #ffb000; /* Amber */
+            --color-denominator: #10b981; /* Emerald */
+            --color-shaded: rgba(56, 189, 248, 0.35);
+            --color-unshaded: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Large fraction display */
+        .fraction-showcase {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .fraction-math-display {
+            font-size: 3rem;
+            font-weight: 700;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1;
+            padding: 0 10px;
+        }
+
+        .fraction-math-display .num {
+            color: var(--color-numerator);
+            text-shadow: 0 0 15px rgba(255, 176, 0, 0.3);
+            border-bottom: 3px solid var(--text-color);
+            padding-bottom: 6px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .fraction-math-display .den {
+            color: var(--color-denominator);
+            text-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+            padding-top: 6px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .fraction-labels-explanation {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 280px;
+        }
+
+        .term-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 6px;
+        }
+
+        .badge-numerator {
+            color: var(--color-numerator);
+            background: rgba(255, 176, 0, 0.08);
+            border: 1px solid rgba(255, 176, 0, 0.15);
+        }
+
+        .badge-denominator {
+            color: var(--color-denominator);
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+
+
+
+        /* Canvas visualizers */
+        .chart-holder {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 1rem;
+            position: relative;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* Controls */
+        .btn-value {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid var(--card-border);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-color);
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-value:hover {
+            background: var(--color-primary);
+            color: var(--bg-color);
+            border-color: var(--color-primary);
+        }
+
+        .control-panel-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer (Managed by shared.js) -->
+    <aside></aside>
+
+    <!-- Main Workspace Content -->
+    <main>
+        <!-- SECTION 1: FRACTIONS OF A CIRCLE -->
+        <section id="section1">
+            <header>
+                <h1>Fractions of a Circle (Pie Charts)</h1>
+                <p>Explore fractions by slicing a circle. Set the total equal slices, and click inside slices to shade them. Watch the fraction update dynamically!</p>
+            </header>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Circle Canvas -->
+                <div class="panel">
+                    <!-- Sliders & Controls -->
+                    <div class="control-panel-row">
+                        <span style="font-weight:600; color:var(--text-color);">Denominator (Total Slices):</span>
+                        <div class="value-control">
+                            <button class="btn-value" onclick="changeCircleDen(-1)">−</button>
+                            <span class="category-value-text" id="circleDenText">8</span>
+                            <button class="btn-value" onclick="changeCircleDen(1)">+</button>
+                        </div>
+                    </div>
+
+                    <div class="control-row" style="margin-bottom:1.5rem;">
+                        <input type="range" id="circleDenSlider" min="2" max="12" value="8" step="1" oninput="setCircleDen(this.value)">
+                    </div>
+
+                    <div class="chart-holder" id="canvasHolderCircle" style="height:320px; margin-bottom:1rem;">
+                        <canvas id="circleCanvas"></canvas>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.85rem; color:var(--text-muted);">Click segments of the circle to shade them!</span>
+                        <button class="btn-preset" onclick="clearCircleNumerator()" style="padding:4px 10px; font-size:0.8rem;">Clear All</button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Explanation & Breakdown -->
+                <div class="panel">
+                    <!-- Large Fraction display -->
+                    <div class="fraction-showcase">
+                        <div class="fraction-math-display">
+                            <span class="num" id="circleNumShow">3</span>
+                            <span class="den" id="circleDenShow">8</span>
+                        </div>
+                        <div class="fraction-labels-explanation">
+                            <div>
+                                <span class="term-badge badge-numerator">Numerator</span>
+                                <span style="font-size:0.85rem; color:var(--text-muted);">How many parts are shaded (active).</span>
+                            </div>
+                            <div style="border-top:1px solid rgba(255,255,255,0.05); padding-top:8px;">
+                                <span class="term-badge badge-denominator">Denominator</span>
+                                <span style="font-size:0.85rem; color:var(--text-muted);">Total number of equal parts in the whole.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="math-card" style="border-color: rgba(56, 189, 248, 0.15);">
+                        <h3>Readout Explanation</h3>
+                        <p style="font-size:1.15rem; font-weight:600; line-height:1.5;" id="circleReadoutText">
+                            3 out of 8 equal slices are shaded.
+                        </p>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>Equal Slices: Remember that each slice of the pie chart must be of exact equal size to be a mathematical fraction!</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+
+
+        // DATA STATE VARIABLES
+        let circleNumerator = 3;
+        let circleDenominator = 8;
+        let circleSegmentsShaded = Array(12).fill(false);
+
+        for (let i = 0; i < circleNumerator; i++) circleSegmentsShaded[i] = true;
+
+
+        const circleCanvas = document.getElementById('circleCanvas');
+        const circleHolder = document.getElementById('canvasHolderCircle');
+        const circleCtx = circleCanvas.getContext('2d');
+        const circleDenText = document.getElementById('circleDenText');
+        const circleDenSlider = document.getElementById('circleDenSlider');
+        const circleNumShow = document.getElementById('circleNumShow');
+        const circleDenShow = document.getElementById('circleDenShow');
+        const circleReadoutText = document.getElementById('circleReadoutText');
+
+        function changeCircleDen(delta) {
+            let den = circleDenominator + delta;
+            if (den < 2) den = 2;
+            if (den > 12) den = 12;
+            setCircleDen(den);
+        }
+
+        function setCircleDen(val) {
+            circleDenominator = parseInt(val);
+            circleDenSlider.value = circleDenominator;
+            circleDenText.innerText = circleDenominator;
+            circleDenShow.innerText = circleDenominator;
+
+            if (circleNumerator > circleDenominator) {
+                circleNumerator = circleDenominator;
+                circleNumShow.innerText = circleNumerator;
+            }
+
+            updateCircleReadout();
+            drawCircleFraction();
+        }
+
+        function clearCircleNumerator() {
+            circleSegmentsShaded.fill(false);
+            circleNumerator = 0;
+            circleNumShow.innerText = 0;
+            updateCircleReadout();
+            drawCircleFraction();
+        }
+
+        function updateCircleReadout() {
+            circleReadoutText.innerText = `${circleNumerator} out of ${circleDenominator} equal slices are shaded.`;
+        }
+
+        function resizeCircleCanvas() {
+            const rect = circleHolder.getBoundingClientRect();
+            circleCanvas.width = rect.width * (window.devicePixelRatio || 1);
+            circleCanvas.height = rect.height * (window.devicePixelRatio || 1);
+            circleCanvas.style.width = rect.width + 'px';
+            circleCanvas.style.height = rect.height + 'px';
+            circleCtx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+            drawCircleFraction();
+        }
+
+        function drawCircleFraction() {
+            const w = circleCanvas.width / (window.devicePixelRatio || 1);
+            const h = circleCanvas.height / (window.devicePixelRatio || 1);
+            circleCtx.clearRect(0, 0, w, h);
+
+            const cx = w / 2;
+            const cy = h / 2;
+            const radius = Math.min(w, h) * 0.42;
+
+            const sliceAngle = 2 * Math.PI / circleDenominator;
+
+            for (let i = 0; i < circleDenominator; i++) {
+                const startAngle = -Math.PI / 2 + i * sliceAngle;
+                const endAngle = startAngle + sliceAngle;
+
+                circleCtx.fillStyle = circleSegmentsShaded[i] ? "rgba(56, 189, 248, 0.35)" : "rgba(255, 255, 255, 0.03)";
+                circleCtx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+                circleCtx.lineWidth = 1.5;
+
+                circleCtx.beginPath();
+                circleCtx.moveTo(cx, cy);
+                circleCtx.arc(cx, cy, radius, startAngle, endAngle);
+                circleCtx.closePath();
+                circleCtx.fill();
+                circleCtx.stroke();
+            }
+
+            circleCtx.strokeStyle = "#38bdf8";
+            circleCtx.lineWidth = 3;
+            circleCtx.beginPath();
+            circleCtx.arc(cx, cy, radius, 0, 2 * Math.PI);
+            circleCtx.stroke();
+
+            circleCtx.fillStyle = "#fff";
+            circleCtx.beginPath();
+            circleCtx.arc(cx, cy, 4, 0, 2 * Math.PI);
+            circleCtx.fill();
+        }
+
+        circleCanvas.addEventListener('mousedown', (e) => {
+            const rect = circleCanvas.getBoundingClientRect();
+            const w = rect.width;
+            const h = rect.height;
+
+            const px = e.clientX - rect.left;
+            const py = e.clientY - rect.top;
+
+            const cx = w / 2;
+            const cy = h / 2;
+            const radius = Math.min(w, h) * 0.42;
+
+            const dist = Math.hypot(px - cx, py - cy);
+            if (dist <= radius) {
+                let angle = Math.atan2(py - cy, px - cx);
+                if (angle < -Math.PI / 2) {
+                    angle += 2 * Math.PI; // normalize starting from top -pi/2
+                }
+
+                const sliceAngle = 2 * Math.PI / circleDenominator;
+                let clickedIndex = Math.floor((angle + Math.PI / 2) / sliceAngle);
+                clickedIndex = (clickedIndex % circleDenominator);
+
+                circleSegmentsShaded[clickedIndex] = !circleSegmentsShaded[clickedIndex];
+                
+                let count = 0;
+                for (let i = 0; i < circleDenominator; i++) {
+                    if (circleSegmentsShaded[i]) count++;
+                }
+                circleNumerator = count;
+                circleNumShow.innerText = circleNumerator;
+
+                updateCircleReadout();
+                drawCircleFraction();
+            }
+        });
+
+
+        setCircleDen(8);
+
+        setTimeout(() => {
+            resizeCircleCanvas();
+        }, 100);
+    </script>
+</body>
+</html>

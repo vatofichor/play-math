@@ -1,0 +1,1027 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometric Transformations - Geometry & Space</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "03_geometry_measurement",
+            logo: {"main":"Space","accent":"Lab","sub":"Geometric Transformations"},
+            navigation: [
+    {
+        "label": "Transformational Canvas",
+        "desc": "Transformational Canvas interactive section",
+        "href": "#transformations"
+    },
+    {
+        "label": "Transformation Principles",
+        "desc": "Transformation Principles interactive section",
+        "href": "#matrix"
+    },
+    {
+        "label": "Transformation Quiz",
+        "desc": "Transformation Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Emerald Theme override */
+            --color-emerald: #10b981;
+            --color-emerald-glow: rgba(16, 185, 129, 0.35);
+            --color-accent: #10b981;
+            --color-accent-glow: rgba(16, 185, 129, 0.35);
+
+            --color-pre-image: #38bdf8; /* Cyan */
+            --color-image: #10b981; /* Emerald */
+            --color-axis: rgba(16, 185, 129, 0.4);
+        }
+
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-accent) !important;
+            box-shadow: 0 4px 20px var(--color-accent-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-title {
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-desc {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-emerald);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            text-shadow: 0 0 5px var(--color-emerald-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .equation-box {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.35rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-emerald);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-emerald-glow);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-preset {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-preset:hover, .btn-preset.active {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .presets-grid {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-mode {
+            flex: 1;
+            padding: 0.6rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            font-size: 0.85rem;
+        }
+
+        .btn-mode.active {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--color-emerald);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-emerald) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Geometric Transformations
+            </h1>
+            <p>Master rigid and non-rigid 2D coordinate mappings. Explore translations, rotational turns, axis reflections, and origin dilations visually.</p>
+        </header>
+
+        <!-- SECTION 1: TRANSFORMATIONS PLAYGROUND -->
+        <section id="transformations">
+            <div class="section-header">
+                <span class="section-tag">Interactive Grid</span>
+                <h2>Transformational Canvas</h2>
+            </div>
+            <p class="section-intro">
+                A geometric transformation maps points of a pre-image shape to new positions on the coordinate plane. Select a mapping type, slide variables, and trace the pre-image <span style="color:#38bdf8; font-weight:700;">A</span> transitioning to image <span style="color:var(--color-emerald); font-weight:700;">A'</span>.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Grid Canvas -->
+                <div class="panel">
+                    <div style="display: flex; gap: 8px; margin-bottom: 1.25rem;">
+                        <button class="btn-mode active" id="modeTranslateBtn" onclick="setTransformMode('translate')">Translate</button>
+                        <button class="btn-mode" id="modeRotateBtn" onclick="setTransformMode('rotate')">Rotate</button>
+                        <button class="btn-mode" id="modeReflectBtn" onclick="setTransformMode('reflect')">Reflect</button>
+                        <button class="btn-mode" id="modeDilateBtn" onclick="setTransformMode('dilate')">Dilate</button>
+                    </div>
+
+                    <div class="canvas-container" style="height: 400px; background: #06090a;">
+                        <canvas id="transformCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Controls & Equations -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Coordinate Mapping Rule</h3>
+                        <div class="equation-box" id="mappingRuleDisplay" style="color: var(--color-emerald);">
+                            (x, y) &rarr; (x + 3, y - 2)
+                        </div>
+                    </div>
+
+                    <div class="slider-group" id="controlsTranslate">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Translate X (dx)</span>
+                                <span class="number" id="lblDx">+3</span>
+                            </div>
+                            <input type="range" id="slideDx" min="-8" max="8" value="3" step="1">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Translate Y (dy)</span>
+                                <span class="number" id="lblDy">-2</span>
+                            </div>
+                            <input type="range" id="slideDy" min="-8" max="8" value="-2" step="1">
+                        </div>
+                    </div>
+
+                    <div class="slider-group" id="controlsRotate" style="display:none;">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Rotation Angle (&theta;)</span>
+                                <span class="number" id="lblRot">90&deg;</span>
+                            </div>
+                            <input type="range" id="slideRot" min="-180" max="180" value="90" step="90">
+                        </div>
+                    </div>
+
+                    <div class="slider-group" id="controlsReflect" style="display:none;">
+                        <div class="slider-row" style="gap:10px;">
+                            <span style="font-size:0.9rem; color:var(--text-muted);">Reflection Axis:</span>
+                            <div style="display:flex; flex-direction:column; gap:6px;">
+                                <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; cursor:pointer;">
+                                    <input type="radio" name="reflectAxis" value="xAxis" checked onclick="updateReflectionAxis('xAxis')">
+                                    X-Axis (y = 0)
+                                </label>
+                                <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; cursor:pointer;">
+                                    <input type="radio" name="reflectAxis" value="yAxis" onclick="updateReflectionAxis('yAxis')">
+                                    Y-Axis (x = 0)
+                                </label>
+                                <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; cursor:pointer;">
+                                    <input type="radio" name="reflectAxis" value="yEqualsX" onclick="updateReflectionAxis('yEqualsX')">
+                                    Diagonal Line (y = x)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slider-group" id="controlsDilate" style="display:none;">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Scale Factor (s)</span>
+                                <span class="number" id="lblScale">1.5x</span>
+                            </div>
+                            <input type="range" id="slideScale" min="0.5" max="2.5" value="1.5" step="0.5">
+                        </div>
+                    </div>
+
+                    <div class="presets-grid" style="margin-top:0.5rem;">
+                        <span style="font-size:0.8rem; color:var(--text-muted); width:100%; display:block; margin-bottom:4px;">Shape Presets:</span>
+                        <button class="btn-preset active" id="btnPresetTri" onclick="setShapePreset('triangle')">Triangle</button>
+                        <button class="btn-preset" id="btnPresetFShape" onclick="setShapePreset('fshape')">F-Shape</button>
+                        <button class="btn-preset" id="btnPresetHouse" onclick="setShapePreset('house')">House</button>
+                    </div>
+
+                    <div class="formula-steps" style="margin-top:1rem;">
+                        <div><strong>Vertex Transformations mapping:</strong></div>
+                        <div id="vertexMappingExplanation" style="margin-top: 6px; font-size:0.8rem; font-family:'JetBrains Mono'; color:var(--text-muted); line-height:1.5;">
+                            A(1, 2) &rarr; A'(4, 0)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: MATRIX FORMULA -->
+        <section id="matrix">
+            <div class="section-header">
+                <span class="section-tag">Anatomy Specs</span>
+                <h2>Transformation Principles</h2>
+            </div>
+            <p class="section-intro">
+                Review the structural mathematical mappings behind each 2D transformation category.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Matrix table -->
+                <div class="panel">
+                    <h3>Mapping Functions Matrix</h3>
+                    <br>
+                    <div class="formula-steps" style="line-height:1.7; font-size:0.82rem;">
+                        <div><strong style="color:var(--color-pre-image);">Translation (Rigid):</strong></div>
+                        <div style="color:var(--text-muted); margin-bottom:12px;">
+                            Shifts all coordinates uniformly. Preserves size, angles, and orientation.
+                            <br>
+                            <span class="number" style="color:#fff;">x' = x + dx, y' = y + dy</span>
+                        </div>
+
+                        <div><strong style="color:var(--color-pre-image);">Rotation (Rigid):</strong></div>
+                        <div style="color:var(--text-muted); margin-bottom:12px;">
+                            Spins points around origin (0,0) by angle &theta;. Preserves size and angles.
+                            <br>
+                            <span class="number" style="color:#fff;">x' = x&middot;cos(&theta;) - y&middot;sin(&theta;), y' = x&middot;sin(&theta;) + y&middot;cos(&theta;)</span>
+                        </div>
+
+                        <div><strong style="color:var(--color-pre-image);">Reflection (Rigid):</strong></div>
+                        <div style="color:var(--text-muted); margin-bottom:12px;">
+                            Flips shape across an axis line. Preserves size/angles; reverses orientation.
+                            <br>
+                            Across x-axis: <span class="number" style="color:#fff;">(x, -y)</span> | Across y-axis: <span class="number" style="color:#fff;">(-x, y)</span> | Across y=x: <span class="number" style="color:#fff;">(y, x)</span>
+                        </div>
+
+                        <div><strong style="color:var(--color-pre-image);">Dilation (Non-Rigid / Similarity):</strong></div>
+                        <div style="color:var(--text-muted);">
+                            Scales shape from origin (0,0) by scale s. Changes size; preserves angles/proportions.
+                            <br>
+                            <span class="number" style="color:#fff;">x' = s&middot;x, y' = s&middot;y</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Info & Explanations -->
+                <div class="panel">
+                    <h3>Orientation & Congruence</h3>
+                    <br>
+                    <div class="formula-steps" style="line-height:1.7;">
+                        <div><strong style="color:var(--color-emerald);">Congruent Transformations:</strong></div>
+                        <div style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">
+                            Translations, rotations, and reflections produce images congruent to the pre-image (identical lengths and shapes).
+                        </div>
+
+                        <div><strong style="color:var(--color-emerald);">Similar Transformations:</strong></div>
+                        <div style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">
+                            Dilations scale dimensions, producing similar shapes (angles remain equal, sides map to scale factor ratio).
+                        </div>
+
+                        <div><strong style="color:var(--color-emerald);">Orientation:</strong></div>
+                        <div style="color:var(--text-muted); font-size:0.85rem;">
+                            Reflections flip the orientation of the shape (vertices go from counter-clockwise to clockwise order).
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Self Evaluation</span>
+                <h2>Transformation Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Evaluate your core understanding of coordinate mappings, matrices, and rigid motion rules.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Quiz Question -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">Which of the following is a NON-RIGID transformation that alters the size of the shape?</h3>
+
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong>Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation goes here.</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Core Vocabulary Review -->
+                <div class="panel">
+                    <h3>Focus Area Vocabulary</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom:0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-pre-image); box-shadow:0 0 6px rgba(56, 189, 248, 0.35);"></span>
+                                Pre-Image: <strong>Original shape (A)</strong>
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-image); box-shadow:0 0 6px var(--color-emerald-glow);"></span>
+                                Image: <strong>Mapped shape (A')</strong>
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:#ffb000; box-shadow:0 0 6px rgba(255, 176, 0, 0.35);"></span>
+                                Rigid Motion: <strong>Preserves shape & sizes</strong>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const transformCanvas = document.getElementById('transformCanvas');
+        const transformCtx = transformCanvas.getContext('2d');
+
+        // Mode elements
+        const modeTranslateBtn = document.getElementById('modeTranslateBtn');
+        const modeRotateBtn = document.getElementById('modeRotateBtn');
+        const modeReflectBtn = document.getElementById('modeReflectBtn');
+        const modeDilateBtn = document.getElementById('modeDilateBtn');
+
+        // Controls container
+        const controlsTranslate = document.getElementById('controlsTranslate');
+        const controlsRotate = document.getElementById('controlsRotate');
+        const controlsReflect = document.getElementById('controlsReflect');
+        const controlsDilate = document.getElementById('controlsDilate');
+
+        // Sliders
+        const slideDx = document.getElementById('slideDx');
+        const slideDy = document.getElementById('slideDy');
+        const slideRot = document.getElementById('slideRot');
+        const slideScale = document.getElementById('slideScale');
+
+        // Labels
+        const lblDx = document.getElementById('lblDx');
+        const lblDy = document.getElementById('lblDy');
+        const lblRot = document.getElementById('lblRot');
+        const lblScale = document.getElementById('lblScale');
+        const mappingRuleDisplay = document.getElementById('mappingRuleDisplay');
+        const vertexMappingExplanation = document.getElementById('vertexMappingExplanation');
+
+        // State variables
+        let transformMode = 'translate'; // 'translate', 'rotate', 'reflect', 'dilate'
+        let valDx = 3;
+        let valDy = -2;
+        let valRot = 90; // degrees
+        let valScale = 1.5;
+        let reflectAxis = 'xAxis'; // 'xAxis', 'yAxis', 'yEqualsX'
+        let currentShape = 'triangle'; // 'triangle', 'fshape', 'house'
+
+        // Coordinates representation of preset shapes: arrays of {x, y, label}
+        const shapePresets = {
+            triangle: [
+                { x: 1, y: 2, label: 'A' },
+                { x: 4, y: 2, label: 'B' },
+                { x: 1, y: 6, label: 'C' }
+            ],
+            fshape: [
+                { x: 1, y: 1, label: 'A' },
+                { x: 4, y: 1, label: 'B' },
+                { x: 4, y: 2, label: 'C' },
+                { x: 2, y: 2, label: 'D' },
+                { x: 2, y: 4, label: 'E' },
+                { x: 4, y: 4, label: 'F' },
+                { x: 4, y: 5, label: 'G' },
+                { x: 2, y: 5, label: 'H' },
+                { x: 2, y: 7, label: 'I' },
+                { x: 1, y: 7, label: 'J' }
+            ],
+            house: [
+                { x: 1, y: 1, label: 'A' },
+                { x: 5, y: 1, label: 'B' },
+                { x: 5, y: 5, label: 'C' },
+                { x: 3, y: 7, label: 'D' },
+                { x: 1, y: 5, label: 'E' }
+            ]
+        };
+
+        function resizeCanvasElement(canvasElement) {
+            const container = canvasElement.parentElement;
+            canvasElement.width = container.clientWidth;
+            canvasElement.height = container.clientHeight;
+        }
+
+        // Coordinate space mapping [-10, 10] to screen pixels
+        function mapToGrid(x, y, w, h) {
+            const size = Math.min(w, h) - 60;
+            const midX = w / 2;
+            const midY = h / 2;
+            const px = midX + (x / 10) * (size / 2);
+            const py = midY - (y / 10) * (size / 2); // Inverted Y
+            return { x: px, y: py };
+        }
+
+        // DRAWING TRANSFORMATIONS ON CANVAS
+        function drawTransformations() {
+            resizeCanvasElement(transformCanvas);
+            const w = transformCanvas.width;
+            const h = transformCanvas.height;
+            transformCtx.clearRect(0, 0, w, h);
+
+            const midX = w / 2;
+            const midY = h / 2;
+            const size = Math.min(w, h) - 60;
+            const gridR = size / 2;
+
+            // 1. Draw Grid lines
+            transformCtx.strokeStyle = 'rgba(255,255,255,0.03)';
+            transformCtx.lineWidth = 1;
+            for (let val = -10; val <= 10; val++) {
+                const pos = mapToGrid(val, val, w, h);
+                transformCtx.beginPath();
+                transformCtx.moveTo(pos.x, midY - gridR);
+                transformCtx.lineTo(pos.x, midY + gridR);
+                transformCtx.moveTo(midX - gridR, pos.y);
+                transformCtx.lineTo(midX + gridR, pos.y);
+                transformCtx.stroke();
+            }
+
+            // 2. Draw axes
+            transformCtx.strokeStyle = 'rgba(255,255,255,0.12)';
+            transformCtx.lineWidth = 2;
+            transformCtx.beginPath();
+            transformCtx.moveTo(midX - gridR - 10, midY);
+            transformCtx.lineTo(midX + gridR + 10, midY);
+            transformCtx.moveTo(midX, midY - gridR - 10);
+            transformCtx.lineTo(midX, midY + gridR + 10);
+            transformCtx.stroke();
+
+            // Axis labels ticks
+            transformCtx.fillStyle = 'rgba(255,255,255,0.35)';
+            transformCtx.font = '8px JetBrains Mono';
+            transformCtx.textAlign = 'center';
+            for (let val = -10; val <= 10; val += 2) {
+                if (val === 0) continue;
+                const pos = mapToGrid(val, val, w, h);
+                transformCtx.fillText(val.toString(), pos.x, midY + 12);
+                transformCtx.fillText(val.toString(), midX + 10, pos.y + 3);
+            }
+
+            // 3. Draw Reflection Axis helper line if in reflect mode
+            if (transformMode === 'reflect') {
+                transformCtx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+                transformCtx.lineWidth = 2;
+                transformCtx.setLineDash([5, 5]);
+                transformCtx.beginPath();
+                if (reflectAxis === 'xAxis') {
+                    transformCtx.moveTo(midX - gridR, midY);
+                    transformCtx.lineTo(midX + gridR, midY);
+                } else if (reflectAxis === 'yAxis') {
+                    transformCtx.moveTo(midX, midY - gridR);
+                    transformCtx.lineTo(midX, midY + gridR);
+                } else if (reflectAxis === 'yEqualsX') {
+                    const startPos = mapToGrid(-10, -10, w, h);
+                    const endPos = mapToGrid(10, 10, w, h);
+                    transformCtx.moveTo(startPos.x, startPos.y);
+                    transformCtx.lineTo(endPos.x, endPos.y);
+                }
+                transformCtx.stroke();
+                transformCtx.setLineDash([]);
+            }
+
+            // 4. Load points
+            const prePoints = shapePresets[currentShape];
+            const postPoints = [];
+
+            // Compute transformed points
+            prePoints.forEach(p => {
+                let tx = p.x;
+                let ty = p.y;
+
+                if (transformMode === 'translate') {
+                    tx += valDx;
+                    ty += valDy;
+                } else if (transformMode === 'rotate') {
+                    const rad = (valRot * Math.PI) / 180;
+                    tx = p.x * Math.cos(rad) - p.y * Math.sin(rad);
+                    ty = p.x * Math.sin(rad) + p.y * Math.cos(rad);
+                } else if (transformMode === 'reflect') {
+                    if (reflectAxis === 'xAxis') {
+                        ty = -p.y;
+                    } else if (reflectAxis === 'yAxis') {
+                        tx = -p.x;
+                    } else if (reflectAxis === 'yEqualsX') {
+                        tx = p.y;
+                        ty = p.x;
+                    }
+                } else if (transformMode === 'dilate') {
+                    tx = p.x * valScale;
+                    ty = p.y * valScale;
+                }
+
+                postPoints.push({ x: tx, y: ty, label: p.label + "'" });
+            });
+
+            // 5. Draw Helper Vector / Ray lines between Pre-image and Image
+            transformCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            transformCtx.lineWidth = 1;
+            
+            if (transformMode === 'dilate') {
+                const originPos = mapToGrid(0, 0, w, h);
+                prePoints.forEach((p, idx) => {
+                    const postP = postPoints[idx];
+                    const screenPost = mapToGrid(postP.x, postP.y, w, h);
+                    transformCtx.strokeStyle = 'rgba(255, 176, 0, 0.2)';
+                    transformCtx.beginPath();
+                    transformCtx.moveTo(originPos.x, originPos.y);
+                    transformCtx.lineTo(screenPost.x, screenPost.y);
+                    transformCtx.stroke();
+                });
+            } else {
+                transformCtx.setLineDash([3, 3]);
+                prePoints.forEach((p, idx) => {
+                    const postP = postPoints[idx];
+                    const screenPre = mapToGrid(p.x, p.y, w, h);
+                    const screenPost = mapToGrid(postP.x, postP.y, w, h);
+                    transformCtx.beginPath();
+                    transformCtx.moveTo(screenPre.x, screenPre.y);
+                    transformCtx.lineTo(screenPost.x, screenPost.y);
+                    transformCtx.stroke();
+                });
+                transformCtx.setLineDash([]);
+            }
+
+            // 6. Draw Pre-Image shape
+            drawShapePoly(transformCtx, prePoints, '#38bdf8', 'rgba(56, 189, 248, 0.15)', w, h);
+
+            // 7. Draw Image shape
+            drawShapePoly(transformCtx, postPoints, '#10b981', 'rgba(16, 185, 129, 0.25)', w, h);
+            
+            let explainHtml = '';
+            prePoints.forEach((p, idx) => {
+                const post = postPoints[idx];
+                explainHtml += `${p.label}(${p.x}, ${p.y}) &rarr; ${post.label}(${post.x.toFixed(1)}, ${post.y.toFixed(1)})<br>`;
+            });
+            vertexMappingExplanation.innerHTML = explainHtml;
+        }
+
+        function drawShapePoly(ctx, points, color, fillColor, w, h) {
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = color;
+            ctx.strokeStyle = color;
+            ctx.fillStyle = fillColor;
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            points.forEach((p, idx) => {
+                const pos = mapToGrid(p.x, p.y, w, h);
+                if (idx === 0) ctx.moveTo(pos.x, pos.y);
+                else ctx.lineTo(pos.x, pos.y);
+            });
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Labels for vertices
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 9px JetBrains Mono';
+            ctx.textAlign = 'center';
+            points.forEach(p => {
+                const pos = mapToGrid(p.x, p.y, w, h);
+                ctx.fillText(p.label, pos.x, pos.y - 8);
+            });
+        }
+
+        // UI Interactions
+        slideDx.addEventListener('input', (e) => {
+            valDx = parseInt(e.target.value);
+            updateTransformUI();
+        });
+
+        slideDy.addEventListener('input', (e) => {
+            valDy = parseInt(e.target.value);
+            updateTransformUI();
+        });
+
+        slideRot.addEventListener('input', (e) => {
+            valRot = parseInt(e.target.value);
+            updateTransformUI();
+        });
+
+        slideScale.addEventListener('input', (e) => {
+            valScale = parseFloat(e.target.value);
+            updateTransformUI();
+        });
+
+        function setTransformMode(mode) {
+            transformMode = mode;
+            
+            // resets buttons active
+            modeTranslateBtn.classList.remove('active');
+            modeRotateBtn.classList.remove('active');
+            modeReflectBtn.classList.remove('active');
+            modeDilateBtn.classList.remove('active');
+
+            if (mode === 'translate') modeTranslateBtn.classList.add('active');
+            else if (mode === 'rotate') modeRotateBtn.classList.add('active');
+            else if (mode === 'reflect') modeReflectBtn.classList.add('active');
+            else if (mode === 'dilate') modeDilateBtn.classList.add('active');
+
+            // Toggle controls containers
+            controlsTranslate.style.display = mode === 'translate' ? 'flex' : 'none';
+            controlsRotate.style.display = mode === 'rotate' ? 'flex' : 'none';
+            controlsReflect.style.display = mode === 'reflect' ? 'flex' : 'none';
+            controlsDilate.style.display = mode === 'dilate' ? 'flex' : 'none';
+
+            updateTransformUI();
+        }
+
+        function updateReflectionAxis(axis) {
+            reflectAxis = axis;
+            updateTransformUI();
+        }
+
+        function setShapePreset(preset) {
+            currentShape = preset;
+            
+            document.getElementById('btnPresetTri').classList.remove('active');
+            document.getElementById('btnPresetFShape').classList.remove('active');
+            document.getElementById('btnPresetHouse').classList.remove('active');
+
+            if (preset === 'triangle') document.getElementById('btnPresetTri').classList.add('active');
+            else if (preset === 'fshape') document.getElementById('btnPresetFShape').classList.add('active');
+            else if (preset === 'house') document.getElementById('btnPresetHouse').classList.add('active');
+
+            updateTransformUI();
+        }
+
+        function updateTransformUI() {
+            lblDx.textContent = valDx >= 0 ? `+${valDx}` : `${valDx}`;
+            lblDy.textContent = valDy >= 0 ? `+${valDy}` : `${valDy}`;
+            lblRot.textContent = `${valRot}\u00B0`;
+            lblScale.textContent = `${valScale.toFixed(1)}x`;
+
+            // Display mapping rule
+            if (transformMode === 'translate') {
+                const opX = valDx >= 0 ? `+ ${valDx}` : `- ${Math.abs(valDx)}`;
+                const opY = valDy >= 0 ? `+ ${valDy}` : `- ${Math.abs(valDy)}`;
+                mappingRuleDisplay.textContent = `(x, y) \u2192 (x ${opX}, y ${opY})`;
+            } else if (transformMode === 'rotate') {
+                const rad = (valRot * Math.PI) / 180;
+                const cos = Math.cos(rad).toFixed(2);
+                const sin = Math.sin(rad).toFixed(2);
+                // simplify print rules for common angles
+                if (valRot === 90) {
+                    mappingRuleDisplay.textContent = `(x, y) \u2192 (-y, x)`;
+                } else if (valRot === -90) {
+                    mappingRuleDisplay.textContent = `(x, y) \u2192 (y, -x)`;
+                } else if (Math.abs(valRot) === 180) {
+                    mappingRuleDisplay.textContent = `(x, y) \u2192 (-x, -y)`;
+                } else {
+                    mappingRuleDisplay.textContent = `(x, y) \u2192 (x\u22C5${cos} - y\u22C5${sin}, x\u22C5${sin} + y\u22C5${cos})`;
+                }
+            } else if (transformMode === 'reflect') {
+                if (reflectAxis === 'xAxis') {
+                    mappingRuleDisplay.textContent = `(x, y) \u2192 (x, -y)`;
+                } else if (reflectAxis === 'yAxis') {
+                    mappingRuleDisplay.textContent = `(x, y) \u2192 (-x, y)`;
+                } else if (reflectAxis === 'yEqualsX') {
+                    mappingRuleDisplay.textContent = `(x, y) \u2192 (y, x)`;
+                }
+            } else if (transformMode === 'dilate') {
+                mappingRuleDisplay.textContent = `(x, y) \u2192 (${valScale.toFixed(1)}\u22C5x, ${valScale.toFixed(1)}\u22C5y)`;
+            }
+
+            drawTransformations();
+        }
+
+        // DYNAMIC TRANSFORMATIONS QUIZ SYSTEM
+        const quizQuestions = [
+            {
+                question: "Which of the following is a NON-RIGID transformation that alters the size of the shape?",
+                options: ["Translation", "Rotation", "Reflection", "Dilation"],
+                correct: 3,
+                explanation: "Dilations scale a shape relative to a center point, changing its perimeter and area. Translations, rotations, and reflections are rigid motions that preserve size."
+            },
+            {
+                question: "If a point (x, y) is rotated 180 degrees about the origin, what is the resulting coordinate?",
+                options: ["(y, x)", "(-x, y)", "(x, -y)", "(-x, -y)"],
+                correct: 3,
+                explanation: "Rotating 180 degrees pivots the point to the exact opposite quadrant, negating both horizontal and vertical displacements: (-x, -y)."
+            },
+            {
+                question: "Which mapping represents a reflection across the vertical Y-axis?",
+                options: ["(x, y) -> (x, -y)", "(x, y) -> (-x, y)", "(x, y) -> (-x, -y)", "(x, y) -> (y, x)"],
+                correct: 1,
+                explanation: "Reflecting across the Y-axis mirrors coordinates horizontally, which negates the horizontal X values while keeping Y values identical: (-x, y)."
+            },
+            {
+                question: "Under a dilation with a scale factor of s = 2, what happens to the AREA of a triangle?",
+                options: ["Area stays unchanged", "Area doubles (2x)", "Area quadruples (4x)", "Area is halved (0.5x)"],
+                correct: 2,
+                explanation: "Area scales by the square of the scale factor: s^2. For s = 2, the area increases by 2^2 = 4 times (quadrupled)."
+            },
+            {
+                question: "Which transformation category reverses the geometric orientation of vertices (e.g. from counter-clockwise to clockwise order)?",
+                options: ["Translation", "Rotation", "Reflection", "Dilation"],
+                correct: 2,
+                explanation: "Reflections create a mirrored flip of the shape, which reverses its spatial orientation (clockwise paths become counter-clockwise, and vice versa)."
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let quizScore = 0;
+        let answered = false;
+
+        function loadQuestion() {
+            answered = false;
+            const q = quizQuestions[currentQuestionIdx];
+            
+            document.getElementById('quizProgressText').textContent = `Question ${currentQuestionIdx + 1} of ${quizQuestions.length}`;
+            document.getElementById('quizScoreText').textContent = `Score: ${quizScore}/${currentQuestionIdx}`;
+            document.getElementById('quizQuestionTitle').textContent = q.question;
+            document.getElementById('quizFeedbackArea').style.display = 'none';
+
+            const container = document.getElementById('quizOptionsContainer');
+            container.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'quiz-option';
+                optDiv.innerHTML = `<span>${opt}</span>`;
+                optDiv.onclick = () => selectOption(idx, optDiv);
+                container.appendChild(optDiv);
+            });
+        }
+
+        function selectOption(selectedIdx, optionElement) {
+            if (answered) return;
+            answered = true;
+
+            const q = quizQuestions[currentQuestionIdx];
+            const options = document.querySelectorAll('.quiz-option');
+
+            options.forEach((opt, idx) => {
+                if (idx === q.correct) {
+                    opt.classList.add('correct');
+                } else if (idx === selectedIdx) {
+                    opt.classList.add('incorrect');
+                }
+            });
+
+            if (selectedIdx === q.correct) {
+                quizScore++;
+                document.getElementById('quizFeedbackArea').querySelector('strong').textContent = 'Correct Answer!';
+                document.getElementById('quizFeedbackArea').querySelector('strong').style.color = '#10b981';
+            } else {
+                document.getElementById('quizFeedbackArea').querySelector('strong').textContent = 'Incorrect Answer';
+                document.getElementById('quizFeedbackArea').querySelector('strong').style.color = '#f43f5e';
+            }
+
+            document.getElementById('quizExplanationText').textContent = q.explanation;
+            document.getElementById('quizFeedbackArea').style.display = 'block';
+            document.getElementById('quizScoreText').textContent = `Score: ${quizScore}/${currentQuestionIdx + 1}`;
+        }
+
+        document.getElementById('quizNextBtn').addEventListener('click', () => {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                const area = document.getElementById('quizContainer');
+                area.innerHTML = `
+                    <div class="quiz-score-overlay">
+                        <h2 style="font-size: 2rem; margin-bottom: 1rem; font-family:'Outfit'; font-weight:700;">Quiz Completed!</h2>
+                        <p style="font-size: 1.1rem; margin-bottom: 2rem; color:var(--text-muted);">
+                            You scored <strong class="number" style="color:var(--color-emerald);">${quizScore} out of ${quizQuestions.length}</strong> correct answers.
+                        </p>
+                        <button class="btn" onclick="resetQuiz()" style="width:auto; display:inline-flex;">Restart Quiz</button>
+                    </div>
+                `;
+            }
+        });
+
+        function resetQuiz() {
+            currentQuestionIdx = 0;
+            quizScore = 0;
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = `
+                <div id="quizQuestionArea">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                        <span id="quizProgressText">Question 1 of 5</span>
+                        <span id="quizScoreText">Score: 0/0</span>
+                    </div>
+                    <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;"></h3>
+                    <div id="quizOptionsContainer"></div>
+                </div>
+                <div class="quiz-feedback" id="quizFeedbackArea">
+                    <strong>Correct Answer!</strong>
+                    <p id="quizExplanationText"></p>
+                    <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                        Next Question
+                    </button>
+                </div>
+            `;
+            document.getElementById('quizNextBtn').addEventListener('click', () => {
+                currentQuestionIdx++;
+                if (currentQuestionIdx < quizQuestions.length) {
+                    loadQuestion();
+                } else {
+                    const area = document.getElementById('quizContainer');
+                    area.innerHTML = `
+                        <div class="quiz-score-overlay">
+                            <h2 style="font-size: 2rem; margin-bottom: 1rem; font-family:'Outfit'; font-weight:700;">Quiz Completed!</h2>
+                            <p style="font-size: 1.1rem; margin-bottom: 2rem; color:var(--text-muted);">
+                                You scored <strong class="number" style="color:var(--color-emerald);">${quizScore} out of ${quizQuestions.length}</strong> correct answers.
+                            </p>
+                            <button class="btn" onclick="resetQuiz()" style="width:auto; display:inline-flex;">Restart Quiz</button>
+                        </div>
+                    `;
+                }
+            });
+            loadQuestion();
+        }
+
+        // INIT & RESIZE BINDINGS
+        window.addEventListener('resize', () => {
+            setTimeout(() => {
+                drawTransformations();
+            }, 300);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTransformUI();
+            loadQuestion();
+        });
+    </script>
+</body>
+
+</html>

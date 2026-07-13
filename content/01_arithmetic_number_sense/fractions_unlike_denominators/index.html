@@ -1,0 +1,559 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equivalent Fraction Splitter - Arithmetic & Numbers</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "01_arithmetic_number_sense",
+            logo: {"main":"Number","accent":"Lab","sub":"Equivalent Fraction Splitter"},
+            navigation: [
+    {
+        "label": "Visual Fraction Partition Balancer",
+        "desc": "Visual Fraction Partition Balancer interactive section",
+        "href": "#splitter"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Accent variables */
+            --color-frac-a: #00f0ff;      /* Cyan for Fraction A */
+            --color-frac-a-glow: rgba(0, 240, 255, 0.35);
+            --color-frac-b: #f43f5e;      /* Rose for Fraction B */
+            --color-frac-b-glow: rgba(244, 63, 94, 0.35);
+            --color-sum: #ffb000;         /* Amber for Sum */
+            --color-sum-glow: rgba(255, 176, 0, 0.35);
+        }
+
+        .control-label.frac-a-label { color: var(--color-frac-a); }
+        .control-label.frac-b-label { color: var(--color-frac-b); }
+        .control-label.sum-label { color: var(--color-sum); }
+
+        .frac-a-slider::-webkit-slider-thumb { background: var(--color-frac-a) !important; box-shadow: 0 0 10px var(--color-frac-a-glow) !important; }
+        .frac-b-slider::-webkit-slider-thumb { background: var(--color-frac-b) !important; box-shadow: 0 0 10px var(--color-frac-b-glow) !important; }
+        #subdenSlider::-webkit-slider-thumb { background: var(--color-sum) !important; box-shadow: 0 0 10px var(--color-sum-glow) !important; }
+
+        .color-frac-a-text { color: var(--color-frac-a); font-weight: 600; }
+        .color-frac-b-text { color: var(--color-frac-b); font-weight: 600; }
+        .color-sum-text { color: var(--color-sum); font-weight: 600; }
+
+        .badge-status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .badge-aligned {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .badge-misaligned {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Syllabus Navigation -->
+    <aside></aside>
+
+    <!-- Main Workspace Content -->
+    <main>
+        <header>
+            <h1>Fractions with Unlike Denominators</h1>
+            <p>Master why we require common denominators. Visually slice two fractions into equal-sized units to add their segments.</p>
+        </header>
+
+        <section id="splitter">
+            <div class="section-header">
+                <span class="section-tag">Interactive Widget</span>
+                <h2>Visual Fraction Partition Balancer</h2>
+            </div>
+            <p class="section-intro">
+                Select your fractions using the sliders. Note how Fraction A (Rose) and Fraction B (Cyan) have different subdivision block sizes. Drag the **Grid Density Selector** (Subdivision Denominator) below. Once both fractions' blocks align perfectly with the grid lines, they share a common unit division and can be combined!
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: HTML5 Canvas -->
+                <div class="panel">
+                    <div class="canvas-container" style="height: 380px;">
+                        <canvas id="fractionCanvas"></canvas>
+                    </div>
+                    
+                    <div class="control-group">
+                        <!-- Fraction A Numerator -->
+                        <div class="control-row">
+                            <div class="control-label-row">
+                                <span class="control-label frac-a-label">Fraction A Numerator</span>
+                                <span class="control-value"><span id="fracANumVal" class="number">1</span></span>
+                            </div>
+                            <input type="range" class="frac-a-slider" id="fracANumSlider" min="1" max="5" value="1">
+                        </div>
+
+                        <!-- Fraction A Denominator -->
+                        <div class="control-row">
+                            <div class="control-label-row">
+                                <span class="control-label frac-a-label">Fraction A Denominator</span>
+                                <span class="control-value"><span id="fracADenVal" class="number">2</span></span>
+                            </div>
+                            <input type="range" class="frac-a-slider" id="fracADenSlider" min="2" max="6" value="2">
+                        </div>
+
+                        <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.05); margin: 0.5rem 0;">
+
+                        <!-- Fraction B Numerator -->
+                        <div class="control-row">
+                            <div class="control-label-row">
+                                <span class="control-label frac-b-label">Fraction B Numerator</span>
+                                <span class="control-value"><span id="fracBNumVal" class="number">1</span></span>
+                            </div>
+                            <input type="range" class="frac-b-slider" id="fracBNumSlider" min="1" max="5" value="1">
+                        </div>
+
+                        <!-- Fraction B Denominator -->
+                        <div class="control-row">
+                            <div class="control-label-row">
+                                <span class="control-label frac-b-label">Fraction B Denominator</span>
+                                <span class="control-value"><span id="fracBDenVal" class="number">3</span></span>
+                            </div>
+                            <input type="range" class="frac-b-slider" id="fracBDenSlider" min="2" max="6" value="3">
+                        </div>
+
+                        <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.05); margin: 0.5rem 0;">
+
+                        <!-- Grid Subdivision (Common Denominator Choice) -->
+                        <div class="control-row">
+                            <div class="control-label-row">
+                                <span class="control-label sum-label" style="font-weight: 600;">Grid Density (Subdivision Denominator)</span>
+                                <span class="control-value" style="font-weight: bold;"><span id="subdenVal" class="number">4</span></span>
+                            </div>
+                            <input type="range" id="subdenSlider" min="2" max="18" value="4">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Formulas & Explanations -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>
+                            <span style="color:var(--color-frac-a); background:rgba(244, 63, 94, 0.1); padding:2px 6px; border-radius:4px;">Fraction A</span>
+                            Original vs Subdivided
+                        </h3>
+                        <div class="math-equation">
+                            <div class="math-fraction">
+                                <span class="numerator color-frac-a-text" id="eqANum">1</span>
+                                <span class="denominator color-frac-a-text" id="eqADen">2</span>
+                            </div>
+                            <span>&rarr;</span>
+                            <div class="math-fraction">
+                                <span class="numerator color-frac-a-text" id="eqASubNum">?</span>
+                                <span class="denominator color-frac-a-text" id="eqASubDen">?</span>
+                            </div>
+                            <span id="eqAStatus" class="badge-status badge-misaligned">Misaligned</span>
+                        </div>
+                    </div>
+
+                    <div class="math-card">
+                        <h3>
+                            <span style="color:var(--color-frac-b); background:rgba(0, 240, 255, 0.1); padding:2px 6px; border-radius:4px;">Fraction B</span>
+                            Original vs Subdivided
+                        </h3>
+                        <div class="math-equation">
+                            <div class="math-fraction">
+                                <span class="numerator color-frac-b-text" id="eqBNum">1</span>
+                                <span class="denominator color-frac-b-text" id="eqBDen">3</span>
+                            </div>
+                            <span>&rarr;</span>
+                            <div class="math-fraction">
+                                <span class="numerator color-frac-b-text" id="eqBSubNum">?</span>
+                                <span class="denominator color-frac-b-text" id="eqBSubDen">?</span>
+                            </div>
+                            <span id="eqBStatus" class="badge-status badge-misaligned">Misaligned</span>
+                        </div>
+                    </div>
+
+                    <div class="math-card" style="border-color: rgba(255, 176, 0, 0.15); background: rgba(255, 176, 0, 0.02);">
+                        <h3>
+                            <span style="color:var(--color-sum); background:rgba(255, 176, 0, 0.1); padding:2px 6px; border-radius:4px;">Addition</span>
+                            Summation Formula
+                        </h3>
+                        <div class="math-equation" id="sumEquationText" style="display: none;">
+                            <div class="math-fraction">
+                                <span class="numerator color-frac-a-text" id="sumEqANum">3</span>
+                                <span class="denominator color-frac-a-text" id="sumEqADen">6</span>
+                            </div>
+                            <span>+</span>
+                            <div class="math-fraction">
+                                <span class="numerator color-frac-b-text" id="sumEqBNum">2</span>
+                                <span class="denominator color-frac-b-text" id="sumEqBDen">6</span>
+                            </div>
+                            <span>=</span>
+                            <div class="math-fraction">
+                                <span class="numerator color-sum-text" id="sumResultNum">5</span>
+                                <span class="denominator color-sum-text" id="sumResultDen">6</span>
+                            </div>
+                            <span>=</span>
+                            <span class="color-sum-text math-value" id="decimalResult">0.833</span>
+                        </div>
+                        <div id="equationWarn" style="font-size:0.9rem; color:var(--text-muted); line-height:1.5;">
+                            Grid lines must align with both fractions' borders to make addition valid. Drag the density slider to find the Lowest Common Multiple (e.g., <span class="number" style="color:var(--color-sum); font-weight:bold;" id="lcdHint">6</span>).
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <button class="btn" id="combineBtn" disabled>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            Combine Fractions & Sum
+                        </button>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>If you pick denominator 6, the segments line up! That represents the Lowest Common Denominator (LCD).</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('fractionCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Inputs
+        const numASlider = document.getElementById('fracANumSlider');
+        const denASlider = document.getElementById('fracADenSlider');
+        const numBSlider = document.getElementById('fracBNumSlider');
+        const denBSlider = document.getElementById('fracBDenSlider');
+        const subdenSlider = document.getElementById('subdenSlider');
+        
+        // Value spans
+        const valANum = document.getElementById('fracANumVal');
+        const valADen = document.getElementById('fracADenVal');
+        const valBNum = document.getElementById('fracBNumVal');
+        const valBDen = document.getElementById('fracBDenVal');
+        const valSubden = document.getElementById('subdenVal');
+
+        // Equation text bindings
+        const eqANum = document.getElementById('eqANum');
+        const eqADen = document.getElementById('eqADen');
+        const eqASubNum = document.getElementById('eqASubNum');
+        const eqASubDen = document.getElementById('eqASubDen');
+        const eqAStatus = document.getElementById('eqAStatus');
+
+        const eqBNum = document.getElementById('eqBNum');
+        const eqBDen = document.getElementById('eqBDen');
+        const eqBSubNum = document.getElementById('eqBSubNum');
+        const eqBSubDen = document.getElementById('eqBSubDen');
+        const eqBStatus = document.getElementById('eqBStatus');
+
+        const sumEquationText = document.getElementById('sumEquationText');
+        const equationWarn = document.getElementById('equationWarn');
+        const lcdHintText = document.getElementById('lcdHint');
+
+        const sumEqANum = document.getElementById('sumEqANum');
+        const sumEqADen = document.getElementById('sumEqADen');
+        const sumEqBNum = document.getElementById('sumEqBNum');
+        const sumEqBDen = document.getElementById('sumEqBDen');
+        const sumResultNum = document.getElementById('sumResultNum');
+        const sumResultDen = document.getElementById('sumResultDen');
+        const decimalResult = document.getElementById('decimalResult');
+
+        const combineBtn = document.getElementById('combineBtn');
+
+        // Retina display scaling
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const width = rect.width;
+            const height = rect.height;
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+            ctx.scale(dpr, dpr);
+        }
+
+        // Math Helpers
+        function gcd(a, b) {
+            return b === 0 ? a : gcd(b, a % b);
+        }
+
+        function lcm(a, b) {
+            return (a * b) / gcd(a, b);
+        }
+
+        // Animation States
+        let animProgress = 0; // 0 = split, 1 = combined
+        let isAnimating = false;
+        let animationDirection = 1; // 1 = combining, -1 = separating
+
+        // Redraw
+        function draw() {
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            ctx.clearRect(0, 0, w, h);
+
+            const nA = parseInt(numASlider.value);
+            const dA = parseInt(denASlider.value);
+            const nB = parseInt(numBSlider.value);
+            const dB = parseInt(denBDen = denBSlider.value); // Wait, note: we parse correctly
+            const dSub = parseInt(subdenSlider.value);
+
+            // Bounds constraints
+            if (nA >= dA) {
+                numASlider.value = dA - 1;
+            }
+            if (nB >= dB) {
+                numBSlider.value = dB - 1;
+            }
+
+            const activeNA = parseInt(numASlider.value);
+            const activeDA = parseInt(denASlider.value);
+            const activeNB = parseInt(numBSlider.value);
+            const activeDB = parseInt(denBSlider.value);
+
+            valANum.innerText = activeNA;
+            valADen.innerText = activeDA;
+            valBNum.innerText = activeNB;
+            valBDen.innerText = activeDB;
+            valSubden.innerText = dSub;
+
+            eqANum.innerText = activeNA;
+            eqADen.innerText = activeDA;
+            eqBNum.innerText = activeNB;
+            eqBDen.innerText = activeDB;
+
+            // Is A subdivisible?
+            const aAligned = (dSub % activeDA === 0);
+            const aSubUnits = aAligned ? activeNA * (dSub / activeDA) : null;
+            if (aAligned) {
+                eqASubNum.innerText = aSubUnits;
+                eqASubDen.innerText = dSub;
+                eqAStatus.innerText = "Aligned";
+                eqAStatus.className = "badge-status badge-aligned";
+            } else {
+                eqASubNum.innerText = "?";
+                eqASubDen.innerText = "?";
+                eqAStatus.innerText = "Misaligned";
+                eqAStatus.className = "badge-status badge-misaligned";
+            }
+
+            // Is B subdivisible?
+            const bAligned = (dSub % activeDB === 0);
+            const bSubUnits = bAligned ? activeNB * (dSub / activeDB) : null;
+            if (bAligned) {
+                eqBSubNum.innerText = bSubUnits;
+                eqBSubDen.innerText = dSub;
+                eqBStatus.innerText = "Aligned";
+                eqBStatus.className = "badge-status badge-aligned";
+            } else {
+                eqBSubNum.innerText = "?";
+                eqBSubDen.innerText = "?";
+                eqBStatus.innerText = "Misaligned";
+                eqBStatus.className = "badge-status badge-misaligned";
+            }
+
+            const currentLcd = lcm(activeDA, activeDB);
+            lcdHintText.innerText = currentLcd;
+
+            if (aAligned && bAligned) {
+                combineBtn.removeAttribute('disabled');
+                equationWarn.style.display = 'none';
+                sumEquationText.style.display = 'flex';
+
+                sumEqANum.innerText = aSubUnits;
+                sumEqADen.innerText = dSub;
+                sumEqBNum.innerText = bSubUnits;
+                sumEqBDen.innerText = dSub;
+                sumResultNum.innerText = aSubUnits + bSubUnits;
+                sumResultDen.innerText = dSub;
+                decimalResult.innerText = ((aSubUnits + bSubUnits) / dSub).toFixed(3);
+            } else {
+                combineBtn.setAttribute('disabled', 'true');
+                equationWarn.style.display = 'block';
+                sumEquationText.style.display = 'none';
+                if (animProgress > 0 && !isAnimating) {
+                    animProgress = 0; // reset combination
+                }
+            }
+
+            const barWidth = w * 0.75;
+            const barHeight = 45;
+            const startX = w * 0.125;
+            
+            const startY_A = 60;
+            const startY_B = 140;
+            const startY_Sum = 250;
+
+            // Helper to draw shaded fraction bar
+            function drawFractionBar(y, numerator, denominator, color, glowColor, label) {
+                // Background
+                ctx.fillStyle = "rgba(255, 255, 255, 0.02)";
+                ctx.fillRect(startX, y, barWidth, barHeight);
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+                ctx.lineWidth = 1;
+                ctx.strokeRect(startX, y, barWidth, barHeight);
+
+                // Shading original fractions
+                const segmentWidth = barWidth / denominator;
+                ctx.fillStyle = color;
+                ctx.shadowColor = glowColor;
+                ctx.shadowBlur = 10;
+                for (let i = 0; i < numerator; i++) {
+                    ctx.fillRect(startX + i * segmentWidth, y, segmentWidth, barHeight);
+                }
+                ctx.shadowBlur = 0; // Reset
+
+                // Original divider lines
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+                ctx.lineWidth = 2;
+                for (let i = 1; i < denominator; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(startX + i * segmentWidth, y);
+                    ctx.lineTo(startX + i * segmentWidth, y + barHeight);
+                    ctx.stroke();
+                }
+
+                // Label on the left
+                ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+                ctx.font = "bold 13px 'Outfit', sans-serif";
+                ctx.fillText(label, startX - 85, y + 27);
+            }
+
+            drawFractionBar(startY_A, activeNA, activeDA, "var(--color-frac-a)", "var(--color-frac-a-glow)", "Fraction A");
+
+            drawFractionBar(startY_B, activeNB, activeDB, "var(--color-frac-b)", "var(--color-frac-b-glow)", "Fraction B");
+
+
+            ctx.fillStyle = "rgba(255, 255, 255, 0.02)";
+            ctx.fillRect(startX, startY_Sum, barWidth, barHeight);
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(startX, startY_Sum, barWidth, barHeight);
+            
+            // Label
+            ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+            ctx.font = "bold 13px 'Outfit', sans-serif";
+            ctx.fillText("Shaded Sum", startX - 85, startY_Sum + 27);
+
+            const subWidth = barWidth / dSub;
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+            ctx.lineWidth = 1;
+            for (let i = 1; i < dSub; i++) {
+                ctx.beginPath();
+                ctx.moveTo(startX + i * subWidth, startY_Sum);
+                ctx.lineTo(startX + i * subWidth, startY_Sum + barHeight);
+                ctx.stroke();
+            }
+
+            if (aAligned && bAligned) {
+                const numAUnits = aSubUnits;
+                const numBUnits = bSubUnits;
+
+                // Animate fraction A blocks sliding
+                // They slide from startY_A to startY_Sum
+                // X position is unchanged or wraps to the front
+                ctx.fillStyle = "var(--color-frac-a)";
+                ctx.shadowColor = "var(--color-frac-a-glow)";
+                ctx.shadowBlur = 10 * animProgress;
+                for (let i = 0; i < numAUnits; i++) {
+                    const x = startX + i * subWidth;
+                    const y = startY_A + (startY_Sum - startY_A) * animProgress;
+                    ctx.fillRect(x + 1, y + 1, subWidth - 2, barHeight - 2);
+                }
+
+                // Animate fraction B blocks sliding
+                // In the sum bar they stack AFTER fraction A blocks, so their final X starts at A's offset.
+                ctx.fillStyle = "var(--color-frac-b)";
+                ctx.shadowColor = "var(--color-frac-b-glow)";
+                ctx.shadowBlur = 10 * animProgress;
+                for (let i = 0; i < numBUnits; i++) {
+                    const startX_B = startX + i * subWidth;
+                    const targetX_B = startX + (numAUnits + i) * subWidth;
+                    const x = startX_B + (targetX_B - startX_B) * animProgress;
+                    const y = startY_B + (startY_Sum - startY_B) * animProgress;
+                    ctx.fillRect(x + 1, y + 1, subWidth - 2, barHeight - 2);
+                }
+                ctx.shadowBlur = 0; // Reset
+            }
+        }
+
+        // Animation loop
+        function animate() {
+            if (!isAnimating) return;
+            
+            animProgress += 0.05 * animationDirection;
+            if (animProgress >= 1) {
+                animProgress = 1;
+                isAnimating = false;
+                combineBtn.innerHTML = `
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Separate Fractions
+                `;
+            } else if (animProgress <= 0) {
+                animProgress = 0;
+                isAnimating = false;
+                combineBtn.innerHTML = `
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Combine Fractions & Sum
+                `;
+            }
+
+            draw();
+            if (isAnimating) {
+                requestAnimationFrame(animate);
+            }
+        }
+
+        combineBtn.addEventListener('click', () => {
+            isAnimating = true;
+            if (animProgress >= 1) {
+                animationDirection = -1;
+            } else {
+                animationDirection = 1;
+            }
+            animate();
+        });
+
+        // Event listeners
+        [numASlider, denASlider, numBSlider, denBSlider, subdenSlider].forEach(slider => {
+            slider.addEventListener('input', () => {
+                // If inputs changed, stop animation and reset
+                animProgress = 0;
+                isAnimating = false;
+                combineBtn.innerHTML = `
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Combine Fractions & Sum
+                `;
+                draw();
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            draw();
+        });
+
+        // Initial setup
+        resizeCanvas();
+        draw();
+    </script>
+</body>
+</html>

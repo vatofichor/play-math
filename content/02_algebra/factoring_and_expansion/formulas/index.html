@@ -1,0 +1,832 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadratic Area Models - Factoring & Expansion</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "02_algebra",
+            logo: {"main":"Algebra","accent":"Lab","sub":"Quadratic Area Models"},
+            navigation: [
+    {
+        "label": "Interactive Partition Box",
+        "desc": "Interactive Partition Box interactive section",
+        "href": "#visualizer"
+    },
+    {
+        "label": "Trinomial Factorization Solver",
+        "desc": "Trinomial Factorization Solver interactive section",
+        "href": "#solver"
+    },
+    {
+        "label": "Conceptual Quiz",
+        "desc": "Conceptual Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Algebra Domain / Rose Theme override */
+            --color-rose: #f43f5e;
+            --color-rose-glow: rgba(244, 63, 94, 0.35);
+            --color-accent: #f43f5e;
+            --color-accent-glow: rgba(244, 63, 94, 0.35);
+
+            --color-x2: #f43f5e;   /* Rose for x² */
+            --color-px: #6366f1;   /* Indigo for px */
+            --color-qx: #a855f7;   /* Purple for qx */
+            --color-pq: #10b981;   /* Emerald for pq */
+        }
+
+        /* Highlight active menu item */
+        .sidebar-drawer .syllabus-item:nth-child(2) a {
+            background: var(--color-rose) !important;
+            box-shadow: 0 4px 20px var(--color-rose-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item:nth-child(2) a .syllabus-title {
+            color: var(--bg-color) !important;
+        }
+        .sidebar-drawer .syllabus-item:nth-child(2) a .syllabus-desc {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-rose);
+            background: rgba(244, 63, 94, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            text-shadow: 0 0 5px var(--color-rose-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        /* Math Display styling */
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        /* Control Sliders */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row.coeff-x input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-x2);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-x2);
+        }
+        .slider-row.coeff-p input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-px);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-px);
+        }
+        .slider-row.coeff-q input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-qx);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-qx);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .coeff-input-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.25rem;
+        }
+
+        .coeff-input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .coeff-input-group label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .number-input-spinner {
+            display: flex;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .number-input-spinner button {
+            background: transparent;
+            color: var(--text-color);
+            border: none;
+            padding: 0.5rem 0.8rem;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background var(--transition-speed) ease;
+        }
+
+        .number-input-spinner button:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .number-input-spinner span {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 600;
+            min-width: 40px;
+        }
+
+        /* Quiz styles */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Quadratic Area Models</h1>
+            <p>Geometrically analyze binomial multiplication. Expand dimensions dynamically and see standard quadratic expansions partition visually into distinct variables and constants.</p>
+        </header>
+
+        <!-- SECTION 1: VISUALIZER -->
+        <section id="visualizer">
+            <div class="section-header">
+                <span class="section-tag">2D Area Model</span>
+                <h2>Interactive Partition Box</h2>
+            </div>
+            <p class="section-intro">
+                Adjust variables $x, p, q$ to resize the rectangle. Observe how the total area $(x+p)(x+q)$ partitions into four sections representing $x^2$, $px$, $qx$, and $pq$.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: The Canvas -->
+                <div class="panel">
+                    <div class="canvas-container" style="height: 380px;">
+                        <canvas id="areaCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders & Live Formulas -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Factored Expression</h3>
+                        <div class="equation-box" id="eqDisplay" style="font-size: 1.3rem;">
+                            (x + 2.0)(x + 3.0) = x² + 5.0x + 6.0
+                        </div>
+                    </div>
+
+                    <!-- Sliders -->
+                    <div class="slider-group">
+                        <div class="slider-row coeff-x">
+                            <div class="slider-label">
+                                <span>Dimension <span class="math-symbol" style="color:var(--color-x2);">x</span></span>
+                                <span class="number" id="lblX">3.0</span>
+                            </div>
+                            <input type="range" id="slideX" min="1.0" max="6.0" step="0.1" value="3.0">
+                        </div>
+                        <div class="slider-row coeff-p">
+                            <div class="slider-label">
+                                <span>Constant <span class="math-symbol" style="color:var(--color-px);">p</span></span>
+                                <span class="number" id="lblP">2.0</span>
+                            </div>
+                            <input type="range" id="slideP" min="0.0" max="4.0" step="0.1" value="2.0">
+                        </div>
+                        <div class="slider-row coeff-q">
+                            <div class="slider-label">
+                                <span>Constant <span class="math-symbol" style="color:var(--color-qx);">q</span></span>
+                                <span class="number" id="lblQ">1.5</span>
+                            </div>
+                            <input type="range" id="slideQ" min="0.0" max="4.0" step="0.1" value="1.5">
+                        </div>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>The area model visually proves the FOIL method: **F**irst ($x \cdot x = x^2$), **O**uter ($x \cdot q$), **I**nner ($p \cdot x$), and **L**ast ($p \cdot q$).</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: SOLVER -->
+        <section id="solver">
+            <div class="section-header">
+                <span class="section-tag">Step-by-Step Solver</span>
+                <h2>Trinomial Factorization Solver</h2>
+            </div>
+            <p class="section-intro">
+                Input coefficients $B$ and $C$ to factor the quadratic expression $x^2 + Bx + C$ into $(x + p)(x + q)$. The solver will search for two integers that sum to $B$ and multiply to $C$.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Coefficient input & solver dashboard -->
+                <div class="panel">
+                    <div class="math-card" style="margin-bottom: 1.5rem; border-color: rgba(244, 63, 94, 0.15); background: rgba(244, 63, 94, 0.02);">
+                        <h3 style="border-bottom-color: rgba(244, 63, 94, 0.1); color: var(--color-rose); font-size: 0.95rem;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 4px; vertical-align: middle;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            How to Factor a Trinomial: x² + Bx + C
+                        </h3>
+                        <ol style="margin-left: 1.25rem; padding-left: 0; color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; display: flex; flex-direction: column; gap: 6px;">
+                            <li>Identify the sum value <strong>B</strong> and the product constant <strong>C</strong>.</li>
+                            <li>List the integer factor pairs of <strong>C</strong> (numbers that multiply to C).</li>
+                            <li>Sum each pair to find which one equals <strong>B</strong>.</li>
+                            <li>Choose this matching pair <strong>(p, q)</strong> where: <em>p + q = B</em> and <em>p · q = C</em>.</li>
+                            <li>Write the factored expression in the form: <strong>(x + p)(x + q)</strong>.</li>
+                        </ol>
+                    </div>
+                    <h3>Expression: <span class="number">x² + Bx + C</span></h3>
+                    <br>
+                    
+                    <div class="coeff-input-row">
+                        <div class="coeff-input-group">
+                            <label>Coefficient B (Sum)</label>
+                            <div class="number-input-spinner">
+                                <button id="btnDecB">-</button>
+                                <span id="valB">5</span>
+                                <button id="btnIncB">+</button>
+                            </div>
+                        </div>
+                        <div class="coeff-input-group">
+                            <label>Constant C (Product)</label>
+                            <div class="number-input-spinner">
+                                <button id="btnDecC">-</button>
+                                <span id="valC">6</span>
+                                <button id="btnIncC">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="formula-steps" id="solverSteps">
+                        <!-- Populated dynamically -->
+                        Searching for factors...
+                    </div>
+                </div>
+
+                <!-- Right Panel: Solver Visual Explanation -->
+                <div class="panel">
+                    <h3>Factoring Logic</h3>
+                    <br>
+                    <div class="math-card">
+                        <h3>Sum Condition</h3>
+                        <p class="number" style="font-size: 1.15rem; color: var(--color-px);">
+                            p + q = <span id="sumCondText">5</span>
+                        </p>
+                    </div>
+                    <div class="math-card">
+                        <h3>Product Condition</h3>
+                        <p class="number" style="font-size: 1.15rem; color: var(--color-pq);">
+                            p &times; q = <span id="prodCondText">6</span>
+                        </p>
+                    </div>
+                    <div class="math-card">
+                        <h3>Factored Form</h3>
+                        <p class="number" style="font-size: 1.3rem; font-weight: 700; color: var(--color-rose);" id="factoredFormText">
+                            (x + 2)(x + 3)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Conceptual Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Solve the factoring challenges below to test your understanding of area partitioning and binomial expansion.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Quiz board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 4</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">If we expand (x + 4)(x + 2), what is the linear coefficient of the resulting trinomial?</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Expanding gives x² + 2x + 4x + 8 = x² + 6x + 8. The linear coefficient is 6 (which is 4 + 2).</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: focus checklist -->
+                <div class="panel">
+                    <h3>Focus Topics</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom: 0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background-color: var(--color-x2);"></span>FOIL Expansion</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background-color: var(--color-px);"></span>Trinomial Coefficients</span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name"><span class="orange-dot" style="background-color: var(--color-pq);"></span>Integer Factoring Pairs</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('areaCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const slideX = document.getElementById('slideX');
+        const slideP = document.getElementById('slideP');
+        const slideQ = document.getElementById('slideQ');
+        const lblX = document.getElementById('lblX');
+        const lblP = document.getElementById('lblP');
+        const lblQ = document.getElementById('lblQ');
+        const eqDisplay = document.getElementById('eqDisplay');
+
+        // Solver Elements
+        const valB = document.getElementById('valB');
+        const valC = document.getElementById('valC');
+        const btnDecB = document.getElementById('btnDecB');
+        const btnIncB = document.getElementById('btnIncB');
+        const btnDecC = document.getElementById('btnDecC');
+        const btnIncC = document.getElementById('btnIncC');
+        const solverSteps = document.getElementById('solverSteps');
+        const sumCondText = document.getElementById('sumCondText');
+        const prodCondText = document.getElementById('prodCondText');
+        const factoredFormText = document.getElementById('factoredFormText');
+
+        // Variables
+        let xVal = 3.0;
+        let pVal = 2.0;
+        let qVal = 1.5;
+
+        let bVal = 5;
+        let cVal = 6;
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            drawArea();
+        }
+
+        function drawArea() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const margin = 40;
+            const w = canvas.width - 2 * margin;
+            const h = canvas.height - 2 * margin;
+
+            // Maximum bounds to fit in canvas
+            const maxVal = 10.0; // x + p max is 6 + 4 = 10, x + q max is 6 + 4 = 10
+            const scale = Math.min(w, h) / maxVal;
+
+            const pxWidth = xVal * scale;
+            const ppWidth = pVal * scale;
+            const pqHeight = qVal * scale;
+            const pxHeight = xVal * scale;
+
+            const startX = margin + (w - (pxWidth + ppWidth)) / 2;
+            const startY = margin + (h - (pxHeight + pqHeight)) / 2;
+
+            ctx.fillStyle = 'rgba(244, 63, 94, 0.25)';
+            ctx.strokeStyle = '#f43f5e';
+            ctx.lineWidth = 2;
+            ctx.fillRect(startX, startY, pxWidth, pxHeight);
+            ctx.strokeRect(startX, startY, pxWidth, pxHeight);
+
+            if (pVal > 0) {
+                ctx.fillStyle = 'rgba(99, 102, 241, 0.25)';
+                ctx.strokeStyle = '#6366f1';
+                ctx.fillRect(startX + pxWidth, startY, ppWidth, pxHeight);
+                ctx.strokeRect(startX + pxWidth, startY, ppWidth, pxHeight);
+            }
+
+            if (qVal > 0) {
+                ctx.fillStyle = 'rgba(168, 85, 247, 0.25)';
+                ctx.strokeStyle = '#a855f7';
+                ctx.fillRect(startX, startY + pxHeight, pxWidth, pqHeight);
+                ctx.strokeRect(startX, startY + pxHeight, pxWidth, pqHeight);
+            }
+
+            if (pVal > 0 && qVal > 0) {
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.25)';
+                ctx.strokeStyle = '#10b981';
+                ctx.fillRect(startX + pxWidth, startY + pxHeight, ppWidth, pqHeight);
+                ctx.strokeRect(startX + pxWidth, startY + pxHeight, ppWidth, pqHeight);
+            }
+
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = '11px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // x^2 label
+            ctx.fillText("x²", startX + pxWidth / 2, startY + pxHeight / 2);
+            ctx.fillText(`(${xVal.toFixed(1)}² = ${(xVal * xVal).toFixed(2)})`, startX + pxWidth / 2, startY + pxHeight / 2 + 15);
+
+            // px label
+            if (pVal > 0) {
+                ctx.fillText("px", startX + pxWidth + ppWidth / 2, startY + pxHeight / 2);
+                ctx.fillText(`(${(pVal * xVal).toFixed(2)})`, startX + pxWidth + ppWidth / 2, startY + pxHeight / 2 + 15);
+            }
+
+            // qx label
+            if (qVal > 0) {
+                ctx.fillText("qx", startX + pxWidth / 2, startY + pxHeight + pqHeight / 2);
+                ctx.fillText(`(${(qVal * xVal).toFixed(2)})`, startX + pxWidth / 2, startY + pxHeight + pqHeight / 2 + 15);
+            }
+
+            // pq label
+            if (pVal > 0 && qVal > 0) {
+                ctx.fillText("pq", startX + pxWidth + ppWidth / 2, startY + pxHeight + pqHeight / 2);
+                ctx.fillText(`(${(pVal * qVal).toFixed(2)})`, startX + pxWidth + ppWidth / 2, startY + pxHeight + pqHeight / 2 + 15);
+            }
+
+            // Dimension indicators
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.font = '10px JetBrains Mono';
+
+            // Top: x and p
+            ctx.fillText(`x = ${xVal.toFixed(1)}`, startX + pxWidth / 2, startY - 15);
+            if (pVal > 0) {
+                ctx.fillText(`p = ${pVal.toFixed(1)}`, startX + pxWidth + ppWidth / 2, startY - 15);
+            }
+
+            // Left: x and q
+            ctx.textAlign = 'right';
+            ctx.fillText(`x = ${xVal.toFixed(1)}`, startX - 10, startY + pxHeight / 2);
+            if (qVal > 0) {
+                ctx.fillText(`q = ${qVal.toFixed(1)}`, startX - 10, startY + pxHeight + pqHeight / 2);
+            }
+        }
+
+        function updateAreaFormula() {
+            lblX.textContent = xVal.toFixed(1);
+            lblP.textContent = pVal.toFixed(1);
+            lblQ.textContent = qVal.toFixed(1);
+
+            const linear = pVal + qVal;
+            const constant = pVal * qVal;
+            eqDisplay.innerHTML = `(x + ${pVal.toFixed(1)})(x + ${qVal.toFixed(1)}) = x² + ${linear.toFixed(1)}x + ${constant.toFixed(1)}`;
+            drawArea();
+        }
+
+        // Solver Logic
+        function solveTrinomial() {
+            valB.textContent = bVal;
+            valC.textContent = cVal;
+            sumCondText.textContent = bVal;
+            prodCondText.textContent = cVal;
+
+            let stepsHtml = `<div><strong>1. Find integer factors of C (${cVal}):</strong></div>`;
+            const absC = Math.abs(cVal);
+            let factors = [];
+
+            for (let i = -absC; i <= absC; i++) {
+                if (i !== 0 && cVal % i === 0) {
+                    let counterpart = cVal / i;
+                    if (i <= counterpart) {
+                        factors.push([i, counterpart]);
+                    }
+                }
+            }
+
+            stepsHtml += `<div style="margin-left: 10px; color: var(--text-muted); font-size: 0.8rem;">`;
+            factors.forEach(pair => {
+                const sum = pair[0] + pair[1];
+                stepsHtml += `Factors: ${pair[0]} &times; ${pair[1]} = ${cVal} &nbsp;&rarr;&nbsp; Sum: ${pair[0]} + ${pair[1]} = ${sum}<br>`;
+            });
+            stepsHtml += `</div><br>`;
+
+            // Find matching pair
+            let match = null;
+            factors.forEach(pair => {
+                if (pair[0] + pair[1] === bVal) {
+                    match = pair;
+                }
+            });
+
+            stepsHtml += `<div><strong>2. Select pair with Sum = B (${bVal}):</strong></div>`;
+            if (match) {
+                stepsHtml += `<div style="margin-left: 10px; color: #10b981; font-weight: 700;">`;
+                stepsHtml += `Match Found! p = ${match[0]}, q = ${match[1]}`;
+                stepsHtml += `</div>`;
+                factoredFormText.textContent = `(x ${match[0] >= 0 ? '+' : '-'} ${Math.abs(match[0])})(x ${match[1] >= 0 ? '+' : '-'} ${Math.abs(match[1])})`;
+            } else {
+                stepsHtml += `<div style="margin-left: 10px; color: #f43f5e; font-weight: 700;">`;
+                stepsHtml += `No simple integer factors sum to ${bVal}.`;
+                stepsHtml += `</div>`;
+                factoredFormText.textContent = "Not factorable over Integers";
+            }
+
+            solverSteps.innerHTML = stepsHtml;
+        }
+
+        // Event listeners
+        slideX.addEventListener('input', (e) => {
+            xVal = parseFloat(e.target.value);
+            updateAreaFormula();
+        });
+        slideP.addEventListener('input', (e) => {
+            pVal = parseFloat(e.target.value);
+            updateAreaFormula();
+        });
+        slideQ.addEventListener('input', (e) => {
+            qVal = parseFloat(e.target.value);
+            updateAreaFormula();
+        });
+
+        btnDecB.addEventListener('click', () => { bVal--; solveTrinomial(); });
+        btnIncB.addEventListener('click', () => { bVal++; solveTrinomial(); });
+        btnDecC.addEventListener('click', () => { cVal--; solveTrinomial(); });
+        btnIncC.addEventListener('click', () => { cVal++; solveTrinomial(); });
+
+        // Quiz State & Data
+        const quizQuestions = [
+            {
+                question: "If we factor the trinomial x² - 7x + 12, what are the values of p and q?",
+                options: ["p = -3, q = -4", "p = 3, q = 4", "p = -2, q = -6", "p = 2, q = 6"],
+                correct: 0,
+                explanation: "We need factors of 12 that sum to -7. Since (-3) * (-4) = 12 and (-3) + (-4) = -7, the factors are -3 and -4, yielding (x-3)(x-4)."
+            },
+            {
+                question: "Which term in the FOIL model corresponds to the product pq in (x+p)(x+q)?",
+                options: ["First term", "Outer term", "Inner term", "Last term"],
+                correct: 3,
+                explanation: "FOIL stands for First (x²), Outer (qx), Inner (px), Last (pq). Thus, pq is the Last term."
+            },
+            {
+                question: "For x² + 2x - 15, what integer factoring pair matches the product and sum conditions?",
+                options: ["p = -3, q = 5", "p = 3, q = -5", "p = -1, q = 15", "p = 1, q = -15"],
+                correct: 0,
+                explanation: "We seek two integers whose product is -15 and sum is +2. The pair is -3 and 5 because (-3)*5 = -15 and -3+5 = 2. Factored form: (x-3)(x+5)."
+            },
+            {
+                question: "In the 2D area box model, if p = 0, what does the rectangle (x+p)(x+q) reduce to?",
+                options: ["A square of area x²", "A rectangle of area x(x+q)", "A line of length x", "An empty region"],
+                correct: 1,
+                explanation: "Setting p = 0 makes (x+p)(x+q) = x(x+q). Visually, the rightmost columns representing p vanish, leaving a rectangle of width x and height x+q."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-rose); box-shadow:0 4px 15px var(--color-rose-glow);">
+                        Restart Factoring Quiz
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function() {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvas, 300);
+            });
+
+            updateAreaFormula();
+            solveTrinomial();
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->

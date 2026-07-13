@@ -1,0 +1,1104 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negative Numbers & Directed Number Line - Arithmetic & Numbers</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "01_arithmetic_number_sense",
+            logo: {"main":"Number","accent":"Lab","sub":"Negative Numbers & Directed Number Line"},
+            navigation: [
+    {
+        "label": "Submarine Ballast & Altimeter",
+        "desc": "Submarine Ballast & Altimeter interactive section",
+        "href": "#submarine"
+    },
+    {
+        "label": "Directed Vector Operations",
+        "desc": "Directed Vector Operations interactive section",
+        "href": "#vector-addition"
+    },
+    {
+        "label": "Directed Math Quiz",
+        "desc": "Directed Math Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Cyan Theme override */
+            --color-cyan: #38bdf8;
+            --color-cyan-glow: rgba(56, 189, 248, 0.35);
+            --color-accent: #38bdf8;
+            --color-accent-glow: rgba(56, 189, 248, 0.35);
+
+            --color-sky: #0ea5e9;
+            --color-ocean: #2563eb;
+            --color-sea-level: #10b981;
+        }
+
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-accent) !important;
+            box-shadow: 0 4px 20px var(--color-accent-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-title {
+            color: var(--bg-color) !important;
+        }
+
+        .sidebar-drawer .syllabus-item.active a .syllabus-desc {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-cyan);
+            background: rgba(56, 189, 248, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            text-shadow: 0 0 5px var(--color-cyan-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .equation-box {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-cyan);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-cyan-glow);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-preset {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-preset:hover, .btn-preset.active {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .presets-grid {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-op {
+            flex: 1;
+            padding: 0.6rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-op.active {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--color-cyan);
+            border-color: rgba(56, 189, 248, 0.3);
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-cyan) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Negative Numbers & Directed Number Line
+            </h1>
+            <p>Explore quantities below zero. Visualize altitude above and ocean depth below sea level, and trace directed mathematical transitions using vector arrows.</p>
+        </header>
+
+        <!-- SECTION 1: SUBMARINE LAB -->
+        <section id="submarine">
+            <div class="section-header">
+                <span class="section-tag">Interactive Physics</span>
+                <h2>Submarine Ballast & Altimeter</h2>
+            </div>
+            <p class="section-intro">
+                Positive and negative values represent opposite directions from a reference zero. In this simulation, sea level is <span style="font-weight:700; color:var(--color-sea-level);">0</span>. Altitude is positive (+), and depth below the surface is negative (-). Adjust ballast to translate our research vehicle.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Submarine Canvas -->
+                <div class="panel">
+                    <div class="canvas-container" style="height: 400px; background: #060810;">
+                        <canvas id="subCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders & absolute value readout -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Position Coordinate</h3>
+                        <div class="equation-box" id="subPosDisplay" style="color: var(--color-cyan);">
+                            y = 0 m (Sea Level)
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Adjust Ballast (Altitude / Depth)</span>
+                                <span class="number" id="lblAltitude">0 m</span>
+                            </div>
+                            <input type="range" id="slideAltitude" min="-100" max="100" value="0" step="1">
+                        </div>
+                    </div>
+
+                    <div class="presets-grid">
+                        <button class="btn-preset" onclick="setSubAltitude(80)">Altitude Peak (+80m)</button>
+                        <button class="btn-preset active" id="btnSeaLevel" onclick="setSubAltitude(0)">Sea Level (0m)</button>
+                        <button class="btn-preset" onclick="setSubAltitude(-80)">Sub Ocean Depth (-80m)</button>
+                    </div>
+
+                    <div class="formula-steps">
+                        <div><strong>Absolute Value (Magnitude):</strong></div>
+                        <div id="absExplanation" style="margin-top: 8px; font-size:0.85rem; line-height:1.5; color:var(--text-muted);">
+                            The absolute value of <span class="number" style="color:var(--color-cyan);">y</span>, denoted as <span class="number" style="color:var(--color-cyan);">|y|</span>, measures its distance from zero, ignoring direction.
+                            <br><br>
+                            <span class="number" style="font-weight:700; color:#fff;">|0| = 0 meters</span> (Distance from sea level)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: DIRECTED VECTOR ADDITION -->
+        <section id="vector-addition">
+            <div class="section-header">
+                <span class="section-tag">Number Line Sandbox</span>
+                <h2>Directed Vector Operations</h2>
+            </div>
+            <p class="section-intro">
+                Adding positive numbers moves to the **right** (increasing). Adding negative numbers (or subtracting positive numbers) changes direction and moves to the **left** (decreasing).
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Vector Canvas -->
+                <div class="panel">
+                    <div class="canvas-container" style="height: 380px; background: rgba(0, 0, 0, 0.25);">
+                        <canvas id="vectorCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Controls & Vector Equations -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Equation Output</h3>
+                        <div class="equation-box" id="vectorEqDisplay" style="color: var(--color-cyan);">
+                            0 + 0 = 0
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Starting Point (Value A)</span>
+                                <span class="number" id="lblStartVal">-2</span>
+                            </div>
+                            <input type="range" id="slideStartVal" min="-10" max="10" value="-2" step="1">
+                        </div>
+
+                        <div class="slider-row" style="margin-top: 5px;">
+                            <div class="slider-label">
+                                <span>Operation</span>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn-op active" id="opAddBtn" onclick="setVectorOp('add')">Addition (+)</button>
+                                <button class="btn-op" id="opSubBtn" onclick="setVectorOp('sub')">Subtraction (-)</button>
+                            </div>
+                        </div>
+
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>Offset/Vector (Value B)</span>
+                                <span class="number" id="lblOffsetVal">+5</span>
+                            </div>
+                            <input type="range" id="slideOffsetVal" min="-10" max="10" value="5" step="1">
+                        </div>
+                    </div>
+
+                    <div class="formula-steps">
+                        <div><strong>Visual Vector Logic:</strong></div>
+                        <div id="vectorExplanation" style="margin-top: 8px; font-size:0.85rem; line-height:1.5; color:var(--text-muted);">
+                            Starting at coordinate <span class="number" style="color: #fff;">-2</span>. Adding positive <span class="number" style="color: var(--color-cyan);">+5</span> draws a vector arrow pointing to the right, completing at final coordinate <span class="number" style="color: var(--color-sea-level);">3</span>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Self Evaluation</span>
+                <h2>Directed Math Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Test your conceptual understanding of directed arithmetic, negative inequalities, and absolute values.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Quiz Question -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">What is the absolute value of -42?</h3>
+
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong>Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation goes here.</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Core Vocabulary Review -->
+                <div class="panel">
+                    <h3>Focus Area Vocabulary</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom:0;">
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-cyan); box-shadow:0 0 6px var(--color-cyan-glow);"></span>
+                                Absolute Value: <strong>|x| (Magnitude only)</strong>
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-sea-level); box-shadow:0 0 6px rgba(16, 185, 129, 0.35);"></span>
+                                Origin Point: <strong>Reference Zero (0)</strong>
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-sky); box-shadow:0 0 6px rgba(14, 165, 233, 0.35);"></span>
+                                Negative Vector: <strong>Moves Left (&larr;)</strong>
+                            </span>
+                        </li>
+                        <li class="subtopic-item">
+                            <span class="subtopic-name">
+                                <span class="orange-dot" style="background:var(--color-rose); box-shadow:0 0 6px var(--color-rose-glow);"></span>
+                                Double Negative: <strong>-(-b) &rarr; +b (Moves Right &rarr;)</strong>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const subCanvas = document.getElementById('subCanvas');
+        const subCtx = subCanvas.getContext('2d');
+        const vectorCanvas = document.getElementById('vectorCanvas');
+        const vectorCtx = vectorCanvas.getContext('2d');
+
+        // Submarine controls
+        const slideAltitude = document.getElementById('slideAltitude');
+        const lblAltitude = document.getElementById('lblAltitude');
+        const subPosDisplay = document.getElementById('subPosDisplay');
+        const absExplanation = document.getElementById('absExplanation');
+
+        // Vector controls
+        const slideStartVal = document.getElementById('slideStartVal');
+        const slideOffsetVal = document.getElementById('slideOffsetVal');
+        const lblStartVal = document.getElementById('lblStartVal');
+        const lblOffsetVal = document.getElementById('lblOffsetVal');
+        const opAddBtn = document.getElementById('opAddBtn');
+        const opSubBtn = document.getElementById('opSubBtn');
+        const vectorEqDisplay = document.getElementById('vectorEqDisplay');
+        const vectorExplanation = document.getElementById('vectorExplanation');
+
+        let subAltitude = 0;
+        let vecStart = -2;
+        let vecOffset = 5;
+        let vecOp = 'add'; // 'add' or 'sub'
+
+        // Canvas sizing helper
+        function resizeCanvasElement(canvasElement) {
+            const container = canvasElement.parentElement;
+            canvasElement.width = container.clientWidth;
+            canvasElement.height = container.clientHeight;
+        }
+
+        // Submarine simulator drawing
+        function drawSubmarineSim() {
+            resizeCanvasElement(subCanvas);
+            const w = subCanvas.width;
+            const h = subCanvas.height;
+            subCtx.clearRect(0, 0, w, h);
+
+            const midY = h / 2;
+
+            // 1. Draw Sky (Altitude zone)
+            const skyGrad = subCtx.createLinearGradient(0, 0, 0, midY);
+            skyGrad.addColorStop(0, '#020617'); // Abyssal night sky
+            skyGrad.addColorStop(1, '#0c4a6e'); // Light sky blue glow
+            subCtx.fillStyle = skyGrad;
+            subCtx.fillRect(0, 0, w, midY);
+
+            subCtx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+            subCtx.beginPath();
+            subCtx.arc(w * 0.2, midY * 0.4, 15, 0, Math.PI * 2);
+            subCtx.arc(w * 0.25, midY * 0.35, 20, 0, Math.PI * 2);
+            subCtx.arc(w * 0.3, midY * 0.4, 15, 0, Math.PI * 2);
+            subCtx.fill();
+
+            // 2. Draw Ocean (Depth zone)
+            const oceanGrad = subCtx.createLinearGradient(0, midY, 0, h);
+            oceanGrad.addColorStop(0, '#1e3a8a'); // Bright navy ocean top
+            oceanGrad.addColorStop(0.6, '#0f172a'); // Very dark deep blue
+            oceanGrad.addColorStop(1, '#020617'); // pitch black sea floor
+            subCtx.fillStyle = oceanGrad;
+            subCtx.fillRect(0, midY, w, h - midY);
+
+            // 3. Sea Level wave transition
+            subCtx.strokeStyle = 'rgba(16, 185, 129, 0.6)';
+            subCtx.lineWidth = 3;
+            subCtx.beginPath();
+            for (let x = 0; x <= w; x += 10) {
+                const sineWave = Math.sin(x * 0.05) * 4;
+                if (x === 0) subCtx.moveTo(x, midY + sineWave);
+                else subCtx.lineTo(x, midY + sineWave);
+            }
+            subCtx.stroke();
+
+            // Sea Level indicator label
+            subCtx.fillStyle = 'rgba(16, 185, 129, 0.85)';
+            subCtx.font = 'bold 11px JetBrains Mono';
+            subCtx.fillText('Sea Level (0 m)', 15, midY - 8);
+
+            // 4. Draw vertical coordinate ruler axis
+            subCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            subCtx.lineWidth = 1;
+            const rulerX = w - 60;
+            subCtx.beginPath();
+            subCtx.moveTo(rulerX, 10);
+            subCtx.lineTo(rulerX, h - 10);
+            subCtx.stroke();
+
+            subCtx.font = '10px JetBrains Mono';
+            subCtx.textAlign = 'right';
+            for (let val = -100; val <= 100; val += 20) {
+                // Map coordinate val to canvas Y
+                // map 100 to Y=20, and -100 to Y=h-20
+                const tickY = 20 + ((100 - val) / 200) * (h - 40);
+                subCtx.strokeStyle = val === 0 ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255, 255, 255, 0.15)';
+                subCtx.beginPath();
+                subCtx.moveTo(rulerX - 5, tickY);
+                subCtx.lineTo(rulerX + 5, tickY);
+                subCtx.stroke();
+
+                subCtx.fillStyle = val > 0 ? '#38bdf8' : (val < 0 ? '#2563eb' : '#10b981');
+                const labelText = val > 0 ? `+${val}` : `${val}`;
+                subCtx.fillText(labelText, rulerX - 10, tickY + 3);
+            }
+
+            // 5. Calculate and draw the active vehicle (drone/boat/submarine)
+            // Map subAltitude to Y screen space
+            const targetY = 20 + ((100 - subAltitude) / 200) * (h - 40);
+            const vehX = w * 0.4;
+
+            subCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            subCtx.setLineDash([5, 5]);
+            subCtx.beginPath();
+            subCtx.moveTo(vehX, targetY);
+            subCtx.lineTo(rulerX, targetY);
+            subCtx.stroke();
+            subCtx.setLineDash([]);
+
+            if (subAltitude > 8) {
+                // Drone (Altitude)
+                drawDrone(subCtx, vehX, targetY);
+            } else if (subAltitude < -8) {
+                // Submarine (Deep depth)
+                drawSubmarine(subCtx, vehX, targetY);
+            } else {
+                // Boat floating right at sea level
+                drawBoat(subCtx, vehX, midY);
+            }
+        }
+
+        function drawDrone(ctx, x, y) {
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = 'rgba(56, 189, 248, 0.4)';
+            ctx.fillStyle = '#38bdf8';
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+
+            // Body
+            ctx.beginPath();
+            ctx.roundRect(x - 20, y - 6, 40, 12, 6);
+            ctx.fill();
+
+            // Rotors arms
+            ctx.beginPath();
+            ctx.moveTo(x - 18, y);
+            ctx.lineTo(x - 28, y - 10);
+            ctx.moveTo(x + 18, y);
+            ctx.lineTo(x + 28, y - 10);
+            ctx.stroke();
+
+            // Blades
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.ellipse(x - 28, y - 10, 12, 2, 0, 0, Math.PI * 2);
+            ctx.ellipse(x + 28, y - 10, 12, 2, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.shadowBlur = 0;
+        }
+
+        function drawSubmarine(ctx, x, y) {
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = 'rgba(37, 99, 235, 0.4)';
+            ctx.fillStyle = '#eab308'; // Yellow submarine
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.5;
+
+            // Submarine hull
+            ctx.beginPath();
+            ctx.ellipse(x, y + 5, 28, 16, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Tower
+            ctx.beginPath();
+            ctx.roundRect(x - 6, y - 15, 12, 12, 3);
+            ctx.fill();
+            ctx.stroke();
+
+            // Periscope
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x + 2, y - 15);
+            ctx.lineTo(x + 2, y - 24);
+            ctx.lineTo(x + 8, y - 24);
+            ctx.stroke();
+
+            // Propeller
+            ctx.fillStyle = '#ca8a04';
+            ctx.beginPath();
+            ctx.ellipse(x - 32, y + 5, 4, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.shadowBlur = 0;
+        }
+
+        function drawBoat(ctx, x, y) {
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = 'rgba(16, 185, 129, 0.3)';
+            ctx.fillStyle = '#f8fafc';
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1.5;
+
+            // Hull
+            ctx.beginPath();
+            ctx.moveTo(x - 25, y - 4);
+            ctx.lineTo(x + 25, y - 4);
+            ctx.lineTo(x + 18, y + 10);
+            ctx.lineTo(x - 18, y + 10);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Sail Mast
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x - 2, y - 4);
+            ctx.lineTo(x - 2, y - 28);
+            ctx.stroke();
+
+
+            ctx.fillStyle = '#38bdf8';
+            ctx.beginPath();
+            ctx.moveTo(x - 1, y - 26);
+            ctx.lineTo(x + 14, y - 14);
+            ctx.lineTo(x - 1, y - 6);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.shadowBlur = 0;
+        }
+
+        // Submarine interaction handlers
+        slideAltitude.addEventListener('input', (e) => {
+            subAltitude = parseInt(e.target.value);
+            updateSubmarineUI();
+        });
+
+        function setSubAltitude(val) {
+            subAltitude = val;
+            slideAltitude.value = val;
+            
+            // Remove active style from presets, re-add to clicked if matches
+            document.querySelectorAll('.presets-grid .btn-preset').forEach(btn => btn.classList.remove('active'));
+            if (val === 0) document.getElementById('btnSeaLevel').classList.add('active');
+            
+            updateSubmarineUI();
+        }
+
+        function updateSubmarineUI() {
+            // Label
+            const direction = subAltitude > 0 ? 'Altitude' : (subAltitude < 0 ? 'Depth' : 'Sea Level');
+            const sign = subAltitude > 0 ? '+' : '';
+            lblAltitude.textContent = `${sign}${subAltitude} m`;
+
+            // Display panel
+            if (subAltitude > 0) {
+                subPosDisplay.textContent = `y = +${subAltitude} m (${direction})`;
+                subPosDisplay.style.color = 'var(--color-cyan)';
+            } else if (subAltitude < 0) {
+                subPosDisplay.textContent = `y = ${subAltitude} m (${direction})`;
+                subPosDisplay.style.color = '#3b82f6';
+            } else {
+                subPosDisplay.textContent = `y = 0 m (Sea Level)`;
+                subPosDisplay.style.color = 'var(--color-sea-level)';
+            }
+
+            // Absolute value statement
+            const absVal = Math.abs(subAltitude);
+            absExplanation.innerHTML = `
+                Visualizing coordinates: <span class="number" style="color:var(--color-cyan);">${subAltitude}</span>
+                <br>
+                Absolute distance: <span class="number" style="color:var(--color-sea-level);">|${subAltitude}| = ${absVal} meters</span> from reference zero.
+                <br><br>
+                Absolute value ignores direction (+ or -) and describes pure distance magnitude.
+            `;
+
+            drawSubmarineSim();
+        }
+
+        // VECTOR ADDITION SIMULATION LOGIC
+        function drawVectorAdditionSim() {
+            resizeCanvasElement(vectorCanvas);
+            const w = vectorCanvas.width;
+            const h = vectorCanvas.height;
+            vectorCtx.clearRect(0, 0, w, h);
+
+            const midY = h / 2 + 10;
+            const borderG = 45; // boundary margins
+            const numberLineW = w - borderG * 2;
+
+            // Map mathematical values [-10, 10] to screen X pixels
+            function mapValToX(val) {
+                return borderG + ((val + 10) / 20) * numberLineW;
+            }
+
+            // 1. Draw grid number line axis
+            vectorCtx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            vectorCtx.lineWidth = 2;
+            vectorCtx.beginPath();
+            vectorCtx.moveTo(borderG - 10, midY);
+            vectorCtx.lineTo(w - borderG + 10, midY);
+            vectorCtx.stroke();
+
+            // Arrowheads on the number line ends
+            vectorCtx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+            vectorCtx.beginPath();
+            vectorCtx.moveTo(borderG - 15, midY);
+            vectorCtx.lineTo(borderG - 5, midY - 6);
+            vectorCtx.lineTo(borderG - 5, midY + 6);
+            vectorCtx.fill();
+
+            vectorCtx.beginPath();
+            vectorCtx.moveTo(w - borderG + 15, midY);
+            vectorCtx.lineTo(w - borderG + 5, midY - 6);
+            vectorCtx.lineTo(w - borderG + 5, midY + 6);
+            vectorCtx.fill();
+
+            // Ticks and numbers
+            vectorCtx.font = '11px JetBrains Mono';
+            vectorCtx.textAlign = 'center';
+            for (let val = -10; val <= 10; val++) {
+                const tx = mapValToX(val);
+                const isMajor = val % 5 === 0 || val === 0;
+                
+                vectorCtx.strokeStyle = val === 0 ? 'rgba(16, 185, 129, 0.5)' : (isMajor ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.1)');
+                vectorCtx.lineWidth = val === 0 ? 2 : (isMajor ? 1.5 : 1);
+                
+                vectorCtx.beginPath();
+                vectorCtx.moveTo(tx, midY - (isMajor ? 8 : 4));
+                vectorCtx.lineTo(tx, midY + (isMajor ? 8 : 4));
+                vectorCtx.stroke();
+
+                if (isMajor) {
+                    vectorCtx.fillStyle = val === 0 ? '#10b981' : 'rgba(255, 255, 255, 0.4)';
+                    vectorCtx.fillText(val.toString(), tx, midY + 22);
+                }
+            }
+
+            // 2. Compute vectors math
+            const startX = mapValToX(vecStart);
+            const calculatedOffset = vecOp === 'add' ? vecOffset : -vecOffset;
+            const endVal = vecStart + calculatedOffset;
+            const endX = mapValToX(endVal);
+
+            // Bounds check display warnings
+            const outOfBounds = endVal < -10 || endVal > 10;
+
+            // 3. Draw original starting point A
+            vectorCtx.fillStyle = '#38bdf8';
+            vectorCtx.beginPath();
+            vectorCtx.arc(startX, midY, 6, 0, Math.PI * 2);
+            vectorCtx.fill();
+
+            // Label starting point A
+            vectorCtx.fillStyle = '#38bdf8';
+            vectorCtx.font = '10px JetBrains Mono';
+            vectorCtx.fillText('Start (A)', startX, midY - 14);
+
+            // 4. Draw Offset Vector Arrow (only if non-zero)
+            if (calculatedOffset !== 0) {
+                const vectorY = midY - 40; // draw offset above axis line
+                const arrowColor = calculatedOffset > 0 ? '#10b981' : '#f43f5e'; // Green for rightward, Rose for leftward
+
+                vectorCtx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+                vectorCtx.setLineDash([3, 3]);
+                vectorCtx.beginPath();
+                vectorCtx.moveTo(startX, midY);
+                vectorCtx.lineTo(startX, vectorY);
+                vectorCtx.moveTo(endX, midY);
+                vectorCtx.lineTo(endX, vectorY);
+                vectorCtx.stroke();
+                vectorCtx.setLineDash([]);
+
+                vectorCtx.strokeStyle = arrowColor;
+                vectorCtx.lineWidth = 3;
+                vectorCtx.beginPath();
+                vectorCtx.moveTo(startX, vectorY);
+                vectorCtx.lineTo(endX, vectorY);
+                vectorCtx.stroke();
+
+                const headlen = 8;
+                const angle = calculatedOffset > 0 ? 0 : Math.PI; // right or left
+                vectorCtx.fillStyle = arrowColor;
+                vectorCtx.beginPath();
+                vectorCtx.moveTo(endX, vectorY);
+                vectorCtx.lineTo(endX - headlen * Math.cos(angle - Math.PI / 6), vectorY - headlen * Math.sin(angle - Math.PI / 6));
+                vectorCtx.lineTo(endX - headlen * Math.cos(angle + Math.PI / 6), vectorY - headlen * Math.sin(angle + Math.PI / 6));
+                vectorCtx.fill();
+
+                // Vector value label on vector arrow
+                vectorCtx.fillStyle = arrowColor;
+                vectorCtx.font = 'bold 10px JetBrains Mono';
+                const labelSign = vecOffset >= 0 ? '+' : '';
+                const displayOp = vecOp === 'add' ? 'add' : 'sub';
+                vectorCtx.fillText(`${displayOp} (${labelSign}${vecOffset})`, (startX + endX) / 2, vectorY - 8);
+            }
+
+            // 5. Draw destination point
+            if (!outOfBounds) {
+                vectorCtx.fillStyle = '#10b981';
+                vectorCtx.beginPath();
+                vectorCtx.arc(endX, midY, 6, 0, Math.PI * 2);
+                vectorCtx.fill();
+
+                // Destination label
+                vectorCtx.fillStyle = '#10b981';
+                vectorCtx.fillText('Result', endX, midY - 14);
+            }
+        }
+
+        // Vector interaction handlers
+        slideStartVal.addEventListener('input', (e) => {
+            vecStart = parseInt(e.target.value);
+            updateVectorUI();
+        });
+
+        slideOffsetVal.addEventListener('input', (e) => {
+            vecOffset = parseInt(e.target.value);
+            updateVectorUI();
+        });
+
+        function setVectorOp(op) {
+            vecOp = op;
+            if (op === 'add') {
+                opAddBtn.classList.add('active');
+                opSubBtn.classList.remove('active');
+            } else {
+                opSubBtn.classList.add('active');
+                opAddBtn.classList.remove('active');
+            }
+            updateVectorUI();
+        }
+
+        function updateVectorUI() {
+            // Raw numbers values labels
+            const signStart = vecStart > 0 ? '+' : '';
+            const signOffset = vecOffset > 0 ? '+' : '';
+            lblStartVal.textContent = `${signStart}${vecStart}`;
+            lblOffsetVal.textContent = `${signOffset}${vecOffset}`;
+
+            // Math execution
+            const calculatedOffset = vecOp === 'add' ? vecOffset : -vecOffset;
+            const endVal = vecStart + calculatedOffset;
+            const resultSign = endVal > 0 ? '+' : '';
+
+            // Construct Equation string
+            // format: A + (B) = C
+            const strA = vecStart < 0 ? `(${vecStart})` : `${vecStart}`;
+            const strB = vecOffset < 0 ? `(${vecOffset})` : `${vecOffset}`;
+            const opSign = vecOp === 'add' ? '+' : '-';
+            vectorEqDisplay.textContent = `${strA} ${opSign} ${strB} = ${endVal}`;
+
+
+            let motionText = '';
+            if (calculatedOffset > 0) {
+                motionText = `moves <span style="font-weight:700; color:var(--color-sea-level);">right</span> by <span class="number" style="color:var(--color-sea-level);">${Math.abs(calculatedOffset)} units</span>`;
+            } else if (calculatedOffset < 0) {
+                motionText = `moves <span style="font-weight:700; color:var(--color-rose);">left</span> by <span class="number" style="color:var(--color-rose);">${Math.abs(calculatedOffset)} units</span>`;
+            } else {
+                motionText = `remains stationary (no movement)`;
+            }
+
+            let doubleNegativeNote = '';
+            if (vecOp === 'sub' && vecOffset < 0) {
+                doubleNegativeNote = `<br><br><span style="color:#ffffff; font-weight:600;">Double Negative Principle:</span> Subtracting a negative quantity removes a deficit. This changes the direction from left to right, functioning equivalent to addition: <span class="number" style="color:var(--color-cyan); font-weight:700;">${vecStart} - (${vecOffset}) &rarr; ${vecStart} + ${Math.abs(vecOffset)}</span>.`;
+            }
+
+            vectorExplanation.innerHTML = `
+                Starting coordinate at <span class="number" style="color:#fff;">${vecStart}</span>. 
+                Applying operation ${opSign} (${vecOffset}) ${motionText}. 
+                The vector arrow lands at final position coordinate <span class="number" style="font-weight:700; color:var(--color-cyan);">${endVal}</span>.
+                ${doubleNegativeNote}
+            `;
+
+            drawVectorAdditionSim();
+        }
+
+        // DYNAMIC CONCEPTUAL QUIZ SYSTEM
+        const quizQuestions = [
+            {
+                question: "What is the absolute value of -42?",
+                options: ["-42", "42", "0", "84"],
+                correct: 1,
+                explanation: "The absolute value |x| represents distance from zero. Since distance is non-negative, |-42| is simply 42."
+            },
+            {
+                question: "If you start at -3 on a number line and subtract -5, where do you end up?",
+                options: ["-8", "-2", "2", "8"],
+                correct: 2,
+                explanation: "Subtracting a negative number is equivalent to adding its absolute value: -3 - (-5) = -3 + 5 = 2."
+            },
+            {
+                question: "A submarine is at -120 meters. A drone is flying at +80 meters directly above it. What is the absolute distance between them?",
+                options: ["40 m", "120 m", "200 m", "-40 m"],
+                correct: 2,
+                explanation: "The distance is computed as |(+80) - (-120)| = |80 + 120| = 200 meters."
+            },
+            {
+                question: "Which of the following describes the ordering of negative numbers correctly?",
+                options: ["-10 is greater than -100", "-5 is greater than -2", "-15 is less than -20", "Zero is less than -1"],
+                correct: 0,
+                explanation: "On a directed number line, values to the right are greater. -10 is situated to the right of -100, so -10 > -100 is correct."
+            },
+            {
+                question: "Subtracting a positive number from a negative number (e.g. -2 - 3) moves you in which direction?",
+                options: ["Moves rightward toward positive values", "Moves leftward toward larger negative magnitudes", "Stays in place", "Bounces back to positive origin"],
+                correct: 1,
+                explanation: "Subtracting a positive value moves left on a directed number line. Starting at -2 and moving left by 3 yields -5."
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let quizScore = 0;
+        let answered = false;
+
+        function loadQuestion() {
+            answered = false;
+            const q = quizQuestions[currentQuestionIdx];
+            
+            document.getElementById('quizProgressText').textContent = `Question ${currentQuestionIdx + 1} of ${quizQuestions.length}`;
+            document.getElementById('quizScoreText').textContent = `Score: ${quizScore}/${currentQuestionIdx}`;
+            document.getElementById('quizQuestionTitle').textContent = q.question;
+            document.getElementById('quizFeedbackArea').style.display = 'none';
+
+            const container = document.getElementById('quizOptionsContainer');
+            container.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'quiz-option';
+                optDiv.innerHTML = `<span>${opt}</span>`;
+                optDiv.onclick = () => selectOption(idx, optDiv);
+                container.appendChild(optDiv);
+            });
+        }
+
+        function selectOption(selectedIdx, optionElement) {
+            if (answered) return;
+            answered = true;
+
+            const q = quizQuestions[currentQuestionIdx];
+            const options = document.querySelectorAll('.quiz-option');
+
+            options.forEach((opt, idx) => {
+                if (idx === q.correct) {
+                    opt.classList.add('correct');
+                } else if (idx === selectedIdx) {
+                    opt.classList.add('incorrect');
+                }
+            });
+
+            if (selectedIdx === q.correct) {
+                quizScore++;
+                document.getElementById('quizFeedbackArea').querySelector('strong').textContent = 'Correct Answer!';
+                document.getElementById('quizFeedbackArea').querySelector('strong').style.color = '#10b981';
+            } else {
+                document.getElementById('quizFeedbackArea').querySelector('strong').textContent = 'Incorrect Answer';
+                document.getElementById('quizFeedbackArea').querySelector('strong').style.color = '#f43f5e';
+            }
+
+            document.getElementById('quizExplanationText').textContent = q.explanation;
+            document.getElementById('quizFeedbackArea').style.display = 'block';
+            document.getElementById('quizScoreText').textContent = `Score: ${quizScore}/${currentQuestionIdx + 1}`;
+        }
+
+        document.getElementById('quizNextBtn').addEventListener('click', () => {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                // Quiz end overlay
+                const area = document.getElementById('quizContainer');
+                area.innerHTML = `
+                    <div class="quiz-score-overlay">
+                        <h2 style="font-size: 2rem; margin-bottom: 1rem; font-family:'Outfit'; font-weight:700;">Quiz Completed!</h2>
+                        <p style="font-size: 1.1rem; margin-bottom: 2rem; color:var(--text-muted);">
+                            You scored <strong class="number" style="color:var(--color-cyan);">${quizScore} out of ${quizQuestions.length}</strong> correct answers.
+                        </p>
+                        <button class="btn" onclick="resetQuiz()" style="width:auto; display:inline-flex;">Restart Quiz</button>
+                    </div>
+                `;
+            }
+        });
+
+        function resetQuiz() {
+            currentQuestionIdx = 0;
+            quizScore = 0;
+            // Restore container layout
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = `
+                <div id="quizQuestionArea">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                        <span id="quizProgressText">Question 1 of 5</span>
+                        <span id="quizScoreText">Score: 0/0</span>
+                    </div>
+                    <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;"></h3>
+                    <div id="quizOptionsContainer"></div>
+                </div>
+                <div class="quiz-feedback" id="quizFeedbackArea">
+                    <strong>Correct Answer!</strong>
+                    <p id="quizExplanationText"></p>
+                    <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                        Next Question
+                    </button>
+                </div>
+            `;
+            // Re-bind click event to new next btn
+            document.getElementById('quizNextBtn').addEventListener('click', () => {
+                currentQuestionIdx++;
+                if (currentQuestionIdx < quizQuestions.length) {
+                    loadQuestion();
+                } else {
+                    const area = document.getElementById('quizContainer');
+                    area.innerHTML = `
+                        <div class="quiz-score-overlay">
+                            <h2 style="font-size: 2rem; margin-bottom: 1rem; font-family:'Outfit'; font-weight:700;">Quiz Completed!</h2>
+                            <p style="font-size: 1.1rem; margin-bottom: 2rem; color:var(--text-muted);">
+                                You scored <strong class="number" style="color:var(--color-cyan);">${quizScore} out of ${quizQuestions.length}</strong> correct answers.
+                            </p>
+                            <button class="btn" onclick="resetQuiz()" style="width:auto; display:inline-flex;">Restart Quiz</button>
+                        </div>
+                    `;
+                }
+            });
+            loadQuestion();
+        }
+
+        // INIT & RESIZE BINDINGS
+        window.addEventListener('resize', () => {
+            // Delay rendering slightly to wait for toggle transition periods
+            setTimeout(() => {
+                drawSubmarineSim();
+                drawVectorAdditionSim();
+            }, 300);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSubmarineUI();
+            updateVectorUI();
+            loadQuestion();
+        });
+    </script>
+</body>
+
+</html>

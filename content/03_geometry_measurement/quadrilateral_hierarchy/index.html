@@ -1,0 +1,398 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadrilateral Hierarchy - Geometry & Measurement</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <script>
+        window.PAGE_CONFIG = {
+            domain: "03_geometry_measurement",
+            logo: { main: "Quad", accent: "Lab", sub: "Quadrilateral Hierarchy" },
+            navigation: [
+                { label: "Venn Hierarchy", desc: "Nested classification maps", href: "#sectionVenn" }
+            ]
+        };
+    </script>
+    <script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Emerald Theme for Step 03 Geometry */
+            --color-primary: #10b981;
+            --color-primary-glow: rgba(16, 185, 129, 0.35);
+            
+            --color-outline: #ffb000; /* Gold */
+            --color-outline-glow: rgba(255, 176, 0, 0.35);
+            --color-blue: #3b82f6;
+            --color-blue-glow: rgba(59, 130, 246, 0.35);
+            --color-rose: #f43f5e;
+            --color-rose-glow: rgba(244, 63, 94, 0.35);
+        }
+
+        /* Override active menu styling to use Emerald */
+        .syllabus-item.active a {
+            background: var(--color-primary) !important;
+            box-shadow: 0 4px 20px var(--color-primary-glow) !important;
+            color: var(--bg-color) !important;
+        }
+
+        .syllabus-item.active a .syllabus-title,
+        .syllabus-item.active a .syllabus-desc {
+            color: var(--bg-color) !important;
+        }
+
+        .digital-box {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            text-align: center;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 1.25rem;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.4), 0 0 10px rgba(16, 185, 129, 0.15);
+        }
+
+        /* Euler / Venn diagram styles */
+        .euler-container {
+            width: 100%;
+            height: 340px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .euler-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .euler-region {
+            fill: rgba(255, 255, 255, 0.015);
+            stroke: rgba(255, 255, 255, 0.08);
+            stroke-width: 2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .euler-node {
+            fill: rgba(255, 255, 255, 0.25);
+            stroke: rgba(0, 0, 0, 0.4);
+            stroke-width: 1.2;
+            r: 3.5px;
+            transition: all 0.3s ease;
+            pointer-events: none; /* Passes click triggers to group path */
+        }
+
+        .euler-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            fill: var(--text-muted);
+            pointer-events: none;
+            transition: fill 0.3s;
+            text-anchor: middle;
+        }
+
+        .euler-shape {
+            cursor: pointer;
+        }
+
+        /* Interactive highlights & active glows */
+        .euler-shape:hover .euler-region,
+        .euler-shape.active .euler-region {
+            fill: rgba(16, 185, 129, 0.05);
+            stroke: var(--color-primary);
+            filter: drop-shadow(0 0 6px var(--color-primary-glow));
+        }
+        .euler-shape:hover .euler-node,
+        .euler-shape.active .euler-node {
+            fill: var(--color-primary);
+            stroke: #fff;
+            r: 5px;
+        }
+        .euler-shape:hover .euler-label,
+        .euler-shape.active .euler-label {
+            fill: #fff;
+        }
+
+        /* Group overrides for specific categories */
+        .euler-shape[data-shape="quad"]:hover .euler-region,
+        .euler-shape[data-shape="quad"].active .euler-region {
+            fill: rgba(16, 185, 129, 0.04);
+            stroke: var(--color-primary);
+            filter: drop-shadow(0 0 6px var(--color-primary-glow));
+        }
+        .euler-shape[data-shape="quad"]:hover .euler-node,
+        .euler-shape[data-shape="quad"].active .euler-node {
+            fill: var(--color-primary);
+        }
+
+        .euler-shape[data-shape="kite"]:hover .euler-region,
+        .euler-shape[data-shape="kite"].active .euler-region {
+            fill: rgba(244, 63, 94, 0.06);
+            stroke: var(--color-rose);
+            filter: drop-shadow(0 0 6px var(--color-rose-glow));
+        }
+        .euler-shape[data-shape="kite"]:hover .euler-node,
+        .euler-shape[data-shape="kite"].active .euler-node {
+            fill: var(--color-rose);
+        }
+
+        .euler-shape[data-shape="para"]:hover .euler-region,
+        .euler-shape[data-shape="para"].active .euler-region {
+            fill: rgba(59, 130, 246, 0.05);
+            stroke: var(--color-blue);
+            filter: drop-shadow(0 0 6px var(--color-blue-glow));
+        }
+        .euler-shape[data-shape="para"]:hover .euler-node,
+        .euler-shape[data-shape="para"].active .euler-node {
+            fill: var(--color-blue);
+        }
+
+        .euler-shape[data-shape="rect"]:hover .euler-region,
+        .euler-shape[data-shape="rect"].active .euler-region {
+            fill: rgba(59, 130, 246, 0.06);
+            stroke: var(--color-blue);
+            filter: drop-shadow(0 0 6px var(--color-blue-glow));
+        }
+        .euler-shape[data-shape="rect"]:hover .euler-node,
+        .euler-shape[data-shape="rect"].active .euler-node {
+            fill: var(--color-blue);
+        }
+
+        .euler-shape[data-shape="rhom"]:hover .euler-region,
+        .euler-shape[data-shape="rhom"].active .euler-region {
+            fill: rgba(255, 176, 0, 0.06);
+            stroke: var(--color-outline);
+            filter: drop-shadow(0 0 6px var(--color-outline-glow));
+        }
+        .euler-shape[data-shape="rhom"]:hover .euler-node,
+        .euler-shape[data-shape="rhom"].active .euler-node {
+            fill: var(--color-outline);
+        }
+
+        .euler-shape[data-shape="square"]:hover .euler-region,
+        .euler-shape[data-shape="square"].active .euler-region {
+            fill: rgba(255, 176, 0, 0.1);
+            stroke: var(--color-outline);
+            filter: drop-shadow(0 0 8px var(--color-outline-glow));
+        }
+        .euler-shape[data-shape="square"]:hover .euler-node,
+        .euler-shape[data-shape="square"].active .euler-node {
+            fill: var(--color-outline);
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer (Managed by shared.js) -->
+    <aside></aside>
+ 
+    <!-- Main Content Panels -->
+    <main>
+        <!-- SECTION 1: VENN HIERARCHY -->
+        <section id="sectionVenn">
+            <header>
+                <h1>Quadrilateral Venn Hierarchy</h1>
+                <p>Quadrilaterals nested together represent sub-classification: <strong>lower classes inherit all properties of their parents</strong>. Click or hover regions in the Euler diagram to see definitions.</p>
+            </header>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: SVG Venn Diagram -->
+                <div class="panel">
+                    <div class="euler-container">
+                        <svg class="euler-svg" viewBox="0 0 400 340">
+                            <!-- Quadrilateral (Outer Ring) -->
+                            <g class="euler-shape" data-shape="quad" onclick="showVennDetails('quad')">
+                                <path class="euler-region" d="M 20,40 L 380,20 L 365,325 L 30,310 Z"></path>
+                                <circle class="euler-node" cx="20" cy="40"></circle>
+                                <circle class="euler-node" cx="380" cy="20"></circle>
+                                <circle class="euler-node" cx="365" cy="325"></circle>
+                                <circle class="euler-node" cx="30" cy="310"></circle>
+                                <text x="75" y="38" class="euler-label">Quadrilateral</text>
+                            </g>
+
+                            <!-- Kite (Non-parallel left shape containing Rhombus & Square) -->
+                            <g class="euler-shape" data-shape="kite" onclick="showVennDetails('kite')">
+                                <path class="euler-region" d="M 135,75 L 235,185 L 135,295 L 35,185 Z"></path>
+                                <circle class="euler-node" cx="135" cy="75"></circle>
+                                <circle class="euler-node" cx="235" cy="185"></circle>
+                                <circle class="euler-node" cx="135" cy="295"></circle>
+                                <circle class="euler-node" cx="35" cy="185"></circle>
+                                <text x="135" y="105" class="euler-label">Kite</text>
+                            </g>
+
+                            <!-- Trapezoid (Inclusive boundary) -->
+                            <g class="euler-shape" data-shape="trap" onclick="showVennDetails('trap')">
+                                <path class="euler-region" d="M 80,85 L 310,85 L 330,285 L 60,285 Z"></path>
+                                <circle class="euler-node" cx="80" cy="85"></circle>
+                                <circle class="euler-node" cx="310" cy="85"></circle>
+                                <circle class="euler-node" cx="330" cy="285"></circle>
+                                <circle class="euler-node" cx="60" cy="285"></circle>
+                                <text x="200" y="102" class="euler-label">Trapezoid</text>
+                            </g>
+
+                            <!-- Parallelogram -->
+                            <g class="euler-shape" data-shape="para" onclick="showVennDetails('para')">
+                                <path class="euler-region" d="M 95,115 L 285,115 L 265,255 L 75,255 Z"></path>
+                                <circle class="euler-node" cx="95" cy="115"></circle>
+                                <circle class="euler-node" cx="285" cy="115"></circle>
+                                <circle class="euler-node" cx="265" cy="255"></circle>
+                                <circle class="euler-node" cx="75" cy="255"></circle>
+                                <text x="180" y="132" class="euler-label">Parallelogram</text>
+                            </g>
+
+                            <!-- Rectangle (Right side of Parallelogram) -->
+                            <g class="euler-shape" data-shape="rect" onclick="showVennDetails('rect')">
+                                <path class="euler-region" d="M 145,160 L 255,160 L 255,210 L 145,210 Z"></path>
+                                <circle class="euler-node" cx="145" cy="160"></circle>
+                                <circle class="euler-node" cx="255" cy="160"></circle>
+                                <circle class="euler-node" cx="255" cy="210"></circle>
+                                <circle class="euler-node" cx="145" cy="210"></circle>
+                                <text x="220" y="178" class="euler-label">Rectangle</text>
+                            </g>
+
+                            <!-- Rhombus (Left side of Parallelogram, nested in Kite) -->
+                            <g class="euler-shape" data-shape="rhom" onclick="showVennDetails('rhom')">
+                                <path class="euler-region" d="M 145,135 L 195,185 L 145,235 L 95,185 Z"></path>
+                                <circle class="euler-node" cx="145" cy="135"></circle>
+                                <circle class="euler-node" cx="195" cy="185"></circle>
+                                <circle class="euler-node" cx="145" cy="235"></circle>
+                                <circle class="euler-node" cx="95" cy="185"></circle>
+                                <text x="145" y="152" class="euler-label">Rhombus</text>
+                            </g>
+
+                            <!-- Square (Intersection of Rect & Rhombus) -->
+                            <g class="euler-shape" data-shape="square" onclick="showVennDetails('square')">
+                                <path class="euler-region square" d="M 170,160 L 195,185 L 170,210 L 145,185 Z"></path>
+                                <circle class="euler-node" cx="170" cy="160"></circle>
+                                <circle class="euler-node" cx="195" cy="185"></circle>
+                                <circle class="euler-node" cx="170" cy="210"></circle>
+                                <circle class="euler-node" cx="145" cy="185"></circle>
+                                <text x="170" y="189" class="euler-label" style="fill:#fff; font-size:10px;">Square</text>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Description card -->
+                <div class="panel">
+                    <div class="digital-box" id="vennTitle" style="font-size:1.35rem;">
+                        Select a Class
+                    </div>
+
+                    <div class="math-card" style="border-color: var(--color-primary-glow); min-height: 180px;">
+                        <h3 id="vennDefTitle">Hierarchical Rules</h3>
+                        <p style="font-size:0.88rem; color:var(--text-muted); line-height:1.5; margin-top:8px;" id="vennDefText">
+                            Click on any shape category region in the Venn Euler diagram on the left to see its definitions, key properties, and hierarchy inheritance logic.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+
+
+        const vennDefinitions = {
+            quad: {
+                title: "General Quadrilateral",
+                definition: "Any polygon with exactly 4 straight sides, 4 vertices, and interior angles summing to exactly 360°.",
+                properties: ["4 vertices", "4 straight edges", "Interior angle sum = 360°"],
+                hierarchy: "This is the root category. All nested shapes (Trapezoids, Parallelograms, Rectangles, Rhombuses, Squares, and Kites) are types of Quadrilaterals."
+            },
+            kite: {
+                title: "Kite",
+                definition: "A quadrilateral with two pairs of adjacent sides that are equal in length.",
+                properties: ["Two pairs of equal adjacent sides", "Diagonals intersect perpendicularly (at 90°)", "One diagonal bisects the other", "One pair of opposite angles is equal"],
+                hierarchy: "Nested under Quadrilaterals. A Rhombus is a special type of Kite that also has opposite sides parallel."
+            },
+            trap: {
+                title: "Trapezoid (Inclusive definition)",
+                definition: "A quadrilateral with at least one pair of parallel opposite sides.",
+                properties: ["At least one pair of opposite sides is parallel", "Consecutive angles between parallel sides sum to 180°"],
+                hierarchy: "Nested under Quadrilaterals. Under the inclusive definition, any shape with 2 pairs of parallel sides (Parallelograms) is also classified as a special Trapezoid."
+            },
+            para: {
+                title: "Parallelogram",
+                definition: "A quadrilateral with two pairs of opposite sides parallel to each other.",
+                properties: ["Two pairs of parallel opposite sides", "Opposite sides are equal in length", "Opposite angles are equal", "Diagonals bisect each other"],
+                hierarchy: "Nested under Trapezoids. This parent category splits into two branches: Rectangles (angles focus) and Rhombuses (sides focus)."
+            },
+            rect: {
+                title: "Rectangle",
+                definition: "A parallelogram with four right angles (90°).",
+                properties: ["All properties of Parallelograms", "Four right angles (90°)", "Diagonals are equal in length"],
+                hierarchy: "Nested under Parallelograms. A Rectangle with equal sides is classified as a Square."
+            },
+            rhom: {
+                title: "Rhombus",
+                definition: "A parallelogram with four sides of equal length.",
+                properties: ["All properties of Parallelograms", "Four equal side lengths", "Diagonals are perpendicular (intersect at 90°)", "Diagonals bisect opposite angles"],
+                hierarchy: "Nested under Parallelograms and overlaps with Kites. A Rhombus with right angles is classified as a Square."
+            },
+            square: {
+                title: "Square (The Pinnacle)",
+                definition: "A parallelogram with four right angles and four sides of equal length.",
+                properties: ["All properties of Rectangles AND Rhombuses", "Four equal sides", "Four right angles (90°)", "Diagonals are equal, perpendicular, and bisect each other"],
+                hierarchy: "The intersection of Rectangle and Rhombus. It sits at the bottom of the hierarchy, inheriting every single property from all categories above it."
+            }
+        };
+
+        function showVennDetails(key) {
+            // Remove active from all groups
+            document.querySelectorAll('.euler-shape').forEach(el => el.classList.remove('active'));
+            
+            // Add active to targeted group
+            const targetGroup = document.querySelector(`.euler-shape[data-shape="${key}"]`);
+            if (targetGroup) targetGroup.classList.add('active');
+
+            const def = vennDefinitions[key];
+            if (!def) return;
+
+            document.getElementById('vennTitle').innerText = def.title;
+            document.getElementById('vennDefTitle').innerText = `${def.title} Definition`;
+            
+            let propsList = def.properties.map(p => `<li>${p}</li>`).join('');
+            
+            document.getElementById('vennDefText').innerHTML = `
+                <div style="margin-bottom:12px; font-size:0.92rem; color:var(--text-color); font-weight:500;">
+                    ${def.definition}
+                </div>
+                <div style="margin-bottom:12px;">
+                    <strong style="color:var(--color-primary); font-size:0.8rem; text-transform:uppercase;">Key Properties:</strong>
+                    <ul style="margin-top:6px; padding-left:20px; display:flex; flex-direction:column; gap:4px; font-size:0.84rem;">
+                        ${propsList}
+                    </ul>
+                </div>
+                <div style="border-top:1px solid rgba(255,255,255,0.06); padding-top:10px;">
+                    <strong style="color:var(--color-outline); font-size:0.8rem; text-transform:uppercase;">Hierarchy Link:</strong>
+                    <p style="margin-top:4px; font-size:0.84rem; line-height:1.4;">${def.hierarchy}</p>
+                </div>
+            `;
+        }
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            showVennDetails('quad');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,955 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roots Relationships (Vieta's Formulas) - Algebraic Structures</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Shared Layout Stylesheet & Template Script -->
+    <link rel="stylesheet" href="../../../assets/shared.css">
+        <script>
+        window.PAGE_CONFIG = {
+            domain: "02_algebra",
+            logo: {"main":"Algebra","accent":"Lab","sub":"Roots Relationships (Vieta's Formulas)"},
+            navigation: [
+    {
+        "label": "Roots & Vieta Geometry Plotter",
+        "desc": "Roots & Vieta Geometry Plotter interactive section",
+        "href": "#visualizer"
+    },
+    {
+        "label": "Step-by-Step Algebraic Expansion",
+        "desc": "Step-by-Step Algebraic Expansion interactive section",
+        "href": "#step-solver"
+    },
+    {
+        "label": "Conceptual Quiz",
+        "desc": "Conceptual Quiz interactive section",
+        "href": "#quiz"
+    }
+]
+        };
+    </script>
+<script src="../../../assets/shared.js" defer></script>
+    <style>
+        :root {
+            /* Algebra Rose Theme */
+            --color-rose: #f43f5e;
+            --color-rose-glow: rgba(244, 63, 94, 0.35);
+            --color-accent: #f43f5e;
+            --color-accent-glow: rgba(244, 63, 94, 0.35);
+
+            --color-r1: #38bdf8; /* Cyan for Root 1 */
+            --color-r2: #ffb000; /* Amber for Root 2 */
+            --color-sum: #a855f7; /* Purple for Sum */
+            --color-prod: #10b981; /* Emerald for Product */
+        }
+
+        .sidebar-drawer .syllabus-item.active a {
+            background: var(--color-rose) !important;
+            box-shadow: 0 4px 20px var(--color-rose-glow) !important;
+        }
+
+        section {
+            margin-bottom: 6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--color-rose);
+            background: rgba(244, 63, 94, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            text-shadow: 0 0 5px var(--color-rose-glow);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .equation-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .slider-row input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            margin: 8px 0;
+        }
+
+        .slider-row.coeff-r1 input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-r1);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-r1);
+        }
+        .slider-row.coeff-r2 input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-r2);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--color-r2);
+        }
+
+        .formula-steps {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
+        }
+
+        .math-symbol {
+            font-style: italic;
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 63, 94, 0.08);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .canvas-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--text-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid var(--card-border);
+            pointer-events: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Drawer Syllabus Menu -->
+    <aside></aside>
+
+    <!-- Main Content Workspace -->
+    <main>
+        <header>
+            <h1 style="background: linear-gradient(135deg, #ffffff 30%, var(--color-rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Roots Relationships (Vieta's Formulas)</h1>
+            <p>Explore the elegant connection between a polynomial's roots and its coefficients. For a monic quadratic $x^2 + bx + c = 0$, the sum of roots equals $-b$, and their product equals $c$.</p>
+        </header>
+
+        <!-- SECTION 1: DYNAMIC VISUALIZER -->
+        <section id="visualizer">
+            <div class="section-header">
+                <span class="section-tag">Interactive Sandbox</span>
+                <h2>Roots & Vieta Geometry Plotter</h2>
+            </div>
+            <p class="section-intro">
+                Drag the roots directly on the x-axis or use the sliders. Observe how the roots construct the parabola, and visualize the Sum ($r_1 + r_2$) as a 1D vector and the Product ($r_1 \cdot r_2$) as a 2D area.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Dual Canvas Plotter -->
+                <div class="panel" style="gap: 1.5rem;">
+                    <div style="position: relative;">
+                        <div class="canvas-label">Quadratic Plot: y = (x - r₁)(x - r₂)</div>
+                        <div class="canvas-container" style="height: 300px; cursor: ew-resize;">
+                            <canvas id="graphCanvas"></canvas>
+                        </div>
+                    </div>
+                    <div style="position: relative;">
+                        <div class="canvas-label">Vieta Geometry: Sum (Vector) & Product (Area)</div>
+                        <div class="canvas-container" style="height: 250px;">
+                            <canvas id="vietaCanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Sliders and Live Equation -->
+                <div class="panel">
+                    <div class="math-card">
+                        <h3>Active Function</h3>
+                        <div class="equation-box" id="eqDisplay">
+                            y = x² - 0.00x + 0.00
+                        </div>
+                    </div>
+
+                    <!-- Sliders for Roots -->
+                    <div class="slider-group">
+                        <div class="slider-row coeff-r1">
+                            <div class="slider-label">
+                                <span>Root 1 (<span class="math-symbol" style="color:var(--color-r1); font-weight:bold;">r₁</span>)</span>
+                                <span class="number" id="lblR1">-2.00</span>
+                            </div>
+                            <input type="range" id="slideR1" min="-6.0" max="6.0" step="0.1" value="-2.00">
+                        </div>
+                        <div class="slider-row coeff-r2">
+                            <div class="slider-label">
+                                <span>Root 2 (<span class="math-symbol" style="color:var(--color-r2); font-weight:bold;">r₂</span>)</span>
+                                <span class="number" id="lblR2">3.00</span>
+                            </div>
+                            <input type="range" id="slideR2" min="-6.0" max="6.0" step="0.1" value="3.00">
+                        </div>
+                    </div>
+
+                    <div class="panel-hint">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v2h2v4zm0-8h-2V7h2v2z"/></svg>
+                        <span>Drag the cyan and amber dots on the x-axis of the top plot to adjust the roots interactively!</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: STEP-BY-STEP SOLVER -->
+        <section id="step-solver">
+            <div class="section-header">
+                <span class="section-tag">Arithmetic Solver</span>
+                <h2>Step-by-Step Algebraic Expansion</h2>
+            </div>
+            <p class="section-intro">
+                Trace how factoring and expanding polynomials mathematically derives the relationship between roots and coefficients.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Calculation Steps -->
+                <div class="panel">
+                    <h3>Deriving Coefficients from Roots</h3>
+                    <br>
+                    <div class="formula-steps">
+                        <div><strong>1. Linear Factors:</strong></div>
+                        <div style="margin-left: 10px;">
+                            f(x) = (x - r₁)(x - r₂)<br>
+                            f(x) = (x - (<span id="stepR1" style="color:var(--color-r1)">-2.00</span>))(x - (<span id="stepR2" style="color:var(--color-r2)">3.00</span>))
+                        </div>
+                        <br>
+                        <div><strong>2. FOIL Expansion:</strong></div>
+                        <div style="margin-left: 10px;">
+                            f(x) = x² - r₂x - r₁x + r₁r₂<br>
+                            f(x) = x² - (<span style="color:var(--color-r2)" id="stepR2_2">3.00</span>)x - (<span style="color:var(--color-r1)" id="stepR1_2">-2.00</span>)x + (<span style="color:var(--color-r1)" id="stepR1_3">-2.00</span> &times; <span style="color:var(--color-r2)" id="stepR2_3">3.00</span>)<br>
+                            f(x) = x² - (r₁ + r₂)x + (r₁ &times; r₂)
+                        </div>
+                        <br>
+                        <div><strong>3. Evaluate Vieta's Coefficients:</strong></div>
+                        <div style="margin-left: 10px;">
+                            Sum (S) = r₁ + r₂ = <span id="calcSum">1.00</span> &nbsp;&implies;&nbsp; Coefficient b = -S = <span style="color:var(--color-sum); font-weight:bold;" id="calcB">-1.00</span><br>
+                            Product (P) = r₁ &times; r₂ = <span id="calcProd">-6.00</span> &nbsp;&implies;&nbsp; Coefficient c = P = <span style="color:var(--color-prod); font-weight:bold;" id="calcC">-6.00</span>
+                        </div>
+                        <div id="stepSolution" style="font-weight: 700; color: var(--color-rose); margin-top: 12px; font-size: 1rem;">
+                            f(x) = x² - 1.00x - 6.00
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Live Parameters Summary -->
+                <div class="panel">
+                    <h3>Vieta Coefficients Summary</h3>
+                    <br>
+                    <div class="math-card" style="border-color: rgba(168, 85, 247, 0.15);">
+                        <h3>Linear Coefficient (b)</h3>
+                        <p class="number" style="font-size: 1.25rem; font-weight: 700; color: var(--color-sum);" id="sumSummaryText">
+                            b = -(r₁ + r₂) = -1.00
+                        </p>
+                    </div>
+
+                    <div class="math-card" style="border-color: rgba(16, 185, 129, 0.15);">
+                        <h3>Constant Term (c)</h3>
+                        <p class="number" style="font-size: 1.25rem; font-weight: 700; color: var(--color-prod);" id="prodSummaryText">
+                            c = r₁ &times; r₂ = -6.00
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONCEPTUAL QUIZ -->
+        <section id="quiz">
+            <div class="section-header">
+                <span class="section-tag">Evaluation</span>
+                <h2>Conceptual Quiz</h2>
+            </div>
+            <p class="section-intro">
+                Test your understanding of root relationships, Vieta's formulas, and coefficient derivation.
+            </p>
+
+            <div class="workspace-grid">
+                <!-- Left Panel: Question Board -->
+                <div class="panel" id="quizContainer">
+                    <div id="quizQuestionArea">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">
+                            <span id="quizProgressText">Question 1 of 5</span>
+                            <span id="quizScoreText">Score: 0/0</span>
+                        </div>
+                        <h3 id="quizQuestionTitle" style="margin-bottom:1.5rem; line-height:1.4;">For the quadratic equation x² - 5x + 6 = 0, what is the sum and product of the roots?</h3>
+                        
+                        <div id="quizOptionsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedbackArea">
+                        <strong id="quizFeedbackTitle">Correct Answer!</strong>
+                        <p id="quizExplanationText">Explanation text goes here...</p>
+                        <button class="btn" id="quizNextBtn" style="margin-top:1.5rem; background: rgba(255,255,255,0.05); color:var(--text-color); border:1px solid rgba(255,255,255,0.1); width:auto; font-weight:600; box-shadow:none;">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Cheatsheet -->
+                <div class="panel" id="quizStatsPanel">
+                    <h3>Vieta's Rules Cheat Sheet</h3>
+                    <br>
+                    <ul class="subtopics-list" style="margin-bottom: 0; list-style: none; display: flex; flex-direction: column; gap: 10px;">
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-sum); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-sum);"></span>
+                            <span>Monic: x² + bx + c = (x - r₁)(x - r₂)</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-sum); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-sum);"></span>
+                            <span>Sum: r₁ + r₂ = -b</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-prod); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-prod);"></span>
+                            <span>Product: r₁ &times; r₂ = c</span>
+                        </li>
+                        <li class="subtopic-item" style="display:flex; align-items:center; gap:8px;">
+                            <span class="orange-dot" style="background-color: var(--color-rose); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px var(--color-rose-glow);"></span>
+                            <span>General: ax² + bx + c = 0 &implies; r₁ + r₂ = -b/a, r₁r₂ = c/a</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        const vCanvas = document.getElementById('vietaCanvas');
+        const vCtx = vCanvas.getContext('2d');
+
+        // Sliders
+        const slideR1 = document.getElementById('slideR1');
+        const slideR2 = document.getElementById('slideR2');
+        const lblR1 = document.getElementById('lblR1');
+        const lblR2 = document.getElementById('lblR2');
+
+        // Text & Solver
+        const eqDisplay = document.getElementById('eqDisplay');
+        const stepR1 = document.getElementById('stepR1');
+        const stepR2 = document.getElementById('stepR2');
+        const stepR1_2 = document.getElementById('stepR1_2');
+        const stepR2_2 = document.getElementById('stepR2_2');
+        const stepR1_3 = document.getElementById('stepR1_3');
+        const stepR2_3 = document.getElementById('stepR2_3');
+        const calcSum = document.getElementById('calcSum');
+        const calcProd = document.getElementById('calcProd');
+        const calcB = document.getElementById('calcB');
+        const calcC = document.getElementById('calcC');
+        const stepSolution = document.getElementById('stepSolution');
+        const sumSummaryText = document.getElementById('sumSummaryText');
+        const prodSummaryText = document.getElementById('prodSummaryText');
+
+        // Roots State
+        let r1 = -2.0;
+        let r2 = 3.0;
+
+        // Interaction State
+        let draggingRoot = null; // 'r1' or 'r2'
+
+        function resizeCanvases() {
+            [canvas, vCanvas].forEach(c => {
+                const container = c.parentElement;
+                c.width = container.clientWidth;
+                c.height = container.clientHeight;
+            });
+            drawAll();
+        }
+
+        // Coordinate Conversions (Math range x: [-8, 8], y: [-8, 8])
+        function toPixel(gx, gy, c) {
+            const margin = 35;
+            const w = c.width - 2 * margin;
+            const h = c.height - 2 * margin;
+            const px = margin + ((gx + 8) / 16) * w;
+            const py = margin + ((8 - gy) / 16) * h;
+            return { x: px, y: py };
+        }
+
+        function toGraph(px, py, c) {
+            const margin = 35;
+            const w = c.width - 2 * margin;
+            const h = c.height - 2 * margin;
+            const gx = -8 + ((px - margin) / w) * 16;
+            const gy = 8 - ((py - margin) / h) * 16;
+            return { x: gx, y: gy };
+        }
+
+        function drawGrid(c, context, xLabel = 'x', yLabel = 'y') {
+            const margin = 35;
+            context.clearRect(0, 0, c.width, c.height);
+
+            context.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            context.lineWidth = 1;
+            context.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            context.font = '9px JetBrains Mono';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+
+            for (let i = -8; i <= 8; i++) {
+                if (i === 0) continue;
+                // Vertical
+                let p1 = toPixel(i, 0, c);
+                context.beginPath();
+                context.moveTo(p1.x, margin);
+                context.lineTo(p1.x, c.height - margin);
+                context.stroke();
+                context.fillText(i, p1.x, c.height - margin + 12);
+
+                // Horizontal
+                let p2 = toPixel(0, i, c);
+                context.beginPath();
+                context.moveTo(margin, p2.y);
+                context.lineTo(c.width - margin, p2.y);
+                context.stroke();
+                context.fillText(i, margin - 15, p2.y);
+            }
+
+            context.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            context.lineWidth = 1.5;
+            let center = toPixel(0, 0, c);
+
+            // X Axis
+            context.beginPath();
+            context.moveTo(margin, center.y);
+            context.lineTo(c.width - margin, center.y);
+            context.stroke();
+
+            // Y Axis
+            context.beginPath();
+            context.moveTo(center.x, margin);
+            context.lineTo(center.x, c.height - margin);
+            context.stroke();
+
+            context.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            context.font = '10px JetBrains Mono';
+            context.fillText(xLabel, c.width - margin + 15, center.y);
+            context.fillText(yLabel, center.x, margin - 12);
+        }
+
+        function drawGraph() {
+            drawGrid(canvas, ctx, 'x', 'y');
+
+            ctx.beginPath();
+            ctx.strokeStyle = 'var(--color-rose)';
+            ctx.lineWidth = 2.5;
+
+            let first = true;
+            for (let px = 35; px <= canvas.width - 35; px += 2) {
+                let gx = toGraph(px, 0, canvas).x;
+                let gy = (gx - r1) * (gx - r2);
+                if (gy >= -8.5 && gy <= 8.5) {
+                    let p = toPixel(gx, gy, canvas);
+                    if (first) {
+                        ctx.moveTo(p.x, p.y);
+                        first = false;
+                    } else {
+                        ctx.lineTo(p.x, p.y);
+                    }
+                }
+            }
+            ctx.stroke();
+
+            const vx = (r1 + r2) / 2;
+            const vy = (vx - r1) * (vx - r2);
+            if (vx >= -8 && vx <= 8 && vy >= -8 && vy <= 8) {
+                let vp = toPixel(vx, vy, canvas);
+                ctx.fillStyle = '#a855f7';
+                ctx.beginPath();
+                ctx.arc(vp.x, vp.y, 5, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.strokeStyle = '#08090d';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            }
+
+            const pr1 = toPixel(r1, 0, canvas);
+            const pr2 = toPixel(r2, 0, canvas);
+
+            ctx.shadowBlur = draggingRoot === 'r1' ? 12 : 4;
+            ctx.shadowColor = 'var(--color-r1)';
+            ctx.fillStyle = 'var(--color-r1)';
+            ctx.beginPath();
+            ctx.arc(pr1.x, pr1.y, 8, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.shadowBlur = draggingRoot === 'r2' ? 12 : 4;
+            ctx.shadowColor = 'var(--color-r2)';
+            ctx.fillStyle = 'var(--color-r2)';
+            ctx.beginPath();
+            ctx.arc(pr2.x, pr2.y, 8, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Labels for roots
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 10px JetBrains Mono';
+            ctx.fillText(`r₁=${r1.toFixed(1)}`, pr1.x, pr1.y - 14);
+            ctx.fillText(`r₂=${r2.toFixed(1)}`, pr2.x, pr2.y - 14);
+        }
+
+        function drawVieta() {
+            drawGrid(vCanvas, vCtx, 'x', 'y');
+
+            const sum = r1 + r2;
+            const prod = r1 * r2;
+
+            // Color represents positive area (emerald) or negative area (rose)
+            vCtx.fillStyle = prod >= 0 ? 'rgba(16, 185, 129, 0.12)' : 'rgba(244, 63, 94, 0.12)';
+            vCtx.strokeStyle = prod >= 0 ? 'rgba(16, 185, 129, 0.4)' : 'rgba(244, 63, 94, 0.4)';
+            vCtx.lineWidth = 1.5;
+
+            // Define rectangle coordinates
+            const p00 = toPixel(0, 0, vCanvas);
+            const pr1_r2 = toPixel(r1, r2, vCanvas);
+            const w = pr1_r2.x - p00.x;
+            const h = pr1_r2.y - p00.y;
+
+            vCtx.fillRect(p00.x, p00.y, w, h);
+            vCtx.strokeRect(p00.x, p00.y, w, h);
+
+            vCtx.fillStyle = prod >= 0 ? '#10b981' : '#f43f5e';
+            vCtx.font = 'bold 11px Outfit';
+            vCtx.textAlign = 'center';
+            vCtx.fillText(`Product Area = ${prod.toFixed(2)}`, p00.x + w / 2, p00.y + h / 2);
+
+            const pStart = toPixel(0, 0, vCanvas);
+            const pEnd = toPixel(sum, 0, vCanvas);
+
+            vCtx.strokeStyle = 'var(--color-sum)';
+            vCtx.lineWidth = 4;
+            vCtx.beginPath();
+            vCtx.moveTo(pStart.x, pStart.y);
+            vCtx.lineTo(pEnd.x, pEnd.y);
+            vCtx.stroke();
+
+            // Arrowhead for vector
+            vCtx.fillStyle = 'var(--color-sum)';
+            vCtx.beginPath();
+            const angle = sum >= 0 ? 0 : Math.PI;
+            vCtx.moveTo(pEnd.x, pEnd.y);
+            vCtx.lineTo(pEnd.x - 8 * Math.cos(angle - Math.PI / 6), pEnd.y - 8 * Math.sin(angle - Math.PI / 6));
+            vCtx.lineTo(pEnd.x - 8 * Math.cos(angle + Math.PI / 6), pEnd.y - 8 * Math.sin(angle + Math.PI / 6));
+            vCtx.fill();
+
+            // Sum vector label
+            vCtx.fillStyle = '#a855f7';
+            vCtx.font = 'bold 10px JetBrains Mono';
+            vCtx.fillText(`Sum Vector = ${sum.toFixed(2)}`, pStart.x + (pEnd.x - pStart.x) / 2, pStart.y - 12);
+        }
+
+        function drawAll() {
+            drawGraph();
+            drawVieta();
+        }
+
+        function updateSolver() {
+            lblR1.textContent = r1.toFixed(2);
+            lblR2.textContent = r2.toFixed(2);
+            slideR1.value = r1;
+            slideR2.value = r2;
+
+            const sum = r1 + r2;
+            const prod = r1 * r2;
+
+            // Formulate standard form coefficients: f(x) = x^2 + bx + c
+            // b = -sum, c = prod
+            const b = -sum;
+            const c = prod;
+
+            const signB = b >= 0 ? '+' : '-';
+            const signC = c >= 0 ? '+' : '-';
+            const absB = Math.abs(b).toFixed(2);
+            const absC = Math.abs(c).toFixed(2);
+
+            eqDisplay.innerHTML = `y = x² ${signB} ${absB}x ${signC} ${absC}`;
+
+            stepR1.textContent = r1.toFixed(2);
+            stepR2.textContent = r2.toFixed(2);
+            stepR1_2.textContent = r1.toFixed(2);
+            stepR2_2.textContent = r2.toFixed(2);
+            stepR1_3.textContent = r1.toFixed(2);
+            stepR2_3.textContent = r2.toFixed(2);
+
+            calcSum.textContent = sum.toFixed(2);
+            calcProd.textContent = prod.toFixed(2);
+            calcB.textContent = b.toFixed(2);
+            calcC.textContent = c.toFixed(2);
+
+            stepSolution.innerHTML = `f(x) = x² ${signB} ${absB}x ${signC} ${absC}`;
+
+            // Summary card
+            sumSummaryText.innerHTML = `b = -(r₁ + r₂) = ${b.toFixed(2)}`;
+            prodSummaryText.innerHTML = `c = r₁ &times; r₂ = ${c.toFixed(2)}`;
+        }
+
+        function updateAll() {
+            updateSolver();
+            drawAll();
+        }
+
+        slideR1.addEventListener('input', (e) => {
+            r1 = parseFloat(e.target.value);
+            updateAll();
+        });
+
+        slideR2.addEventListener('input', (e) => {
+            r2 = parseFloat(e.target.value);
+            updateAll();
+        });
+
+        // Mouse Drag Handlers for roots
+        function getMousePos(e, c) {
+            const rect = c.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        function handleDragStart(x, y) {
+            const pr1 = toPixel(r1, 0, canvas);
+            const pr2 = toPixel(r2, 0, canvas);
+
+            const dist1 = Math.hypot(x - pr1.x, y - pr1.y);
+            const dist2 = Math.hypot(x - pr2.x, y - pr2.y);
+
+            if (dist1 < 15 && dist1 < dist2) {
+                draggingRoot = 'r1';
+            } else if (dist2 < 15) {
+                draggingRoot = 'r2';
+            }
+            if (draggingRoot) {
+                drawGraph();
+            }
+        }
+
+        function handleDragMove(x, y) {
+            if (!draggingRoot) return;
+            const gx = toGraph(x, y, canvas).x;
+            // Clamp roots between -6 and 6
+            const clampedX = Math.max(-6, Math.min(6, gx));
+
+            if (draggingRoot === 'r1') {
+                r1 = parseFloat(clampedX.toFixed(1));
+            } else {
+                r2 = parseFloat(clampedX.toFixed(1));
+            }
+            updateAll();
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const pos = getMousePos(e, canvas);
+            handleDragStart(pos.x, pos.y);
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!draggingRoot) return;
+            const pos = getMousePos(e, canvas);
+            handleDragMove(pos.x, pos.y);
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (draggingRoot) {
+                draggingRoot = null;
+                drawGraph();
+            }
+        });
+
+        // Touch event compatibility
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                const pos = getMousePos(e.touches[0], canvas);
+                handleDragStart(pos.x, pos.y);
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!draggingRoot) return;
+            if (e.touches.length === 1) {
+                const pos = getMousePos(e.touches[0], canvas);
+                handleDragMove(pos.x, pos.y);
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('touchend', () => {
+            if (draggingRoot) {
+                draggingRoot = null;
+                drawGraph();
+            }
+        });
+
+        // Quiz State & Data
+        const quizQuestions = [
+            {
+                question: "For a monic quadratic x² + bx + c = 0, which of the following represents b and c according to Vieta's formulas?",
+                options: [
+                    "b = r₁ + r₂, c = r₁r₂",
+                    "b = -(r₁ + r₂), c = r₁r₂",
+                    "b = r₁r₂, c = -(r₁ + r₂)",
+                    "b = -r₁r₂, c = r₁ + r₂"
+                ],
+                correct: 1,
+                explanation: "By expanding (x - r₁)(x - r₂) = x² - (r₁ + r₂)x + r₁r₂. Comparing this to x² + bx + c = 0 yields b = -(r₁ + r₂) and c = r₁r₂."
+            },
+            {
+                question: "If a quadratic equation has roots r₁ = -4 and r₂ = 4, what is the corresponding equation in standard form?",
+                options: [
+                    "x² - 8x + 16 = 0",
+                    "x² - 16 = 0",
+                    "x² + 8x - 16 = 0",
+                    "x² + 16 = 0"
+                ],
+                correct: 1,
+                explanation: "Sum of roots = -4 + 4 = 0, so b = -0 = 0. Product of roots = -4 × 4 = -16, so c = -16. The equation is x² - 16 = 0."
+            },
+            {
+                question: "An equation has coefficients b = -6 and c = 5. What are the roots of this equation?",
+                options: [
+                    "r₁ = -1, r₂ = -5",
+                    "r₁ = 2, r₂ = 3",
+                    "r₁ = 1, r₂ = 5",
+                    "r₁ = -2, r₂ = -3"
+                ],
+                correct: 2,
+                explanation: "b = -(r₁ + r₂) = -6 implies r₁ + r₂ = 6. c = r₁r₂ = 5. The two numbers that add to 6 and multiply to 5 are 1 and 5."
+            },
+            {
+                question: "If the product of the roots is negative (c < 0), what can we conclude about the signs of the roots?",
+                options: [
+                    "Both roots are positive",
+                    "Both roots are negative",
+                    "The roots have opposite signs",
+                    "One of the roots is zero"
+                ],
+                correct: 2,
+                explanation: "Since c = r₁ × r₂, a negative product implies that one root must be strictly positive and the other strictly negative, i.e. opposite signs."
+            },
+            {
+                question: "If the roots of a quadratic equation are reciprocal to each other (r₁ = 1/r₂), what is the value of coefficient c?",
+                options: [
+                    "c = 0",
+                    "c = 1",
+                    "c = -1",
+                    "c depends on the value of the roots"
+                ],
+                correct: 1,
+                explanation: "By Vieta's formula, c = r₁ × r₂. If the roots are reciprocals, then r₁ × r₂ = (1/r₂) × r₂ = 1. Therefore, c must equal 1."
+            }
+        ];
+
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        const quizProgressText = document.getElementById('quizProgressText');
+        const quizScoreText = document.getElementById('quizScoreText');
+        const quizQuestionTitle = document.getElementById('quizQuestionTitle');
+        const quizOptionsContainer = document.getElementById('quizOptionsContainer');
+        const quizFeedbackArea = document.getElementById('quizFeedbackArea');
+        const quizFeedbackTitle = document.getElementById('quizFeedbackTitle');
+        const quizExplanationText = document.getElementById('quizExplanationText');
+        const quizNextBtn = document.getElementById('quizNextBtn');
+
+        function loadQuestion() {
+            quizFeedbackArea.style.display = 'none';
+            const q = quizQuestions[quizIndex];
+            quizProgressText.textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex}`;
+            quizQuestionTitle.textContent = q.question;
+
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="quiz-option" data-idx="${idx}">
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+            quizOptionsContainer.innerHTML = html;
+
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    handleOptionSelect(parseInt(el.getAttribute('data-idx')), el);
+                });
+            });
+        }
+
+        function handleOptionSelect(selectedIdx, element) {
+            const q = quizQuestions[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selectedIdx === q.correct) {
+                element.classList.add('correct');
+                quizFeedbackTitle.textContent = "Correct Answer!";
+                quizFeedbackTitle.style.color = '#10b981';
+                quizScore++;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                quizFeedbackTitle.textContent = "Incorrect Answer";
+                quizFeedbackTitle.style.color = '#f43f5e';
+            }
+
+            quizExplanationText.textContent = q.explanation;
+            quizFeedbackArea.style.display = 'block';
+            quizScoreText.textContent = `Score: ${quizScore}/${quizIndex + 1}`;
+        }
+
+        quizNextBtn.addEventListener('click', () => {
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                quizProgressText.textContent = `Evaluation Completed`;
+                quizQuestionTitle.innerHTML = `Quiz finished! You scored <strong>${quizScore} out of ${quizQuestions.length}</strong> correct.`;
+                quizOptionsContainer.innerHTML = `
+                    <button class="btn" onclick="resetQuiz()" style="background:var(--color-rose); box-shadow:0 4px 15px var(--color-rose-glow);">
+                        Restart Quiz Evaluation
+                    </button>
+                `;
+                quizFeedbackArea.style.display = 'none';
+            }
+        });
+
+        window.resetQuiz = function() {
+            quizIndex = 0;
+            quizScore = 0;
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+            window.addEventListener('sidebar-resize', () => {
+                setTimeout(resizeCanvases, 300);
+            });
+            updateAll();
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
+<!--
+Copyright (c) 2026:
+vatofichor - Sebastian Mass     [>_<]
+& Assisted By Gemini Antigravity /|\
+-->
