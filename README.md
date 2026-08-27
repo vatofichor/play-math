@@ -20,25 +20,17 @@ This section is designed to get the math playground running on your home compute
 ## How to Run Locally
 
 ### 1. Launching on Windows (Recommended)
-1. Double-click the file [run_server.bat](run_server.bat) in this folder.
-2. A window will open, and your web browser should automatically open to the dashboard.
-3. The launcher will automatically detect if you have Python 3+ installed. If not, it will fall back to using the prepackaged portable Python environment included in this repository under `assets/lib/python/`.
-4. If both your system Python and the prepackaged local Python are missing, the launcher window will stop and show you a clean step-by-step instruction guide on how to download it.
-
-> [!TIP]
-> **If you need to install Python manually**:
-> 1. Open your web browser and go to [https://www.python.org/downloads/](https://www.python.org/downloads/).
-> 2. Click the yellow button to download the latest version for Windows.
-> 3. Run the downloaded installer.
-> 4. **CRITICAL STEP**: On the very first screen of the installer, check the box at the bottom that says **"Add Python.exe to PATH"** before clicking Install.
-> 5. After the installation finishes, double-click [run_server.bat](run_server.bat) again.
+1. Double-click [install.bat](install.bat) (or run [run_server.bat](run_server.bat) directly to auto-unpack portable PHP).
+2. Double-click [run_server.bat](run_server.bat) in this folder.
+3. The launcher will automatically detect if you have system PHP (>= 5.3) installed. If not, it will fall back to using the prepackaged portable PHP environment under `assets/lib/php/php/`.
 
 ### 2. Launching on macOS / Linux / Terminal
 1. Open your Terminal program.
-2. Navigate to this folder and type:
+2. Navigate to this folder and run:
    ```bash
-   python3 app.py
+   bash run-server.sh
    ```
+   *(Note: Linux/macOS users require system PHP 5.3+ installed).*
 3. Open your browser and go to: [http://localhost:8090](http://localhost:8090)
 
 ### 3. Stopping the Server
@@ -66,12 +58,11 @@ Use this table to find the appropriate math topics for your child or student. Th
 
 This section is for developers hosting the playground on production web servers or integrating modules into Learning Management Systems (LMS).
 
-## Pythonic Dependencies & Environment
+## PHP Environment & Local Server
 
-The local python tools (the development server `app.py` and diagnostic checker scripts under `dev/`) run natively using Python 3+ standard libraries.
-- **Required Packages**: None (zero external pip packages required).
-- **Core Standard Modules**: `http.server`, `socketserver`, `webbrowser`, `threading`, `json`, `html.parser`, `re`.
-- **Portable Setup**: A pre-packaged, portable Python installation is located at `assets/lib/python/` for plug-and-play execution on Windows without system-wide python installations.
+The local web application runs natively using PHP 5.3+ (built-in CLI server `php -S localhost:8090`).
+- **Required Packages**: None (zero external 3rd-party dependencies required).
+- **Portable Setup**: A pre-packaged Windows portable PHP archive is located at `assets/lib/php/php.zip` for plug-and-play execution on Windows without system-wide PHP installations. Unpacks dynamically to `assets/lib/php/php/` via `install.bat` or `run_server.bat`.
 
 ## Production Hosting Setup
 
