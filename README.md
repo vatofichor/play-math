@@ -9,6 +9,9 @@
               /____/                             
 ```
 
+[Play-Math Beta](https://play-math.com)
+BETA MIT free version - live testing site
+
 An interactive, high-density dashboard mapping core domains of mathematics to real-time HTML5 Canvas physical sandbox simulators. This playground teaches mathematical quantities, spatial relationships, and formulas through interactive visual models.
 
 ---
